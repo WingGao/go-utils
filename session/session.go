@@ -8,11 +8,11 @@ import (
 	"github.com/kataras/iris/sessions/sessiondb/redis"
 	"github.com/kataras/iris/sessions/sessiondb/redis/service"
 	"github.com/kataras/iris/context"
-	. "utils"
+	. "github.com/WingGao/go-utils"
 	//"fmt"
 	"errors"
 	cdb "core/db"
-	pxdb "px/db"
+	//pxdb "px/db"
 	"time"
 	"net/http/httptest"
 	"net/http"
@@ -179,26 +179,6 @@ func (x *XSession) IsAdmin() bool {
 	return IsAdmin(x.Group)
 }
 
-func (x *XSession) IsTeacher() bool {
-	return x.Group == cdb.GROUP_TEACHER
-}
-func (x *XSession) Teacher() (s *pxdb.Teacher) {
-	if x.IsTeacher() {
-		s = pxdb.NewTeacher()
-		s.LoadAndSetId(x.Uid)
-	}
-	return
-}
-func (x *XSession) IsStudent() bool {
-	return x.Group == cdb.GROUP_STUDENT
-}
-func (x *XSession) Student() (s *pxdb.Student) {
-	if x.IsStudent() {
-		s = pxdb.NewStudent()
-		s.LoadAndSetId(x.Uid)
-	}
-	return
-}
 func (x *XSession) Account() (s *cdb.Account) {
 	if x.Uid > 0 {
 		s = cdb.NewAccount()

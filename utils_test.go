@@ -10,7 +10,6 @@ var (
 )
 
 func TestMain(m *testing.M) {
-	//TODO 修改测试配置
-	testConfig, _ = LoadConfig("/Users/suamo/Projs/SuamoIris/dev/config.imac.yaml")
+	testConfig, _ = LoadConfig(os.Getenv("WING_GO_CONF"))
 	os.Exit(m.Run())
 }

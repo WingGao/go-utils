@@ -7,7 +7,7 @@ import (
 	"github.com/kataras/iris/httptest"
 	"mtest"
 	"os"
-	"utils"
+	"github.com/WingGao/go-utils"
 	credis "core/redis"
 	"github.com/stretchr/testify/assert"
 )
