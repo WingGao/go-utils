@@ -33,6 +33,11 @@ type MConfig struct {
 	TestAdminSession   string
 	TestStudentSession string
 	TestTeacherSession string
+
+	Wing struct{
+		FaceKey string
+		FaceSec string
+	}
 }
 
 type WxConfig struct {
