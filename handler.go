@@ -13,6 +13,10 @@ type ErrJson struct {
 }
 
 func AfterHandler(ictx context.Context, o interface{}, err error) {
+	//跳过已经处理过的请求
+	if ictx.GetStatusCode() > 200 {
+		return
+	}
 	if err != nil {
 		ictx.StatusCode(iris.StatusBadRequest)
 		ictx.JSON(ErrJson{Err: err.Error()})

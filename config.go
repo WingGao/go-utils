@@ -22,15 +22,15 @@ type MConfig struct {
 		Mysql string
 		WpDir string
 	}
-	WxConfig WxConfig
+	WxConfig WxConfig `yaml:"wechat"`
 	Redis    RedisConf
 	Task     tconfig.Config
 
 	Cms struct {
 	}
 
-	LibreOfficePath  string `yaml:"libreoffice_path"`
-	TestAdminSession string
+	LibreOfficePath    string `yaml:"libreoffice_path"`
+	TestAdminSession   string
 	TestStudentSession string
 	TestTeacherSession string
 }
@@ -40,6 +40,7 @@ type WxConfig struct {
 	MchId     string
 	ApiKey    string
 	NotifyUrl string
+	Token     string //缓存用
 }
 
 type RedisConf struct {
