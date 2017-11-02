@@ -19,6 +19,7 @@ type IMgModel interface {
 	SetModel(n *MgModel)
 	SetParent(p interface{})
 	GetParent() interface{}
+	C() (c *mgo.Collection, s *mgo.Session)
 }
 type IMgParent interface {
 	TableName() string
@@ -79,6 +80,13 @@ func (m *MgModel) Find(q interface{}, out interface{}) error {
 	return m.pFormatError(err)
 }
 
+func (m *MgModel) FindAll(q interface{}, arr interface{}) error {
+	mc, ms := m.C()
+	defer ms.Close()
+	err := mc.Find(q).All(arr)
+	return m.pFormatError(err)
+}
+
 //由于mgo的赋值会替换全部属性，所以需要重新赋值
 func (m *MgModel) one(q *mgo.Query, out interface{}) error {
 	var oldM interface{}
@@ -122,3 +130,21 @@ func ToObjectId(in interface{}) bson.ObjectId {
 //	out := funk.PtrOf(out.parent)
 //	return
 //}
+
+func BSum(v interface{}) (out bson.M) {
+	return bson.M{"$sum": v}
+}
+func BAvg(v interface{}) (bson.M) {
+	return bson.M{"$avg": v}
+}
+
+func BAddFields(field string, v interface{}) (out bson.M) {
+	return bson.M{"$addFields": bson.M{field: v}}
+}
+
+func BMatch(v interface{}) (bson.M) {
+	return bson.M{"$match": v}
+}
+func BGroup(v interface{}) (bson.M) {
+	return bson.M{"$group": v}
+}

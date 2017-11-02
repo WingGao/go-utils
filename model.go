@@ -526,6 +526,13 @@ func GormAddSelect(g *gorm.DB, fields ...string) *gorm.DB {
 	return g.Select(attrs)
 }
 
+func GormIn(g *gorm.DB, field string, arg interface{}) *gorm.DB {
+	if funk.IsEmpty(arg) {
+		return g
+	}
+	return g.Where(fmt.Sprintf("%s IN (?)", field), arg)
+}
+
 func ScopeOmitFields(scope *gorm.Scope, fields ...string) {
 	if updateAttrs, ok := scope.InstanceGet("gorm:update_attrs"); ok {
 		for _, v := range fields {
