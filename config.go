@@ -13,6 +13,7 @@ type MConfig struct {
 	Addr            string //服务地址
 	Host            string
 	Mysql           string
+	Mongodb         string
 	DefaultPassword string `yaml:"default_password"` //默认密码
 	MediaPath       string
 	WebApps         string

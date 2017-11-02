@@ -76,3 +76,20 @@ func ToPrtZeroUint32(ptr uint32) *uint32 {
 	n := ptr
 	return &n
 }
+
+//func Clone(ob interface{}) (out interface{}) {
+//	t := reflect.TypeOf(ob)
+//	cp := reflect.New(t)
+//	// Avoid double pointers if itf is a pointer
+//	if t.Kind() == reflect.Ptr {
+//		out = cp.Elem().Interface()
+//	} else {
+//		out = cp.Interface()
+//	}
+//
+//	err := copier.Copy(out, ob)
+//	if err != nil {
+//		panic(err)
+//	}
+//	return
+//}
