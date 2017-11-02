@@ -21,6 +21,7 @@ type IModel interface {
 	GetTableName() string
 	GetModel() *Model
 	GetDB() *gorm.DB
+	SetDB(g *gorm.DB)
 	Begin() *gorm.DB
 	Rollback() (err error)
 	Commit() (err error)
@@ -107,6 +108,10 @@ func (m *Model) GetDB() *gorm.DB {
 	return m.DB
 }
 
+func (m *Model) SetDB(g *gorm.DB) {
+	m.DB = g
+}
+
 func (m *Model) GModel() *gorm.DB {
 	return m.GetDB().Model(m.parent)
 }
@@ -184,8 +189,13 @@ func (m *Model) FetchColumnValue(keys ... string) (out interface{}) {
 	return
 }
 
-func (m *Model) Find(out interface{}, where ...interface{}) *gorm.DB {
-	db := m.GetDB().Find(out, where...)
+//用了scan的方法
+func (m *Model) Find(out interface{}, where ...interface{}) (db *gorm.DB) {
+	if len(where) > 0 {
+		db = m.Table().Where(where[0], where[1:]...).Scan(out)
+	} else {
+		db = m.GetDB().Find(out)
+	}
 	pv := reflect.ValueOf(out)
 	if pv.Kind() == reflect.Ptr {
 		pv = pv.Elem()
@@ -202,13 +212,14 @@ func (m *Model) Find(out interface{}, where ...interface{}) *gorm.DB {
 			//for j := 0; j < vt.NumMethod(); j++ {
 			//	fmt.Println("method", vt.Method(i).Name)
 			//}
-
-			outv.MethodByName("SetParent").Call([]reflect.Value{outv})
-			outv = outv.Elem()
-			outv.FieldByName("DB").Set(reflect.ValueOf(m.GetDB()))
+			if _, ok := outv.Interface().(IModel); ok {
+				outv.MethodByName("SetParent").Call([]reflect.Value{outv})
+				outv = outv.Elem()
+				outv.FieldByName("DB").Set(reflect.ValueOf(m.GetDB()))
+			}
 		}
 	}
-	return db
+	return
 }
 
 //返回 *[]*ParentType
@@ -242,6 +253,12 @@ func (m *Model) BatchInsertBad(items []*Model) (err error) {
 	tx.Commit()
 	return
 }
+
+func (m *Model) First(out interface{}, where ...interface{}) (err error) {
+	err = m.GModel().First(out, where...).Error
+	return m.parent.(IModelParent).FormatError(err)
+}
+
 func (m *Model) FirstOrCreate(where ...interface{}) (err error) {
 	err = m.GModel().FirstOrCreate(m.parent, where...).Error
 	return m.parent.(IModelParent).FormatError(err)
@@ -392,18 +409,16 @@ func (m *Model) ToMap() map[string]interface{} {
 
 //最好ID必须设置，不然会查询全部
 func (m *Model) Exist(where ...interface{}) bool {
-	item := &Model{}
+	item := funk.PtrOf(m.parent)
 	e := m.GModel().Select("id").First(item, where...).Error
-	return e != nil && item.ID > 0
+	return e == nil && item.(IModel).GetModel().ID > 0
 }
 
 func (m *Model) ExistID() bool {
 	if m.ID <= 0 {
 		return false
 	}
-	item := &Model{}
-	e := m.GModel().Select("id").First(item).Error
-	return e != nil && item.ID > 0
+	return m.Exist("id = ?", m.ID)
 }
 
 //格式化sql，添加自定义变量
@@ -418,23 +433,24 @@ func (m *Model) FormatSql(sql string, args ... interface{}) string {
 
 //被JOIN
 // selectKeysMap = nil | map[string]string k:to
+// SELECT <map> FROM ... JOIN <m.TableName> ON <m.TableName>.<rkey> == <g.Table>.<lkey>
 func (m *Model) JoinBy(g *gorm.DB, selectKeysMap interface{}, lkey, rkey, jtype string) *gorm.DB {
 	table := m.GetTableName()
 	scope := GetScope(g)
 	attrs := GetSelectAttrs(g)
 	if selectKeysMap == nil {
-		attrs = append(attrs, fmt.Sprintf("%v.*", table))
+		attrs = append(attrs, fmt.Sprintf("`%v`.*", table))
 	} else if sm, ok := selectKeysMap.(map[string]string); ok {
 		for k, to := range sm {
 			if strings.Contains(k, ".") || strings.Contains(k, "(") {
-				attrs = append(attrs, fmt.Sprintf("%v as %v", k, to))
+				attrs = append(attrs, fmt.Sprintf("`%v` as `%v`", k, to))
 			} else {
-				attrs = append(attrs, fmt.Sprintf("%v.%v as %v", table, k, to))
+				attrs = append(attrs, fmt.Sprintf("`%v`.`%v` as `%v`", table, k, to))
 			}
 		}
 	}
 	g = g.Select(attrs).Joins(
-		fmt.Sprintf("%s JOIN %s ON %s.%s = %s.%s", jtype, table, table, rkey, scope.QuotedTableName(), lkey))
+		fmt.Sprintf("%s JOIN `%s` ON `%s`.`%s` = `%s`.`%s`", jtype, table, table, rkey, scope.TableName(), lkey))
 	return g
 }
 

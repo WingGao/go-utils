@@ -12,6 +12,9 @@ var (
 	ERR_PARAMS        = errors.New("params error")
 	ERR_NO_PERMISSION = errors.New("no permission")
 	ERR_CANNOT_MODIFY = errors.New("cannot modify")
+	ErrNoItem         = errors.New("no such item")
+	ErrExisted        = errors.New("existed")
+	ErrNotMatch       = errors.New("not match")
 )
 
 func Nothing(...interface{}) {

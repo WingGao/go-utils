@@ -28,6 +28,13 @@ type XSession struct {
 	Username string
 	LastTime time.Time
 }
+type IXSession interface {
+	IsClear() bool
+	Clear() ()
+	IsValued() bool
+	Refresh()
+	RefreshAuto()
+}
 
 var (
 	_session   *sessions.Sessions
@@ -81,7 +88,7 @@ func GetIrisSession(ctx context.Context) *sessions.Session {
 	sess := _session.Start(ctx)
 	return sess
 }
-func getSessionCtx(key string) context.Context {
+func GetSessionCtx(key string) context.Context {
 	ctx := context.NewContext(nil)
 	req := httptest.NewRequest("GET", "http://localhost", nil)
 	req.AddCookie(&http.Cookie{Name: "smsid", Value: key})
@@ -91,19 +98,21 @@ func getSessionCtx(key string) context.Context {
 }
 
 func GetIrisSessionByKey(key string) *sessions.Session {
-	ctx := getSessionCtx(key)
+	ctx := GetSessionCtx(key)
 	defer func() {
 		ctx.EndRequest()
 	}()
 	return GetIrisSession(ctx)
 }
+
 func NewSessionByKey(key string) (*XSession, error) {
-	ctx := getSessionCtx(key)
+	ctx := GetSessionCtx(key)
 	defer func() {
 		ctx.EndRequest()
 	}()
 	return NewSessionFromIris(ctx, XSESSION_KEY)
 }
+
 func NewSessionFromIris(ctx context.Context, key string) (*XSession, error) {
 	if !checkSession() {
 		return nil, _errNotSet
@@ -133,6 +142,10 @@ func (x *XSession) ToGob() ([]byte, error) {
 	enc := gob.NewEncoder(&buf)
 	err := enc.Encode(x)
 	return buf.Bytes(), err
+}
+
+func (x *XSession) IsClear() bool {
+	return x.isClear
 }
 
 func (x *XSession) Clear() () {

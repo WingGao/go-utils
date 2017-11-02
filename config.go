@@ -29,12 +29,14 @@ type MConfig struct {
 	Cms struct {
 	}
 
+	YunCoureTemplate string
+
 	LibreOfficePath    string `yaml:"libreoffice_path"`
 	TestAdminSession   string
 	TestStudentSession string
 	TestTeacherSession string
 
-	Wing struct{
+	Wing struct {
 		FaceKey string
 		FaceSec string
 	}
