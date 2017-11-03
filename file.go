@@ -4,6 +4,8 @@ import (
 	"time"
 	"github.com/ungerik/go-dry"
 	"encoding/base64"
+	"path/filepath"
+	"os"
 )
 
 func FileGetBase64(filenameOrURL string, timeout ...time.Duration) (out string, err error) {
@@ -14,4 +16,9 @@ func FileGetBase64(filenameOrURL string, timeout ...time.Duration) (out string, 
 	}
 	out = base64.StdEncoding.EncodeToString(bs)
 	return
+}
+
+func PWD() string {
+	p, _ := filepath.Abs(filepath.Dir(os.Args[0]))
+	return p
 }
