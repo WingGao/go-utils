@@ -6,10 +6,17 @@ import (
 	"encoding/json"
 	"github.com/go-playground/form"
 	"github.com/json-iterator/go"
+	"github.com/emirpasic/gods/sets/hashset"
 )
+
+var ignoreErros = hashset.New()
 
 type ErrJson struct {
 	Err string `json:"err_msg"`
+}
+
+func AddHandlerIgnoreErrors(errs ...interface{}) {
+	ignoreErros.Add(errs...)
 }
 
 func AfterHandler(ictx context.Context, o interface{}, err error) {
@@ -18,6 +25,11 @@ func AfterHandler(ictx context.Context, o interface{}, err error) {
 		return
 	}
 	if err != nil {
+		if !ignoreErros.Contains(err) {
+			err2 := NewWError(err)
+			err2.Fmt()
+			ictx.Application().Logger().Error(err2.ErrorStack())
+		}
 		ictx.StatusCode(iris.StatusBadRequest)
 		ictx.JSON(ErrJson{Err: err.Error()})
 	} else {

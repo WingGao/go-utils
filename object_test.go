@@ -216,9 +216,3 @@ func TestToPrtZero(t *testing.T) {
 	assert.EqualValues(t, bUint32, *res)
 }
 
-func TestArray(t *testing.T) {
-	arr := []int{}
-	arr = append(arr, 1)
-	_, ok := arr[1]
-	assert.False(t, ok)
-}

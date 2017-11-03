@@ -3,6 +3,8 @@ package utils
 import (
 	"github.com/go-errors/errors"
 	sll "github.com/emirpasic/gods/lists/singlylinkedlist"
+	"bytes"
+	"strings"
 )
 
 var (
@@ -15,6 +17,9 @@ var (
 	ErrNoItem         = errors.New("no such item")
 	ErrExisted        = errors.New("existed")
 	ErrNotMatch       = errors.New("not match")
+
+	UtilsErrList = []*errors.Error{ERR_REQUIRE_LOGIN, ERR_REQUIRE_ADMIN, ERR_NO_ACCOUNT,
+		ERR_PARAMS, ERR_NO_PERMISSION, ERR_CANNOT_MODIFY, ErrNoItem, ErrExisted, ErrNotMatch}
 )
 
 func Nothing(...interface{}) {
@@ -65,4 +70,50 @@ func (l *ErrorList) Panic() {
 	if err := l.FirstError(); err != nil {
 		panic(err)
 	}
+}
+
+func PrintError(err error) {
+	//errN := errors.Wrap(err, 0)
+	//fmt.Println(errN.ErrorStack())
+}
+
+type WError struct {
+	Err    *errors.Error
+	Frames []errors.StackFrame
+}
+
+func NewWError(e interface{}) *WError {
+	out := &WError{}
+	if e2, ok := e.(*errors.Error); ok {
+		out.Err = e2
+		out.Frames = e2.StackFrames()
+	} else {
+		out.Err = errors.Wrap(e, 1)
+		out.Frames = out.Err.StackFrames()
+	}
+	return out
+}
+
+//我们只需要知道最短路径
+func (e *WError) Fmt() {
+	for i, frame := range e.Frames {
+		if frame.Package == "main" || strings.HasSuffix(frame.File, "/mcmd/main.go") {
+			e.Frames = e.Frames[:i+1]
+			break
+		}
+	}
+}
+
+func (e *WError) Stack() []byte {
+	buf := bytes.Buffer{}
+
+	for _, frame := range e.Frames {
+		buf.WriteString(frame.String())
+	}
+
+	return buf.Bytes()
+}
+
+func (e *WError) ErrorStack() string {
+	return e.Err.TypeName() + " " + e.Err.Error() + "\n" + string(e.Stack())
 }
