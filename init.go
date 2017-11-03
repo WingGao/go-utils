@@ -1,5 +1,7 @@
 package utils
 
 func init() {
-	AddHandlerIgnoreErrors(ERR_REQUIRE_LOGIN)
+	for _, v := range UtilsErrList {
+		AddHandlerIgnoreErrors(v)
+	}
 }
