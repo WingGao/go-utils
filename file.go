@@ -18,7 +18,7 @@ func FileGetBase64(filenameOrURL string, timeout ...time.Duration) (out string, 
 	return
 }
 
-func PWD() string {
+func BinPath() string {
 	p, _ := filepath.Abs(filepath.Dir(os.Args[0]))
 	return p
 }

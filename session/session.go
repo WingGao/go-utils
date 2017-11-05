@@ -1,8 +1,6 @@
 package session
 
 import (
-	"encoding/gob"
-	"bytes"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/sessions"
 	"github.com/kataras/iris/sessions/sessiondb/redis"
@@ -16,10 +14,13 @@ import (
 	"time"
 	"net/http/httptest"
 	"net/http"
+	"encoding/json"
+	"github.com/json-iterator/go"
 )
 
 type XSession struct {
 	ctx      context.Context
+	Iris     *sessions.Session `json:"-"`
 	key      string
 	isClear  bool
 	Sid      string
@@ -27,6 +28,7 @@ type XSession struct {
 	Group    uint32
 	Username string
 	LastTime time.Time
+	WxOpenId string
 }
 type IXSession interface {
 	IsClear() bool
@@ -120,28 +122,36 @@ func NewSessionFromIris(ctx context.Context, key string) (*XSession, error) {
 	sess := _session.Start(ctx)
 	val := sess.Get(key)
 	if val == nil {
-		return &XSession{ctx: ctx, key: key}, nil
+		return &XSession{ctx: ctx, key: key, Iris: sess}, nil
 	}
 	xsess, err := NewSessionFromGob(val.([]byte))
 	xsess.RefreshAuto()
 	xsess.ctx = ctx
 	xsess.key = key
+	xsess.Iris = sess
 	return xsess, err
 }
 
 func NewSessionFromGob(bs []byte) (*XSession, error) {
-	buf := bytes.NewBuffer(bs)
-	dec := gob.NewDecoder(buf)
+	//buf := bytes.NewBuffer(bs)
+	//dec := gob.NewDecoder(buf)
 	sess := &XSession{}
-	err := dec.Decode(&sess)
+	//err := dec.Decode(&sess)
+	err := jsoniter.Unmarshal(bs, sess)
 	return sess, err
 }
 
 func (x *XSession) ToGob() ([]byte, error) {
-	var buf bytes.Buffer
-	enc := gob.NewEncoder(&buf)
-	err := enc.Encode(x)
-	return buf.Bytes(), err
+	//var buf bytes.Buffer
+	//enc := gob.NewEncoder(&buf)
+	////make a copy
+	//dx := &XSession{}
+	//copier.Copy(dx, x)
+	//dx.ctx = nil
+	//dx.Iris = nil
+	//err := enc.Encode(dx)
+	//return buf.Bytes(), err
+	return json.Marshal(x)
 }
 
 func (x *XSession) IsClear() bool {
@@ -165,7 +175,10 @@ func (x *XSession) SaveIris(ctx context.Context, key string) error {
 	}
 
 	g, err := x.ToGob()
-	sess := _session.Start(ctx)
+	sess := x.Iris
+	if sess == nil {
+		sess = _session.Start(ctx)
+	}
 	sess.Set(key, g)
 	return err
 }
@@ -177,7 +190,10 @@ func (x *XSession) SaveIrisD() error {
 	}
 
 	g, err := x.ToGob()
-	sess := _session.Start(x.ctx)
+	sess := x.Iris
+	if sess == nil {
+		sess = _session.Start(x.ctx)
+	}
 	sess.Set(x.key, g)
 	return err
 }
