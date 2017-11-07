@@ -7,6 +7,9 @@ import (
 	tconfig "github.com/RichardKnop/machinery/v1/config"
 )
 
+var (
+	DefaultConfig MConfig
+)
 //main config
 type MConfig struct {
 	Debug           bool
@@ -41,6 +44,10 @@ type MConfig struct {
 		FaceKey string
 		FaceSec string
 	}
+
+	Exam struct {
+		Mysql string
+	}
 }
 
 type WxConfig struct {
@@ -73,5 +80,6 @@ func LoadConfig(confPath string) (MConfig, error) {
 			fmt.Println("MConfig loaded")
 		}
 	}
+	DefaultConfig = conf
 	return conf, nil
 }
