@@ -155,3 +155,8 @@ func BGroup(v interface{}) (bson.M) {
 func BIn(field string, v interface{}) (out bson.M) {
 	return bson.M{field: bson.M{"$in": v}}
 }
+
+func MarshalJSONStr(m interface{}) string {
+	js, _ := bson.MarshalJSON(m)
+	return string(js)
+}
