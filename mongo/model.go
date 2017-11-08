@@ -43,6 +43,7 @@ func (m *MgModel) SetParent(p interface{}) {
 	m.parent = p
 }
 
+//需要手动关闭session
 func (m *MgModel) GetSession() *mgo.Session {
 	return m.Session.New()
 }
@@ -130,7 +131,9 @@ func ToObjectId(in interface{}) bson.ObjectId {
 //	out := funk.PtrOf(out.parent)
 //	return
 //}
-
+func BCount(v interface{}) (out bson.M) {
+	return bson.M{"$count": v}
+}
 func BSum(v interface{}) (out bson.M) {
 	return bson.M{"$sum": v}
 }
@@ -147,4 +150,8 @@ func BMatch(v interface{}) (bson.M) {
 }
 func BGroup(v interface{}) (bson.M) {
 	return bson.M{"$group": v}
+}
+
+func BIn(field string, v interface{}) (out bson.M) {
+	return bson.M{field: bson.M{"$in": v}}
 }
