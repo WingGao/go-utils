@@ -29,11 +29,13 @@ func ContainsUint32(s []uint32, v uint32) bool {
 	return false
 }
 
-func MapGetColumn(arr interface{}, key string) interface{} {
+func MapGetColumn(arr interface{}, key string) []interface{} {
 	return funk.Map(arr, func(item interface{}) interface{} {
 		return funk.Get(item, key)
-	})
+	}).([]interface{})
 }
+
+
 func MapGetColumnUint32(arr interface{}, key string) []uint32 {
 	return funk.Map(arr, func(item interface{}) uint32 {
 		return funk.Get(item, key).(uint32)

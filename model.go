@@ -4,7 +4,7 @@ import (
 	"time"
 	"github.com/jinzhu/gorm"
 	"reflect"
-	"errors"
+	"github.com/go-errors/errors"
 	"github.com/thoas/go-funk"
 	"github.com/fatih/structs"
 	"strings"
