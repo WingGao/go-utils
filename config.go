@@ -6,6 +6,8 @@ import (
 	"fmt"
 	tconfig "github.com/RichardKnop/machinery/v1/config"
 	"path"
+	"path/filepath"
+	"github.com/go-errors/errors"
 )
 
 var (
@@ -13,8 +15,9 @@ var (
 )
 //main config
 type MConfig struct {
-	AppPath         string //运行路径，一般不设置，测试使用
-	configPath      string //配置文件路径
+	configPath      string                 //配置文件路径
+	allMap          map[string]interface{} //保存配置,默认map[interface {}]interface {}
+	AppPath         string                 //运行路径，一般不设置，测试使用
 	Debug           bool
 	Addr            string //服务地址
 	Host            string
@@ -57,6 +60,13 @@ func (m MConfig) GetConfigPath() string {
 	return m.configPath
 }
 
+func (m MConfig) Get(key string) interface{} {
+	if v, ok := m.allMap[key]; ok {
+		return v
+	}
+	return nil
+}
+
 type WxConfig struct {
 	AppId     string
 	MchId     string
@@ -72,25 +82,32 @@ type RedisConf struct {
 	UniqueIdKey string
 }
 
-func LoadConfig(confPath string) (MConfig, error) {
-	conf := MConfig{
-		Debug: false,
-	}
+func NewConfigFromFile(confPath string) (conf MConfig, err error) {
 	if confPath == "" {
-
+		err = errors.New("need path")
 	} else {
+		confPath, _ = filepath.Abs(confPath)
 		confd, _ := ioutil.ReadFile(confPath)
 		err := yaml.Unmarshal(confd, &conf)
 		if err != nil {
 			return conf, err
 		} else {
-			fmt.Println("MConfig loaded")
+			m := make(map[string]interface{})
+			yaml.Unmarshal(confd, &m)
+			conf.allMap = m
 			conf.configPath = confPath
 			if conf.AppPath == "" {
 				conf.AppPath = path.Dir(confPath)
 			}
 		}
 	}
+	return
+}
+func LoadConfig(confPath string) (MConfig, error) {
+	conf, err := NewConfigFromFile(confPath)
+	if err == nil {
+		fmt.Println("MConfig loaded")
+	}
 	DefaultConfig = conf
-	return conf, nil
+	return conf, err
 }
