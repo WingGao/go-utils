@@ -5,6 +5,7 @@ import (
 	"gopkg.in/yaml.v2"
 	"fmt"
 	tconfig "github.com/RichardKnop/machinery/v1/config"
+	"path"
 )
 
 var (
@@ -12,6 +13,8 @@ var (
 )
 //main config
 type MConfig struct {
+	AppPath         string //运行路径，一般不设置，测试使用
+	configPath      string //配置文件路径
 	Debug           bool
 	Addr            string //服务地址
 	Host            string
@@ -50,6 +53,10 @@ type MConfig struct {
 	}
 }
 
+func (m MConfig) GetConfigPath() string {
+	return m.configPath
+}
+
 type WxConfig struct {
 	AppId     string
 	MchId     string
@@ -78,6 +85,10 @@ func LoadConfig(confPath string) (MConfig, error) {
 			return conf, err
 		} else {
 			fmt.Println("MConfig loaded")
+			conf.configPath = confPath
+			if conf.AppPath == "" {
+				conf.AppPath = path.Dir(confPath)
+			}
 		}
 	}
 	DefaultConfig = conf
