@@ -7,6 +7,7 @@ import (
 	"github.com/go-playground/form"
 	"github.com/json-iterator/go"
 	"github.com/emirpasic/gods/sets/hashset"
+	"net/url"
 )
 
 var ignoreErros = hashset.New()
@@ -54,12 +55,19 @@ func AfterHandler(ictx context.Context, o interface{}, err error) {
 }
 
 //params必须是ptr
-func ParseForm(ictx context.Context, params interface{}) (err error) {
+func ParseFormIris(ictx context.Context, params interface{}) (err error) {
 	dec := form.NewDecoder()
 	err = dec.Decode(params, ictx.FormValues())
 	if err != nil {
 		ictx.Application().Logger().Warnf("Error when reading form: " + err.Error())
 		err = ERR_PARAMS
 	}
+	return
+}
+
+//params必须是ptr
+func ParseForm(v url.Values, outPtr interface{}) (err error) {
+	dec := form.NewDecoder()
+	err = dec.Decode(outPtr, v)
 	return
 }
