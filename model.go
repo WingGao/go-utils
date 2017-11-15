@@ -69,13 +69,13 @@ type IModelParent interface {
 
 type Model struct {
 	ID uint32   `gorm:"primary_key" bson:"ID"`
-	DB *gorm.DB `gorm:"-" json:"-" bson:"-"`
+	DB *gorm.DB `gorm:"-" json:"-" bson:"-" form:"-"`
 	// 指向父的指针
 	parent            interface{} `gorm:"-"`
 	associationColumn []string    `gorm:"-"`
 	tx                *gorm.DB    `gorm:"-"` //事务，进行事务的时候暂存
 	next              *gorm.DB    `gorm:"-"` //连贯操作需要
-	OmitFields        []string    `gorm:"-" json:"-" bson:"-"`
+	OmitFields        []string    `gorm:"-" json:"-" bson:"-" form:"-"`
 }
 
 type ModelTime struct {

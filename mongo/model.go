@@ -1,3 +1,29 @@
+// 用来方便MongoDB对象创建
+// MgModel
+//	type HugoScorePageRecord struct {
+//		mongo.MgModel                                            `bson:",inline" structs:",flatten"`
+//		PageID                  uint32                           `bson:"PageID"`                  //评分表ID
+//		CourseHourInteractionID uint32                           `bson:"CourseHourInteractionID"` //互动ID course_hour_interaction_id
+//		Result                  map[string]HugoScorePageQuestion `bson:"Result"`
+//		ToUserID                uint32                           `bson:"ToUserID"` //被评价者
+//		ToUser                  *Student                         `bson:"-" json:",omitempty"`
+//		FromUserID              uint32                           `bson:"FromUserID"` //评论者
+//	}
+/*
+	func (HugoScorePageRecord) TableName() string {
+		return "px_hugo_page_record"
+	}
+
+	func NewHugoScorePageRecord(d interface{}) (m *HugoScorePageRecord) {
+		m = &HugoScorePageRecord{}
+		if d != nil {
+			copier.Copy(m, d)
+		}
+		m.MgModel = mongo.MgModel{Session: _mgodb, DbName: mgoName}
+		m.SetParent(m)
+		return
+	}
+ */
 package mongo
 
 import (
@@ -6,6 +32,7 @@ import (
 	"github.com/thoas/go-funk"
 )
 
+// MongoDB结构的通用
 type MgModel struct {
 	Id      bson.ObjectId `bson:"_id"`
 	Session *mgo.Session  `bson:"-" json:"-"`
