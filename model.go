@@ -80,7 +80,7 @@ type Model struct {
 
 type ModelTime struct {
 	CreatedAt *time.Time `json:",omitempty"`
-	UpdatedAt *time.Time `json:",omitempty"`
+	UpdatedAt *time.Time `json:",omitempty"` //updated_at
 	//DeletedAt *time.Time `sql:"index"`
 }
 
