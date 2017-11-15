@@ -493,7 +493,12 @@ func (m *Model) AfterDelete(scope *gorm.Scope) error {
 
 func GetIDs(ms interface{}) []uint32 {
 	return funk.Map(ms, func(v IModel) uint32 {
-		return v.GetModel().ID
+		if  v != nil {
+			if m := v.GetModel(); m != nil {
+				return m.ID
+			}
+		}
+		return 0
 	}).([]uint32)
 }
 
