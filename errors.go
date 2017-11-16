@@ -17,6 +17,7 @@ var (
 	ErrNoItem         = errors.New("no such item")
 	ErrExisted        = errors.New("existed")
 	ErrNotMatch       = errors.New("not match")
+	ErrFormat         = errors.New("format error")
 
 	UtilsErrList = []*errors.Error{ERR_REQUIRE_LOGIN, ERR_REQUIRE_ADMIN, ERR_NO_ACCOUNT,
 		ERR_PARAMS, ERR_NO_PERMISSION, ERR_CANNOT_MODIFY, ErrNoItem, ErrExisted, ErrNotMatch}

@@ -38,6 +38,10 @@ func StrToInt32(s string) (r int32) {
 	return
 }
 
+func StrFromUint32(u uint32) string {
+	return strconv.FormatUint(uint64(u), 10)
+}
+
 func TrimSpaceArr(s []string) (out []string) {
 	out = make([]string, len(s))
 	for i, v := range s {
