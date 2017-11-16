@@ -8,6 +8,7 @@ import (
 	"path"
 	"path/filepath"
 	"github.com/go-errors/errors"
+	"strings"
 )
 
 var (
@@ -22,6 +23,7 @@ type MConfig struct {
 	Addr            string //服务地址
 	Host            string
 	Mysql           string
+	MysqlDebug      bool
 	Mongodb         string
 	DefaultPassword string `yaml:"default_password"` //默认密码
 	MediaPath       string
@@ -99,15 +101,39 @@ func NewConfigFromFile(confPath string) (conf MConfig, err error) {
 			if conf.AppPath == "" {
 				conf.AppPath = path.Dir(confPath)
 			}
+			if conf.MediaPath == "" {
+				conf.MediaPath = path.Join(conf.AppPath, "uploads")
+			} else {
+				conf.MediaPath = getFullPath(conf.AppPath, conf.MediaPath)
+			}
+			if conf.WebApps == "" {
+				conf.WebApps = path.Join(conf.AppPath, "webapps")
+			} else {
+				conf.WebApps = getFullPath(conf.AppPath, conf.WebApps)
+			}
 		}
 	}
 	return
+}
+
+func getFullPath(apppath, p string) string {
+	if p == "" {
+		return apppath
+	}
+	if strings.HasPrefix(p, "/") {
+		return p
+	} else {
+		return filepath.Join(apppath, p)
+	}
 }
 func LoadConfig(confPath string) (MConfig, error) {
 	conf, err := NewConfigFromFile(confPath)
 	if err == nil {
 		fmt.Println("MConfig loaded")
 	}
+	fmt.Println("AppPath:", conf.AppPath)
+	fmt.Println("MediaPath:", conf.MediaPath)
+	fmt.Println("WebApps:", conf.WebApps)
 	DefaultConfig = conf
 	return conf, err
 }
