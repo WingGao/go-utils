@@ -35,16 +35,20 @@ func MapGetColumn(arr interface{}, key string) []interface{} {
 	}).([]interface{})
 }
 
-
 func MapGetColumnUint32(arr interface{}, key string) []uint32 {
 	return funk.Map(arr, func(item interface{}) uint32 {
 		return funk.Get(item, key).(uint32)
 	}).([]uint32)
 }
+
 func MapGetColumnString(arr interface{}, key string) []string {
 	return funk.Map(arr, func(item interface{}) string {
 		return funk.Get(item, key).(string)
 	}).([]string)
+}
+
+func ArrayFilterNotEmpty(arr interface{}) []interface{} {
+	return funk.Filter(arr, funk.NotEmpty).([]interface{})
 }
 
 func ArrayToHashmap(arr interface{}, mapKeyField string) *hashmap.Map {
