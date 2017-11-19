@@ -115,6 +115,13 @@ func (m *MgModel) FindAll(q interface{}, arr interface{}) error {
 	return m.pFormatError(err)
 }
 
+func (m *MgModel) Count(q interface{}) (int, error) {
+	mc, ms := m.C()
+	defer ms.Close()
+	cnt, err := mc.Find(q).Count()
+	return cnt, m.pFormatError(err)
+}
+
 //由于mgo的赋值会替换全部属性，所以需要重新赋值
 func (m *MgModel) one(q *mgo.Query, out interface{}) error {
 	var oldM interface{}
