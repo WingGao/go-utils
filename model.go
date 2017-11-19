@@ -78,12 +78,6 @@ type Model struct {
 	OmitFields        []string    `gorm:"-" json:"-" bson:"-" form:"-"`
 }
 
-type ModelTime struct {
-	CreatedAt *time.Time `json:",omitempty"`
-	UpdatedAt *time.Time `json:",omitempty"` //updated_at
-	//DeletedAt *time.Time `sql:"index"`
-}
-
 func (m *Model) GetPK() interface{} {
 	return m.ID
 }
@@ -491,9 +485,24 @@ func (m *Model) AfterDelete(scope *gorm.Scope) error {
 	return nil
 }
 
+type IModelTime interface {
+	UnsetTime()
+}
+
+type ModelTime struct {
+	CreatedAt *time.Time `json:",omitempty"`
+	UpdatedAt *time.Time `json:",omitempty"` //updated_at
+	//DeletedAt *time.Time `sql:"index"`
+}
+
+func (m *ModelTime) UnsetTime() {
+	m.CreatedAt = nil
+	m.UpdatedAt = nil
+}
+
 func GetIDs(ms interface{}) []uint32 {
 	return funk.Map(ms, func(v IModel) uint32 {
-		if  v != nil {
+		if v != nil {
 			if m := v.GetModel(); m != nil {
 				return m.ID
 			}
