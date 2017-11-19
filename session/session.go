@@ -261,5 +261,7 @@ func ClearUserAllSessions(uid uint32) (err error) {
 			Action:    sessions.ActionDestroy,
 		})
 	}
+	//删除自己
+	uredis.MainClient.Del(userKey)
 	return
 }
