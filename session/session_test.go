@@ -8,14 +8,14 @@ import (
 	"mtest"
 	"os"
 	"github.com/WingGao/go-utils"
-	credis "core/redis"
+	uredis "github.com/WingGao/go-utils/redis"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestMain(m *testing.M) {
 	mtest.PreEnv()
 	testConf, _ := utils.LoadConfig(os.Getenv("NXPT_GO_CONF"))
-	credis.LoadClient(testConf.Redis)
+	uredis.LoadClient(testConf.Redis)
 	BuildIrisSession(testConf)
 	os.Exit(m.Run())
 }
@@ -59,4 +59,9 @@ func TestGetIrisSessionByKey(t *testing.T) {
 	xsess, err := NewSessionByKey(k)
 	assert.NoError(t, err)
 	t.Log(xsess)
+}
+
+func TestClearUserAllSessions(t *testing.T) {
+	err := ClearUserAllSessions(169)
+	assert.NoError(t, err)
 }

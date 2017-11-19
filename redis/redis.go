@@ -90,6 +90,7 @@ func (c *RedisClient) GetBytes(key string, def []byte) ([]byte, error) {
 	}
 	return out, err
 }
+
 //gob.Register
 func (c *RedisClient) SetGlob(key string, ptr interface{}) (error) {
 	var buf bytes.Buffer
@@ -110,6 +111,23 @@ func (c *RedisClient) GetGlob(key string, out interface{}) (error) {
 	dec := gob.NewDecoder(buf)
 	err = dec.Decode(out)
 	return err
+}
+
+// SADD
+func (c *RedisClient) Csadd(key string, members ...interface{}) (added bool, err error) {
+	added, err = redis.Bool(c.Do("SADD", append([]interface{}{key}, members...)...))
+	return
+}
+
+// SMEMBERS
+//
+func (c *RedisClient) Csmembers(key string, out interface{}) (err error) {
+	rep, err1 := redis.Values(c.Do("SMEMBERS", key))
+	if err1 != nil {
+		return err1
+	}
+	err = redis.ScanSlice(rep, out)
+	return
 }
 
 func LoadClient(conf utils.RedisConf) {

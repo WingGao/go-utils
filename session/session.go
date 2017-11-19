@@ -10,12 +10,14 @@ import (
 	//"fmt"
 	"errors"
 	cdb "core/db"
+	uredis "github.com/WingGao/go-utils/redis"
 	//pxdb "px/db"
 	"time"
 	"net/http/httptest"
 	"net/http"
 	"encoding/json"
 	"github.com/json-iterator/go"
+	"fmt"
 )
 
 type XSession struct {
@@ -39,9 +41,10 @@ type IXSession interface {
 }
 
 var (
-	_session   *sessions.Sessions
-	_errNotSet = errors.New("utils.session not set")
-	_rdb       *redis.Database
+	_session          *sessions.Sessions
+	_errNotSet        = errors.New("utils.session not set")
+	_rdb              *redis.Database
+	_sessionKeyPrefix = "core_sid_"
 )
 
 func BuildIrisSession(conf MConfig) {
@@ -54,7 +57,7 @@ func BuildIrisSession(conf MConfig) {
 		MaxIdle:     0,
 		MaxActive:   0,
 		IdleTimeout: service.DefaultRedisIdleTimeout,
-		Prefix:      ""})
+		Prefix:      _sessionKeyPrefix})
 
 	_rdb.Async(true)
 	iris.RegisterOnInterrupt(func() {
@@ -129,6 +132,7 @@ func NewSessionFromIris(ctx context.Context, key string) (*XSession, error) {
 	xsess.ctx = ctx
 	xsess.key = key
 	xsess.Iris = sess
+	xsess.Sid = sess.ID()
 	return xsess, err
 }
 
@@ -236,4 +240,26 @@ func (x *XSession) RefreshAuto() {
 	if x.Uid > 0 && time.Now().After(x.LastTime.Add(5*time.Minute)) {
 		x.Refresh()
 	}
+}
+
+//删除所有的用户登录session
+func ClearUserAllSessions(uid uint32) (err error) {
+	userKey := fmt.Sprintf("core_user_%d_sids", uid)
+	sids := []string{}
+	err = uredis.MainClient.Csmembers(userKey, &sids)
+	if err != nil {
+		return
+	}
+	for i, v := range sids {
+		_session.DestroyByID(v)
+		if i == 0 { //初始化
+			_rdb.Load("")
+		}
+		//手动调用，可能不在内存里
+		_rdb.Sync(sessions.SyncPayload{
+			SessionID: v,
+			Action:    sessions.ActionDestroy,
+		})
+	}
+	return
 }
