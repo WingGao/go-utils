@@ -30,15 +30,18 @@ import (
 	"gopkg.in/mgo.v2/bson"
 	"gopkg.in/mgo.v2"
 	"github.com/thoas/go-funk"
+	sll "github.com/emirpasic/gods/lists/singlylinkedlist"
 )
 
 // MongoDB结构的通用
 type MgModel struct {
 	Id      bson.ObjectId `bson:"_id"`
+	//IdHex   string        `bson:"-"`
 	Session *mgo.Session  `bson:"-" json:"-"`
 	DbName  string        `bson:"-" json:"-"`
 	// 指向父的指针
-	parent interface{} `bson:"-"`
+	parent          interface{} `bson:"-"`
+	createdSessions *sll.List   `bson:"-"`
 }
 
 type IMgModel interface {
@@ -66,7 +69,11 @@ func (m *MgModel) GetParent() interface{} {
 	return m.parent
 }
 
+//基本可以用作初始化
 func (m *MgModel) SetParent(p interface{}) {
+	if m.createdSessions == nil {
+		m.createdSessions = sll.New()
+	}
 	m.parent = p
 }
 
@@ -75,8 +82,21 @@ func (m *MgModel) GetSession() *mgo.Session {
 	return m.Session.New()
 }
 
+//关闭所有获取到的session
+func (m *MgModel) CloseAllSession() {
+	if m.createdSessions != nil {
+		for i := 0; i < m.createdSessions.Size(); i++ {
+			if s, ok := m.createdSessions.Get(i); ok && s != nil {
+				s.(*mgo.Session).Close()
+			}
+		}
+		m.createdSessions.Clear()
+	}
+}
+
 func (m *MgModel) C() (c *mgo.Collection, s *mgo.Session) {
 	s = m.GetSession()
+	m.createdSessions.Add(s)
 	c = s.DB(m.DbName).C(m.parent.(IMgParent).TableName())
 	return
 }

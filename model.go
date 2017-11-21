@@ -567,6 +567,8 @@ func FormatSqlError(err error) (error) {
 		errStr := err.Error()
 		if strings.HasPrefix(errStr, "Error 1451: Cannot delete or update a parent row") {
 			err = errors.New("还有其他项目在使用")
+		} else if strings.HasPrefix(errStr, "Error 1062: Duplicate entry") {
+			err = errors.New("已存在")
 		}
 	}
 	return err

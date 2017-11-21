@@ -2,7 +2,6 @@ package utils
 
 import (
 	"github.com/thoas/go-funk"
-	"github.com/emirpasic/gods/maps/hashmap"
 	"reflect"
 )
 
@@ -51,14 +50,6 @@ func ArrayFilterNotEmpty(arr interface{}) []interface{} {
 	return funk.Filter(arr, funk.NotEmpty).([]interface{})
 }
 
-func ArrayToHashmap(arr interface{}, mapKeyField string) *hashmap.Map {
-	m := hashmap.New()
-	funk.ForEach(arr, func(v interface{}) {
-		m.Put(funk.Get(v, mapKeyField), v)
-	})
-	return m
-}
-
 func EqualValUint32(a *uint32, b uint32) bool {
 	return a != nil && *a == b
 }
@@ -99,3 +90,15 @@ func ToPrtZeroUint32(ptr uint32) *uint32 {
 //	}
 //	return
 //}
+
+func ObjectGet(v, f interface{}) interface{} {
+	var mapKeyFunc func(v interface{}) interface{}
+	if k, ok := f.(string); ok {
+		mapKeyFunc = func(v interface{}) interface{} {
+			return funk.Get(v, k)
+		}
+	} else {
+		mapKeyFunc = f.(func(v interface{}) interface{})
+	}
+	return mapKeyFunc(v)
+}
