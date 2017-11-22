@@ -3,6 +3,8 @@ package utils
 import (
 	"testing"
 	"errors"
+	"reflect"
+	"github.com/stretchr/testify/assert"
 )
 
 type testMod2 struct {
@@ -41,11 +43,34 @@ func TestModel_IsValid(t *testing.T) {
 	t.Log("IsVaild Pass")
 }
 
-func checkInterface(m IModel) bool{
+func checkInterface(m IModel) bool {
 	return true
 }
 
 func TestGetIDs(t *testing.T) {
 	m := &Model{}
 	checkInterface(m)
+}
+
+type TestA struct {
+	Model
+	FieldB uint32
+}
+
+func TestModel_New(t *testing.T) {
+	a := &TestA{}
+	a.ID = 1
+	a.SetParent(a)
+	ta := reflect.TypeOf(a).Elem()
+	n := reflect.New(ta)
+	nele := n.Elem()
+	for i := 0; i < nele.NumField(); i++ {
+		t.Log(nele.Field(i).Type().String())
+	}
+	nele.FieldByName("Model").Set(reflect.ValueOf(Model{ID: 2}))
+	b := PtrOf(a)
+	reflect.ValueOf(b).Elem().FieldByName("Model").Set(reflect.ValueOf(Model{ID: 3}))
+	assert.Equal(t, uint32(2), nele.Addr().Interface().(*TestA).ID)
+	assert.Equal(t, uint32(1), a.ID)
+	assert.Equal(t, uint32(3), b.(*TestA).ID)
 }

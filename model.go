@@ -16,6 +16,7 @@ var (
 )
 
 type IModel interface {
+	New() interface{}
 	GModel() *gorm.DB
 	GetPK() interface{}
 	GetTableName() string
@@ -27,6 +28,7 @@ type IModel interface {
 	Commit() (err error)
 	NewScope() (*gorm.Scope, error)
 	Limit(limit interface{}) *gorm.DB
+	LoadAndSetId(id uint32) error
 	Exist(where ...interface{}) bool
 	ExistID() bool
 	FetchColumnValue(keys ... string) (out interface{})
@@ -194,7 +196,7 @@ func (m *Model) Find(out interface{}, where ...interface{}) (db *gorm.DB) {
 	if pv.Kind() == reflect.Ptr {
 		pv = pv.Elem()
 	}
-	if pv.Kind() != reflect.Struct {
+	if pv.Kind() == reflect.Slice {
 		// 多个结果的情况
 		for i := 0; i < pv.Len(); i++ {
 			outv := pv.Index(i)
@@ -483,6 +485,13 @@ func (m *Model) BeforeDelete(scope *gorm.Scope) error {
 }
 func (m *Model) AfterDelete(scope *gorm.Scope) error {
 	return nil
+}
+
+//得到一个基础父类，可以被重写
+func (m *Model) New() interface{} {
+	n := PtrOf(m.parent)
+	reflect.ValueOf(n).Elem().FieldByName("Model").Set(reflect.ValueOf(Model{parent: n, DB: m.GetDB()}))
+	return n
 }
 
 type IModelTime interface {

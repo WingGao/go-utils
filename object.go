@@ -74,22 +74,25 @@ func ToPrtZeroUint32(ptr uint32) *uint32 {
 	return &n
 }
 
-//func Clone(ob interface{}) (out interface{}) {
-//	t := reflect.TypeOf(ob)
-//	cp := reflect.New(t)
-//	// Avoid double pointers if itf is a pointer
-//	if t.Kind() == reflect.Ptr {
-//		out = cp.Elem().Interface()
-//	} else {
-//		out = cp.Interface()
-//	}
-//
-//	err := copier.Copy(out, ob)
-//	if err != nil {
-//		panic(err)
-//	}
-//	return
-//}
+//只获取类型指针
+func PtrOf(ob interface{}) (out interface{}) {
+	t := reflect.TypeOf(ob)
+
+	// Avoid double pointers if itf is a pointer
+	if t.Kind() == reflect.Ptr {
+		cp := reflect.New(t.Elem())
+		out = cp.Interface()
+	} else {
+		cp := reflect.New(t)
+		out = cp.Interface()
+	}
+
+	//err := copier.Copy(out, ob)
+	//if err != nil {
+	//	panic(err)
+	//}
+	return
+}
 
 func ObjectGet(v, f interface{}) interface{} {
 	var mapKeyFunc func(v interface{}) interface{}
