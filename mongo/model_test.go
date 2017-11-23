@@ -7,6 +7,7 @@ import (
 	"gopkg.in/mgo.v2"
 	"github.com/stretchr/testify/assert"
 	"mtest"
+	"github.com/jinzhu/copier"
 )
 
 var (
@@ -40,7 +41,7 @@ func NewModelA() (m *ModelA) {
 	m.SetParent(m)
 	return
 }
-func testP( p IMgParent){
+func testP(p IMgParent) {
 	p.FormatError(nil)
 }
 func TestMgModel_Save(t *testing.T) {
@@ -65,4 +66,14 @@ func TestMgModel_LoadById(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, "2", mod.FieldStr)
 	mtest.OutputJson(mod)
+}
+
+func TestToObjectId(t *testing.T) {
+	mod := NewModelA()
+	a := struct {
+		Id string
+	}{"5a16b6117aff15ead7d498da"}
+	copier.Copy(mod, a)
+	mod.Id = ToObjectId(mod.Id)
+	assert.Equal(t, "5a16b6117aff15ead7d498da", mod.Id.Hex())
 }

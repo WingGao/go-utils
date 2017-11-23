@@ -31,6 +31,7 @@ import (
 	"gopkg.in/mgo.v2"
 	"github.com/thoas/go-funk"
 	sll "github.com/emirpasic/gods/lists/singlylinkedlist"
+	"reflect"
 )
 
 // MongoDB结构的通用
@@ -184,10 +185,14 @@ func (m *MgModel) FormatError(err error) error {
 
 //转换ObjectId, 支持 ObjectId, string
 func ToObjectId(in interface{}) bson.ObjectId {
-	if id, ok := in.(bson.ObjectId); ok {
-		return id
-	} else if s, ok := in.(string); ok {
+	//_id是24位
+	if s, ok := in.(string); ok && len(s) == 24 {
 		return bson.ObjectIdHex(s)
+	} else if id, ok := in.(bson.ObjectId); ok {
+		if len(string(id)) == 24 {
+			return bson.ObjectIdHex(string(id))
+		}
+		return id
 	}
 	return bson.ObjectId("")
 }
@@ -196,6 +201,10 @@ func ToObjectId(in interface{}) bson.ObjectId {
 //	out := funk.PtrOf(out.parent)
 //	return
 //}
+//
+func BEq(v interface{}) (out bson.M) {
+	return bson.M{"$eq": v}
+}
 func BSet(v interface{}) (out bson.M) {
 	return bson.M{"$set": v}
 }
@@ -227,7 +236,33 @@ func BIn(field string, v interface{}) (out bson.M) {
 	return bson.M{field: bson.M{"$in": v}}
 }
 
+//array
+func BElemMatch(v interface{}) (out bson.M) {
+	return bson.M{"$elemMatch": v}
+}
+
 func MarshalJSONStr(m interface{}) string {
 	js, _ := bson.MarshalJSON(m)
 	return string(js)
+}
+
+//忽略某些
+func GetMSetIgnore(obj interface{}, bsonFields ...string) (bm bson.M) {
+	setM := bson.M{}
+	info, err1 := bson.GetStructInfo(reflect.TypeOf(obj))
+	if err1 != nil {
+		return
+	}
+	ignoreMap := make(map[string]bool, len(bsonFields))
+	for _, f := range bsonFields {
+		ignoreMap[f] = true
+	}
+	objv := reflect.ValueOf(obj)
+	for _, v := range info.FieldsList {
+		if _, ok := ignoreMap[v.Key]; !ok {
+			setM[v.Key] = objv.Field(v.Num).Interface()
+		}
+	}
+	bm = BSet(setM)
+	return
 }
