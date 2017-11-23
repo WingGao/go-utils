@@ -12,3 +12,10 @@ func TestMConfig_Get(t *testing.T) {
 	islocal := conf.Get("islocal")
 	assert.Equal(t, true, islocal)
 }
+
+func TestMConfig_AbsPath(t *testing.T) {
+	conf, err := NewConfigFromFile(dry.GetenvDefault("WING_GO_CONF", ""))
+	assert.NoError(t, err)
+	t.Log(conf.configPath)
+	t.Log(conf.AbsPath("../helloAbs"))
+}

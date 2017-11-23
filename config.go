@@ -70,7 +70,7 @@ func (m MConfig) Get(key string) interface{} {
 
 //获得相对于配置文件的绝对路径
 func (m MConfig) AbsPath(apath string) string {
-	return getFullPath(m.configPath, apath)
+	return getFullPath(path.Dir(m.configPath), apath)
 }
 
 type WxConfig struct {

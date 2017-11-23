@@ -34,11 +34,12 @@ import (
 )
 
 // MongoDB结构的通用
+// 如果新增加域，需要在one()里也添加对应复制
 type MgModel struct {
-	Id      bson.ObjectId `bson:"_id"`
+	Id bson.ObjectId `bson:"_id"`
 	//IdHex   string        `bson:"-"`
-	Session *mgo.Session  `bson:"-" json:"-"`
-	DbName  string        `bson:"-" json:"-"`
+	Session *mgo.Session `bson:"-" json:"-"`
+	DbName  string       `bson:"-" json:"-"`
 	// 指向父的指针
 	parent          interface{} `bson:"-"`
 	createdSessions *sll.List   `bson:"-"`
@@ -50,6 +51,7 @@ type IMgModel interface {
 	SetParent(p interface{})
 	GetParent() interface{}
 	C() (c *mgo.Collection, s *mgo.Session)
+	UpdateId(update interface{}) error
 }
 type IMgParent interface {
 	TableName() string
@@ -101,6 +103,7 @@ func (m *MgModel) C() (c *mgo.Collection, s *mgo.Session) {
 	return
 }
 
+//注意，会完全覆盖
 func (m *MgModel) Save() error {
 	if !m.Id.Valid() {
 		m.Id = bson.NewObjectId()
@@ -118,6 +121,13 @@ func (m *MgModel) LoadById(id interface{}) error {
 	mc, ms := m.C()
 	defer ms.Close()
 	err := m.one(mc.FindId(ToObjectId(id)), m.parent)
+	return m.pFormatError(err)
+}
+
+func (m *MgModel) UpdateId(update interface{}) error {
+	mc, ms := m.C()
+	defer ms.Close()
+	err := mc.UpdateId(m.Id, update)
 	return m.pFormatError(err)
 }
 
@@ -154,6 +164,7 @@ func (m *MgModel) one(q *mgo.Query, out interface{}) error {
 		m.parent = out
 		m.Session = oldM.(*MgModel).Session
 		m.DbName = oldM.(*MgModel).DbName
+		m.createdSessions = oldM.(*MgModel).createdSessions
 	}
 	return err
 }
@@ -185,6 +196,12 @@ func ToObjectId(in interface{}) bson.ObjectId {
 //	out := funk.PtrOf(out.parent)
 //	return
 //}
+func BSet(v interface{}) (out bson.M) {
+	return bson.M{"$set": v}
+}
+func BUnset(v interface{}) (out bson.M) {
+	return bson.M{"$unset": v}
+}
 func BCount(v interface{}) (out bson.M) {
 	return bson.M{"$count": v}
 }
