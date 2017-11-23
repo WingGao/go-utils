@@ -28,6 +28,7 @@ type IModel interface {
 	Commit() (err error)
 	NewScope() (*gorm.Scope, error)
 	Limit(limit interface{}) *gorm.DB
+	IsLoaded() bool
 	LoadAndSetId(id uint32) error
 	Exist(where ...interface{}) bool
 	ExistID() bool
@@ -345,6 +346,11 @@ func (m *Model) BatchDelete(ids []uint32) (err error) {
 
 func (m *Model) Where(query interface{}, args ...interface{}) *gorm.DB {
 	return m.GetDB().Model(m.parent).Where(query, args...)
+}
+
+//判断是否加载，需要重写
+func (m *Model) IsLoaded() bool {
+	return false
 }
 
 func (m *Model) LoadById() error {

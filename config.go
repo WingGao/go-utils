@@ -8,7 +8,6 @@ import (
 	"path"
 	"path/filepath"
 	"github.com/go-errors/errors"
-	"strings"
 )
 
 var (
@@ -41,7 +40,7 @@ type MConfig struct {
 	Cms struct {
 	}
 
-	YunCoureTemplate string
+	YunCourseTemplate string
 
 	LibreOfficePath    string `yaml:"libreoffice_path"`
 	TestAdminSession   string
@@ -67,6 +66,11 @@ func (m MConfig) Get(key string) interface{} {
 		return v
 	}
 	return nil
+}
+
+//获得相对于配置文件的绝对路径
+func (m MConfig) AbsPath(apath string) string {
+	return getFullPath(m.configPath, apath)
 }
 
 type WxConfig struct {
@@ -120,7 +124,7 @@ func getFullPath(apppath, p string) string {
 	if p == "" {
 		return apppath
 	}
-	if strings.HasPrefix(p, "/") {
+	if filepath.IsAbs(p) {
 		return p
 	} else {
 		return filepath.Join(apppath, p)
