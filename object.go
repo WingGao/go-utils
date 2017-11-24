@@ -34,9 +34,17 @@ func MapGetColumn(arr interface{}, key string) []interface{} {
 	}).([]interface{})
 }
 
+//转换*uint32和uint32
 func MapGetColumnUint32(arr interface{}, key string) []uint32 {
 	return funk.Map(arr, func(item interface{}) uint32 {
-		return funk.Get(item, key).(uint32)
+		v := funk.Get(item, key)
+		if vi, ok := v.(*uint32); ok {
+			if vi == nil {
+				return 0
+			}
+			return *vi
+		}
+		return v.(uint32)
 	}).([]uint32)
 }
 
