@@ -153,6 +153,20 @@ func (m *MgModel) Count(q interface{}) (int, error) {
 	return cnt, m.pFormatError(err)
 }
 
+func (m *MgModel) Exist(q bson.M) bool {
+	mc, ms := m.C()
+	defer ms.Close()
+	q["limit"] = 1
+	cnt, _ := mc.Find(q).Count()
+	return cnt > 0
+}
+
+func (m *MgModel) DeleteId() error {
+	mc, ms := m.C()
+	defer ms.Close()
+	return mc.RemoveId(m.Id)
+}
+
 //由于mgo的赋值会替换全部属性，所以需要重新赋值
 func (m *MgModel) one(q *mgo.Query, out interface{}) error {
 	var oldM interface{}
@@ -249,7 +263,13 @@ func MarshalJSONStr(m interface{}) string {
 //忽略某些
 func GetMSetIgnore(obj interface{}, bsonFields ...string) (bm bson.M) {
 	setM := bson.M{}
-	info, err1 := bson.GetStructInfo(reflect.TypeOf(obj))
+	objt := reflect.TypeOf(obj)
+	objv := reflect.ValueOf(obj)
+	if objt.Kind() == reflect.Ptr {
+		objt = objt.Elem()
+		objv = objv.Elem()
+	}
+	info, err1 := bson.GetStructInfo(objt)
 	if err1 != nil {
 		return
 	}
@@ -257,7 +277,7 @@ func GetMSetIgnore(obj interface{}, bsonFields ...string) (bm bson.M) {
 	for _, f := range bsonFields {
 		ignoreMap[f] = true
 	}
-	objv := reflect.ValueOf(obj)
+
 	for _, v := range info.FieldsList {
 		if _, ok := ignoreMap[v.Key]; !ok {
 			setM[v.Key] = objv.Field(v.Num).Interface()
