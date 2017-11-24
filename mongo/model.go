@@ -279,10 +279,14 @@ func GetMSetIgnore(obj interface{}, bsonFields ...string) (bm bson.M) {
 	}
 
 	for _, v := range info.FieldsList {
+		if v.Key == "_id" { //忽略_id
+			continue
+		}
 		if _, ok := ignoreMap[v.Key]; !ok {
 			setM[v.Key] = objv.Field(v.Num).Interface()
 		}
 	}
 	bm = BSet(setM)
+
 	return
 }
