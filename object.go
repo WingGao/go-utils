@@ -103,13 +103,16 @@ func PtrOf(ob interface{}) (out interface{}) {
 }
 
 func ObjectGet(v, f interface{}) interface{} {
-	var mapKeyFunc func(v interface{}) interface{}
 	if k, ok := f.(string); ok {
-		mapKeyFunc = func(v interface{}) interface{} {
-			return funk.Get(v, k)
-		}
+		return funk.Get(v, k)
 	} else {
-		mapKeyFunc = f.(func(v interface{}) interface{})
+		ft := reflect.ValueOf(f)
+		if ft.Kind() == reflect.Func {
+			rv := ft.Call([]reflect.Value{reflect.ValueOf(v)})[0].Interface()
+			return rv
+		} else {
+			panic("ObjectGet need f")
+		}
 	}
-	return mapKeyFunc(v)
+	return nil
 }

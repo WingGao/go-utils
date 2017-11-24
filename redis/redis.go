@@ -130,6 +130,15 @@ func (c *RedisClient) Csmembers(key string, out interface{}) (err error) {
 	return
 }
 
+// SISMEMBER
+func (c *RedisClient) Csismember(key string, item interface{}) (ok bool, err error) {
+	rep, err1 := redis.Bool(c.Do("SISMEMBER", key, item))
+	if err1 != nil {
+		return false, err1
+	}
+	return rep, nil
+}
+
 func LoadClient(conf utils.RedisConf) {
 	if MainClient == nil {
 		MainClient = &RedisClient{Config: conf}

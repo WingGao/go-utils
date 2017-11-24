@@ -216,3 +216,10 @@ func TestToPrtZero(t *testing.T) {
 	assert.EqualValues(t, bUint32, *res)
 }
 
+func TestObjectGet(t *testing.T) {
+	r := ObjectGet("a", func(v string) bool {
+		return v == "a"
+	})
+	assert.Equal(t, true, r)
+	t.Log(r)
+}

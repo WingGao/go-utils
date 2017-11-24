@@ -121,7 +121,7 @@ func (m *MgModel) Save() error {
 func (m *MgModel) LoadById(id interface{}) error {
 	mc, ms := m.C()
 	defer ms.Close()
-	err := m.one(mc.FindId(ToObjectId(id)), m.parent)
+	err := m.One(mc.FindId(ToObjectId(id)), m.parent)
 	return m.pFormatError(err)
 }
 
@@ -135,7 +135,7 @@ func (m *MgModel) UpdateId(update interface{}) error {
 func (m *MgModel) Find(q interface{}, out interface{}) error {
 	mc, ms := m.C()
 	defer ms.Close()
-	err := m.one(mc.Find(q), out)
+	err := m.One(mc.Find(q), out)
 	return m.pFormatError(err)
 }
 
@@ -168,7 +168,7 @@ func (m *MgModel) DeleteId() error {
 }
 
 //由于mgo的赋值会替换全部属性，所以需要重新赋值
-func (m *MgModel) one(q *mgo.Query, out interface{}) error {
+func (m *MgModel) One(q *mgo.Query, out interface{}) error {
 	var oldM interface{}
 	if om, ok := out.(IMgModel); ok {
 		oldM = funk.PtrOf(*om.GetModel())
