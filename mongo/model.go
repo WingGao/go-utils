@@ -125,7 +125,7 @@ func (m *MgModel) LoadById(id interface{}) error {
 	err := m.One(mc.FindId(ToObjectId(id)), m.parent)
 	return m.pFormatError(err)
 }
-
+//注意，如果局部更新，请传$set
 func (m *MgModel) UpdateId(update interface{}) error {
 	mc, ms := m.C()
 	defer ms.Close()
