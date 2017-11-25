@@ -5,7 +5,6 @@ import (
 	"gopkg.in/yaml.v2"
 	"fmt"
 	tconfig "github.com/RichardKnop/machinery/v1/config"
-	"path"
 	"path/filepath"
 	"github.com/go-errors/errors"
 )
@@ -78,7 +77,7 @@ func (m MConfig) GetString(key, def string) string {
 
 //获得相对于配置文件的绝对路径
 func (m MConfig) AbsPath(apath string) string {
-	return getFullPath(path.Dir(m.configPath), apath)
+	return getFullPath(filepath.Dir(m.configPath), apath)
 }
 
 type WxConfig struct {
@@ -111,15 +110,15 @@ func NewConfigFromFile(confPath string) (conf MConfig, err error) {
 			conf.allMap = m
 			conf.configPath = confPath
 			if conf.AppPath == "" {
-				conf.AppPath = path.Dir(confPath)
+				conf.AppPath = filepath.Dir(confPath)
 			}
 			if conf.MediaPath == "" {
-				conf.MediaPath = path.Join(conf.AppPath, "uploads")
+				conf.MediaPath = filepath.Join(conf.AppPath, "uploads")
 			} else {
 				conf.MediaPath = getFullPath(conf.AppPath, conf.MediaPath)
 			}
 			if conf.WebApps == "" {
-				conf.WebApps = path.Join(conf.AppPath, "webapps")
+				conf.WebApps = filepath.Join(conf.AppPath, "webapps")
 			} else {
 				conf.WebApps = getFullPath(conf.AppPath, conf.WebApps)
 			}
