@@ -10,7 +10,7 @@ type MLogger struct {
 }
 
 func (l MLogger) Output(calldepth int, s string) error {
-	l.Debugf("%d => %s", calldepth, s)
+	l.Debugf("%s", s)
 	return nil
 }
 

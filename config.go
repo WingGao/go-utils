@@ -68,6 +68,14 @@ func (m MConfig) Get(key string) interface{} {
 	return nil
 }
 
+func (m MConfig) GetString(key, def string) string {
+	v := m.Get(key)
+	if v == nil || v.(string) == "" {
+		return def
+	}
+	return v.(string)
+}
+
 //获得相对于配置文件的绝对路径
 func (m MConfig) AbsPath(apath string) string {
 	return getFullPath(path.Dir(m.configPath), apath)

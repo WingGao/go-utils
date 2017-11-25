@@ -57,6 +57,7 @@ type IMgModel interface {
 type IMgParent interface {
 	TableName() string
 	FormatError(err error) error
+	BeforeDelete() error
 }
 
 func (m *MgModel) SetModel(n *MgModel) {
@@ -156,12 +157,18 @@ func (m *MgModel) Count(q interface{}) (int, error) {
 func (m *MgModel) Exist(q bson.M) bool {
 	mc, ms := m.C()
 	defer ms.Close()
-	q["limit"] = 1
-	cnt, _ := mc.Find(q).Count()
+	cnt, _ := mc.Find(q).Limit(1).Count()
 	return cnt > 0
 }
 
+//删除前置
+func (m *MgModel) BeforeDelete() error {
+	return nil
+}
 func (m *MgModel) DeleteId() error {
+	if err := m.parent.(IMgParent).BeforeDelete(); err != nil {
+		return err
+	}
 	mc, ms := m.C()
 	defer ms.Close()
 	return mc.RemoveId(m.Id)
@@ -248,6 +255,9 @@ func BGroup(v interface{}) (bson.M) {
 
 func BIn(field string, v interface{}) (out bson.M) {
 	return bson.M{field: bson.M{"$in": v}}
+}
+func BExists(v interface{}) (bson.M) {
+	return bson.M{"$exists": v}
 }
 
 //array
