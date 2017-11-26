@@ -12,6 +12,10 @@ import (
 
 var ignoreErros = hashset.New()
 
+const (
+	HANDLER_CANCEL = "wing-handler-cancel"
+)
+
 type ErrJson struct {
 	Err string `json:"err_msg"`
 }
@@ -19,10 +23,13 @@ type ErrJson struct {
 func AddHandlerIgnoreErrors(errs ...interface{}) {
 	ignoreErros.Add(errs...)
 }
+func CancelAfterHandler(ictx context.Context) {
+	ictx.Values().Set(HANDLER_CANCEL, true)
+}
 
 func AfterHandler(ictx context.Context, o interface{}, err error) {
 	//跳过已经处理过的请求
-	if ictx.GetStatusCode() > 200 {
+	if v := ictx.Values().Get(HANDLER_CANCEL); v != nil && v.(bool) {
 		return
 	}
 	if err != nil {
