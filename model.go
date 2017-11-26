@@ -306,10 +306,6 @@ func (m *Model) Upsert(attrs ...interface{}) (err error) {
 }
 
 func (m *Model) Updates(values interface{}, ignoreProtectedAttrs ...bool) error {
-	//因为updates是部分修改，目前所以不需要检查
-	//但是其实应该做
-	//TODO Updates加入IsValid()操作
-	//err := m.parent.(IModelParent).IsValid()
 	var err error
 	if err == nil {
 		d := m.GetDB().Model(m.parent).Omit("id").Updates(values, ignoreProtectedAttrs ...)
@@ -483,6 +479,12 @@ func (m *Model) IsValid() (err error) {
 // 格式化错误
 // IMPORTANT: 记得最后调用 err = p.Model.FormatError(err)
 func (m *Model) FormatError(err error) error {
+	if err != nil {
+		errStr := err.Error()
+		if errStr == "record not found" {
+			err = errors.New("不存在")
+		}
+	}
 	return err
 }
 
