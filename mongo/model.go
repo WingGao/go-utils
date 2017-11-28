@@ -311,8 +311,10 @@ func GetMSetIgnore(obj interface{}, bsonFields ...string) (bm bson.M) {
 }
 //有些版本的MongoDB会报错，可以使用该方法忽律
 func IgnoreDuplicateKey(err error) error {
-	if strings.HasPrefix(err.Error(), "E11000 duplicate key error") {
-		return nil
+	if err != nil {
+		if strings.HasPrefix(err.Error(), "E11000 duplicate key error") {
+			return nil
+		}
 	}
 	return err
 }
