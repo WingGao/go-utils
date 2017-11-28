@@ -32,6 +32,7 @@ import (
 	"github.com/thoas/go-funk"
 	sll "github.com/emirpasic/gods/lists/singlylinkedlist"
 	"reflect"
+	"strings"
 )
 
 // MongoDB结构的通用
@@ -307,4 +308,11 @@ func GetMSetIgnore(obj interface{}, bsonFields ...string) (bm bson.M) {
 	bm = BSet(setM)
 
 	return
+}
+//有些版本的MongoDB会报错，可以使用该方法忽律
+func IgnoreDuplicateKey(err error) error {
+	if strings.HasPrefix(err.Error(), "E11000 duplicate key error") {
+		return nil
+	}
+	return err
 }
