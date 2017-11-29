@@ -76,6 +76,13 @@ func (l *ErrorList) Panic() {
 	}
 }
 
+// 没有错误的时候运行
+func (l *ErrorList) Run(fo func() error) {
+	if l.FirstError() == nil {
+		l.AppendE(fo())
+	}
+}
+
 func PrintError(err error) {
 	//errN := errors.Wrap(err, 0)
 	//fmt.Println(errN.ErrorStack())

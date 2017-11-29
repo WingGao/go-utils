@@ -64,6 +64,7 @@ type IModelParent interface {
 	IsValid() error
 	// 用户格式化数据库错误
 	FormatError(err error) error
+	FormatFields(str string) string
 	//Delete 操作前会自动调用，检测是否可以删除
 	//BeforeDelete(scope *gorm.Scope) error
 	//AfterDelete(scope *gorm.Scope) error
@@ -481,13 +482,21 @@ func (m *Model) IsValid() (err error) {
 	return nil
 }
 
+func (m *Model) FormatFields(str string) string {
+	return ""
+}
+
 // 格式化错误
 // IMPORTANT: 记得最后调用 err = p.Model.FormatError(err)
 func (m *Model) FormatError(err error) error {
 	if err != nil {
 		errStr := err.Error()
 		if errStr == "record not found" {
-			err = errors.New("不存在")
+			err = errors.Wrap("不存在", 1)
+		} else if strings.HasPrefix(errStr, "Error 1062: Duplicate entry") {
+			if nl := m.parent.(IModelParent).FormatFields(errStr); nl != "" {
+				err = errors.Wrap(fmt.Errorf("%s已存在", nl), 1)
+			}
 		}
 	}
 	return err

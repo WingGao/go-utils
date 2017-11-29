@@ -4,6 +4,7 @@ import (
 	"github.com/thoas/go-funk"
 	"reflect"
 	"github.com/emirpasic/gods/maps/hashmap"
+	"github.com/emirpasic/gods/sets/hashset"
 )
 
 func GetItemString(arr []string, index int) (out string, ok bool) {
@@ -22,6 +23,14 @@ func ArrayToHashmap(arr interface{}, mapKeyField interface{}) *hashmap.Map {
 		m.Put(ObjectGet(v, mapKeyField), v)
 	})
 	return m
+}
+
+func ArrayGetColumnSet(arr interface{}, key string) *hashset.Set {
+	kset := hashset.New()
+	funk.ForEach(arr, func(v interface{}) {
+		kset.Add(funk.Get(v, key))
+	})
+	return kset
 }
 
 //
