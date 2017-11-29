@@ -11,7 +11,6 @@ var (
 	ERR_REQUIRE_LOGIN = errors.New("require login")
 	ERR_REQUIRE_ADMIN = errors.New("require admin")
 	ERR_NO_ACCOUNT    = errors.New("no such account")
-	ERR_PARAMS        = errors.New("params error")
 	ERR_NO_PERMISSION = errors.New("no permission")
 	ERR_CANNOT_MODIFY = errors.New("cannot modify")
 	ErrNoItem         = errors.New("no such item")
@@ -20,8 +19,12 @@ var (
 	ErrFormat         = errors.New("format error")
 
 	UtilsErrList = []*errors.Error{ERR_REQUIRE_LOGIN, ERR_REQUIRE_ADMIN, ERR_NO_ACCOUNT,
-		ERR_PARAMS, ERR_NO_PERMISSION, ERR_CANNOT_MODIFY, ErrNoItem, ErrExisted, ErrNotMatch}
+		ERR_NO_PERMISSION, ERR_CANNOT_MODIFY, ErrNoItem, ErrExisted, ErrNotMatch}
 )
+
+func NewErrParams() *errors.Error {
+	return errors.Wrap("参数错误", 1)
+}
 
 func Nothing(...interface{}) {
 

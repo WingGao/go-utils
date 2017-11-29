@@ -409,6 +409,11 @@ func (m *Model) ToMap() map[string]interface{} {
 func (m *Model) Exist(where ...interface{}) bool {
 	item := funk.PtrOf(m.parent)
 	e := m.GModel().Select("id").First(item, where...).Error
+	defer func() {
+		if mod, ok := item.(IModel); ok {
+			mod.GetModel().ID = 0
+		}
+	}()
 	return e == nil && item.(IModel).GetModel().ID > 0
 }
 

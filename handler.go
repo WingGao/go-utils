@@ -67,7 +67,7 @@ func ParseFormIris(ictx context.Context, params interface{}) (err error) {
 	err = dec.Decode(params, ictx.FormValues())
 	if err != nil {
 		ictx.Application().Logger().Warnf("Error when reading form: " + err.Error())
-		err = ERR_PARAMS
+		err = NewErrParams()
 	}
 	return
 }
