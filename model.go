@@ -406,10 +406,10 @@ func (m *Model) ToMap() map[string]interface{} {
 	return structs.Map(m.GetParent())
 }
 
-//最好ID必须设置，不然会查询全部
+//最好ID必须设置，不然会查询全部;如果没有定义的时候没有ID，则无法生效
 func (m *Model) Exist(where ...interface{}) bool {
 	item := funk.PtrOf(m.parent)
-	e := m.GModel().Select("id").First(item, where...).Error
+	e := m.GModel().First(item, where...).Error
 	defer func() {
 		if mod, ok := item.(IModel); ok {
 			mod.GetModel().ID = 0

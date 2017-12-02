@@ -41,6 +41,10 @@ func (c *RedisClient) newPool() *redis.Pool {
 		},
 	}
 }
+func (c *RedisClient) Conn() (redis.Conn, error) {
+	con := c.pool.Get()
+	return con, con.Err()
+}
 
 func (c *RedisClient) Do(commandName string, args ...interface{}) (interface{}, error) {
 	return c.pool.Get().Do(commandName, args...)
@@ -139,9 +143,11 @@ func (c *RedisClient) Csismember(key string, item interface{}) (ok bool, err err
 	return rep, nil
 }
 
-func LoadClient(conf utils.RedisConf) {
+func LoadClient(conf utils.RedisConf) error {
 	if MainClient == nil {
 		MainClient = &RedisClient{Config: conf}
 		MainClient.pool = MainClient.newPool()
 	}
+	_, err := MainClient.Conn()
+	return err
 }
