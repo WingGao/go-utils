@@ -323,8 +323,11 @@ func (m *Model) Update(attrs ...interface{}) (error) {
 	}
 	return m.parent.(IModelParent).FormatError(err)
 }
-
+//只能删除自己
 func (m *Model) Delete() error {
+	if m.ID <= 0 {
+		return errors.New("Delete require ID")
+	}
 	err := m.GetDB().Delete(m.parent).Error
 	return m.parent.(IModelParent).FormatError(err)
 }
