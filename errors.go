@@ -26,6 +26,10 @@ func NewErrParams() *errors.Error {
 	return errors.Wrap("参数错误", 1)
 }
 
+func NewErrPermission() *errors.Error {
+	return errors.Wrap("没有权限", 1)
+}
+
 func Nothing(...interface{}) {
 
 }
