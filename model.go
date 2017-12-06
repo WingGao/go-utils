@@ -168,18 +168,19 @@ func (m *Model) Limit(limit interface{}) *gorm.DB {
 //只返回第一个
 func (m *Model) FetchColumnValue(keys ... string) (out interface{}) {
 	if m.ID == 0 || m.parent == nil {
-		return nil
-	}
-	selectKeys := []string{}
-	for _, key := range keys {
-		v := funk.Get(m.parent, key)
-		if funk.IsZero(v) {
-			dbkey := m.FormatColumns(key)[0]
-			selectKeys = append(selectKeys, dbkey)
+
+	} else {
+		selectKeys := []string{}
+		for _, key := range keys {
+			v := funk.Get(m.parent, key)
+			if funk.IsZero(v) {
+				dbkey := m.FormatColumns(key)[0]
+				selectKeys = append(selectKeys, dbkey)
+			}
 		}
-	}
-	if len(selectKeys) > 0 {
-		m.Select(selectKeys).First(m.parent)
+		if len(selectKeys) > 0 {
+			m.Select(selectKeys).First(m.parent)
+		}
 	}
 	if len(keys) > 0 {
 		out = funk.Get(m.parent, keys[0])
@@ -323,6 +324,7 @@ func (m *Model) Update(attrs ...interface{}) (error) {
 	}
 	return m.parent.(IModelParent).FormatError(err)
 }
+
 //只能删除自己
 func (m *Model) Delete() error {
 	if m.ID <= 0 {
