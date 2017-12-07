@@ -33,6 +33,7 @@ import (
 	sll "github.com/emirpasic/gods/lists/singlylinkedlist"
 	"reflect"
 	"strings"
+	"time"
 )
 
 // MongoDB结构的通用
@@ -213,6 +214,15 @@ func (m *MgModel) FormatError(err error) error {
 	return err
 }
 
+type MgTimeModel struct {
+	UpdatedAt *time.Time `bson:"UpdatedAt"`
+}
+
+func (m *MgTimeModel) AutoNow() {
+	now := time.Now()
+	m.UpdatedAt = &now
+}
+
 //转换ObjectId, 支持 ObjectId, string
 func ToObjectId(in interface{}) bson.ObjectId {
 	//_id是24位
@@ -309,6 +319,7 @@ func GetMSetIgnore(obj interface{}, bsonFields ...string) (bm bson.M) {
 
 	return
 }
+
 //有些版本的MongoDB会报错，可以使用该方法忽律
 func IgnoreDuplicateKey(err error) error {
 	if err != nil {
