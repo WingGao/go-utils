@@ -245,6 +245,9 @@ func ToObjectId(in interface{}) bson.ObjectId {
 func BEq(v interface{}) (out bson.M) {
 	return bson.M{"$eq": v}
 }
+func BNe(v interface{}) (out bson.M) {
+	return bson.M{"$ne": v}
+}
 func BSet(v interface{}) (out bson.M) {
 	return bson.M{"$set": v}
 }
