@@ -248,6 +248,15 @@ func BEq(v interface{}) (out bson.M) {
 func BNe(v interface{}) (out bson.M) {
 	return bson.M{"$ne": v}
 }
+
+//query logical
+func BOr(items ...bson.M) (bson.M) {
+	return bson.M{"$or": items}
+}
+func BAnd(items ...bson.M) (bson.M) {
+	return bson.M{"$and": items}
+}
+
 func BSet(v interface{}) (out bson.M) {
 	return bson.M{"$set": v}
 }
@@ -278,6 +287,7 @@ func BGroup(v interface{}) (bson.M) {
 func BIn(field string, v interface{}) (out bson.M) {
 	return bson.M{field: bson.M{"$in": v}}
 }
+
 func BExists(v interface{}) (bson.M) {
 	return bson.M{"$exists": v}
 }
