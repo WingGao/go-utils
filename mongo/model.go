@@ -60,6 +60,7 @@ type IMgParent interface {
 	TableName() string
 	FormatError(err error) error
 	BeforeDelete() error
+	BeforeSave() error
 }
 
 func (m *MgModel) SetModel(n *MgModel) {
@@ -107,8 +108,16 @@ func (m *MgModel) C() (c *mgo.Collection, s *mgo.Session) {
 	return
 }
 
+//保存前置
+func (m *MgModel) BeforeSave() error {
+	return nil
+}
+
 //注意，会完全覆盖
 func (m *MgModel) Save() error {
+	if err := m.parent.(IMgParent).BeforeSave(); err != nil {
+		return err
+	}
 	if !m.Id.Valid() {
 		m.Id = bson.NewObjectId()
 	}
