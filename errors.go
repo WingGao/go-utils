@@ -22,6 +22,10 @@ var (
 		ERR_NO_PERMISSION, ERR_CANNOT_MODIFY, ErrNoItem, ErrExisted, ErrNotMatch}
 )
 
+func NewErrNotFound() *errors.Error {
+	return errors.Wrap("不存在", 1)
+}
+
 func NewErrParams() *errors.Error {
 	return errors.Wrap("参数错误", 1)
 }

@@ -82,6 +82,13 @@ func ToPrtZeroUint32(ptr uint32) *uint32 {
 	return &n
 }
 
+func FromPrtZeroUint32(ptr *uint32) uint32 {
+	if ptr == nil {
+		return 0
+	}
+	return *ptr
+}
+
 //只获取类型指针
 func PtrOf(ob interface{}) (out interface{}) {
 	t := reflect.TypeOf(ob)
