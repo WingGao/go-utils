@@ -18,12 +18,13 @@ import (
 	"encoding/json"
 	"github.com/json-iterator/go"
 	"fmt"
+	"github.com/jinzhu/copier"
 )
 
 type XSession struct {
 	ctx      context.Context
 	Iris     *sessions.Session `json:"-"`
-	key      string
+	key      string //保存在iris中的键
 	isClear  bool
 	Sid      string
 	Uid      uint32
@@ -69,8 +70,9 @@ func BuildIrisSession(conf MConfig) {
 		exp = exp * time.Second
 	}
 	mySessions := sessions.New(sessions.Config{
-		Cookie:  "smsid",
-		Expires: exp,
+		Cookie:       "smsid",
+		Expires:      exp,
+		AllowReclaim: true,
 	})
 	mySessions.UseDatabase(_rdb)
 
@@ -162,10 +164,10 @@ func (x *XSession) IsClear() bool {
 	return x.isClear
 }
 
-func (x *XSession) Clear() () {
+func (x *XSession) Clear() {
+	newSess := XSession{ctx: x.ctx, key: x.key}
+	copier.Copy(x, newSess)
 	x.isClear = true
-	x.Uid = 0
-	x.Group = 0
 }
 
 func (x *XSession) SaveIris(ctx context.Context, key string) error {
@@ -175,7 +177,6 @@ func (x *XSession) SaveIris(ctx context.Context, key string) error {
 	//被清空的不需要保存
 	if x.isClear {
 		_session.Destroy(ctx)
-		return nil
 	}
 
 	g, err := x.ToGob()
