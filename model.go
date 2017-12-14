@@ -562,7 +562,9 @@ func GetSelectAttrs(g *gorm.DB) []string {
 		for i, v := range attrs {
 			if strings.Contains(v, ".") || strings.HasPrefix(v, scope.TableName()+".") ||
 				strings.HasPrefix(v, scope.QuotedTableName()+".") {
-
+			} else if strings.HasPrefix(v, "DISTINCT") {
+				at := strings.Split(v, " ")
+				attrs[i] = fmt.Sprintf("DISTINCT %s.%s", scope.QuotedTableName(), at[1])
 			} else {
 				attrs[i] = fmt.Sprintf("%s.%s", scope.QuotedTableName(), v)
 			}
