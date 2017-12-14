@@ -89,7 +89,7 @@ func FromPrtZeroUint32(ptr *uint32) uint32 {
 	return *ptr
 }
 
-//只获取类型指针
+//只获取类型指针，值不会拷贝
 func PtrOf(ob interface{}) (out interface{}) {
 	t := reflect.TypeOf(ob)
 

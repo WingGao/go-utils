@@ -133,6 +133,15 @@ func (m *Model) Commit() (err error) {
 	return
 }
 
+func (m *Model)AutoEnd(commit bool) (err error){
+	if commit {
+		err = m.Commit()
+	}else {
+		err = m.Rollback()
+	}
+	return
+}
+
 //TODO 默认应该关闭关联存储
 func (m *Model) SetSaveAssociations(v bool) {
 	m.DB = m.DB.Set("gorm:save_associations", v)
@@ -514,7 +523,7 @@ func (m *Model) AfterDelete(scope *gorm.Scope) error {
 	return nil
 }
 
-//得到一个基础父类，可以被重写
+//得到一个基础父类，可以被重写，值不复制
 func (m *Model) New() interface{} {
 	n := PtrOf(m.parent)
 	reflect.ValueOf(n).Elem().FieldByName("Model").Set(reflect.ValueOf(Model{parent: n, DB: m.GetDB()}))
