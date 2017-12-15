@@ -93,6 +93,7 @@ type RedisConf struct {
 	Password    string
 	Database    string
 	UniqueIdKey string
+	Prefix      string
 }
 
 func NewConfigFromFile(confPath string) (conf MConfig, err error) {

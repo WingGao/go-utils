@@ -160,6 +160,10 @@ func (x *XSession) ToGob() ([]byte, error) {
 	return json.Marshal(x)
 }
 
+func (x *XSession) UpdateExpiration(expires time.Duration) {
+	_session.UpdateExpiration(x.ctx, expires)
+}
+
 func (x *XSession) IsClear() bool {
 	return x.isClear
 }
@@ -177,12 +181,14 @@ func (x *XSession) SaveIris(ctx context.Context, key string) error {
 	//被清空的不需要保存
 	if x.isClear {
 		_session.Destroy(ctx)
+		x.isClear = false
 	}
 
 	g, err := x.ToGob()
 	sess := x.Iris
 	if sess == nil {
 		sess = _session.Start(ctx)
+		x.Iris = sess
 	}
 	sess.Set(key, g)
 	return err
@@ -194,13 +200,7 @@ func (x *XSession) SaveIrisD() error {
 		return errors.New("XSession ctx or key is not set")
 	}
 
-	g, err := x.ToGob()
-	sess := x.Iris
-	if sess == nil {
-		sess = _session.Start(x.ctx)
-	}
-	sess.Set(x.key, g)
-	return err
+	return x.SaveIris(x.ctx, x.key)
 }
 
 func (x *XSession) IsValued() bool {
