@@ -163,6 +163,13 @@ func (c *RedisClient) Csismember(key string, item interface{}) (ok bool, err err
 	return rep, nil
 }
 
+// EXPIRE
+func (c *RedisClient) Expire(key string, second int) (err error) {
+	key = c.FullKey(key)
+	_, err = c.Do("EXPIRE", key, second)
+	return
+}
+
 func LoadClient(conf utils.RedisConf) error {
 	if MainClient == nil {
 		MainClient = &RedisClient{Config: conf}
