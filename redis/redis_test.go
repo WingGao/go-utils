@@ -60,3 +60,11 @@ func TestRedisClientGlob(t *testing.T) {
 	assert.Equal(t, a.FieldA, b.FieldA)
 	assert.Equal(t, int32(3), b.FieldC.(sb).FieldA)
 }
+
+func TestRedisClient_Incr(t *testing.T) {
+	tkey := "12345"
+	v, err := MainClient.Incr(tkey)
+	assert.Equal(t, int64(1), v)
+	assert.NoError(t, err)
+}
+

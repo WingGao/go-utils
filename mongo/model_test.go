@@ -24,7 +24,8 @@ func TestMain(m *testing.M) {
 }
 
 type ModelA struct {
-	MgModel `bson:",inline"`
+	MgModel     `bson:",inline"`
+	MgTimeModel `bson:",inline"`
 	FieldStr     string
 	FieldStructs []EmModel
 }
@@ -76,4 +77,11 @@ func TestToObjectId(t *testing.T) {
 	copier.Copy(mod, a)
 	mod.Id = ToObjectId(mod.Id)
 	assert.Equal(t, "5a16b6117aff15ead7d498da", mod.Id.Hex())
+}
+
+func TestGetMSetIgnore(t *testing.T) {
+	mod := NewModelA()
+	mod.AutoNow()
+	upm := GetMSetIgnore(mod,"fieldstr")
+	t.Log(MarshalJSONStr(upm))
 }

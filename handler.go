@@ -94,10 +94,21 @@ func FixSetCookie(ctx context.Context) {
 		}
 		//有重复
 		if len(cookieMap) < cookieNum {
-			ctx.Header("Set-Cookie","")
+			ctx.Header("Set-Cookie", "")
 			for _, cookie := range cookieMap {
 				ctx.SetCookie(cookie)
 			}
 		}
 	}
+}
+
+func FormHasValue(ctx context.Context, name string) bool {
+	fv := ctx.FormValues()
+	if fv == nil {
+		return false
+	}
+	if v, ok := fv[name]; ok && len(v) > 0 {
+		return true
+	}
+	return false
 }

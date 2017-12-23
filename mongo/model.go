@@ -306,11 +306,6 @@ func BElemMatch(v interface{}) (out bson.M) {
 	return bson.M{"$elemMatch": v}
 }
 
-func MarshalJSONStr(m interface{}) string {
-	js, _ := bson.MarshalJSON(m)
-	return string(js)
-}
-
 //忽略某些
 func GetMSetIgnore(obj interface{}, bsonFields ...string) (bm bson.M) {
 	setM := bson.M{}
@@ -334,7 +329,16 @@ func GetMSetIgnore(obj interface{}, bsonFields ...string) (bm bson.M) {
 			continue
 		}
 		if _, ok := ignoreMap[v.Key]; !ok {
-			setM[v.Key] = objv.Field(v.Num).Interface()
+			setv := objv
+			if len(v.Inline) > 0 {
+				//inline
+				for _, inlineNum := range v.Inline {
+					setv = setv.Field(inlineNum)
+				}
+			} else {
+				setv = setv.Field(v.Num)
+			}
+			setM[v.Key] = setv.Interface()
 		}
 	}
 	bm = BSet(setM)
