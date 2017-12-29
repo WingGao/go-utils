@@ -9,6 +9,7 @@ import (
 	"github.com/fatih/structs"
 	"strings"
 	"fmt"
+	"database/sql"
 )
 
 var (
@@ -133,10 +134,10 @@ func (m *Model) Commit() (err error) {
 	return
 }
 
-func (m *Model)AutoEnd(commit bool) (err error){
+func (m *Model) AutoEnd(commit bool) (err error) {
 	if commit {
 		err = m.Commit()
-	}else {
+	} else {
 		err = m.Rollback()
 	}
 	return
@@ -668,4 +669,11 @@ func SqlEscape(source string) (string) {
 		}
 	}
 	return string(desc[0:j])
+}
+// sql.Rows的长度
+func RowsLength(rows *sql.Rows) (l int) {
+	for rows.Next() {
+		l++
+	}
+	return
 }
