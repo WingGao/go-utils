@@ -293,7 +293,11 @@ func BGroup(v interface{}) (bson.M) {
 	return bson.M{"$group": v}
 }
 
-func BIn(field string, v interface{}) (out bson.M) {
+func BIn(v interface{}) (out bson.M) {
+	return bson.M{"$in": v}
+}
+
+func BInField(field string, v interface{}) (out bson.M) {
 	return bson.M{field: bson.M{"$in": v}}
 }
 
