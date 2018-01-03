@@ -152,7 +152,7 @@ func (m *MgModel) UpdateIdSet(update interface{}) error {
 	return m.pFormatError(err)
 }
 
-func (m *MgModel) Find(q interface{}, out interface{}) error {
+func (m *MgModel) FindOne(q interface{}, out interface{}) error {
 	mc, ms := m.C()
 	defer ms.Close()
 	err := m.One(mc.Find(q), out)
