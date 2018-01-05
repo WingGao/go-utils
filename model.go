@@ -275,7 +275,6 @@ func (m *Model) FirstOrCreate(where ...interface{}) (err error) {
 
 // 会更新全部flied
 func (m *Model) Save() (err error) {
-	err = m.parent.(IModelParent).IsValid()
 	if m.GetDB() == nil {
 		err = errors.New("Model.DB is null")
 	} else if err == nil {
