@@ -34,6 +34,7 @@ import (
 	"reflect"
 	"strings"
 	"time"
+	"github.com/go-errors/errors"
 )
 
 // MongoDB结构的通用
@@ -86,6 +87,9 @@ func (m *MgModel) SetParent(p interface{}) {
 
 //需要手动关闭session
 func (m *MgModel) GetSession() *mgo.Session {
+	if m.Session == nil {
+		return nil
+	}
 	return m.Session.New()
 }
 
@@ -103,6 +107,9 @@ func (m *MgModel) CloseAllSession() {
 
 func (m *MgModel) C() (c *mgo.Collection, s *mgo.Session) {
 	s = m.GetSession()
+	if s == nil {
+		return
+	}
 	m.createdSessions.Add(s)
 	c = s.DB(m.DbName).C(m.parent.(IMgParent).TableName())
 	return
@@ -168,6 +175,9 @@ func (m *MgModel) FindAll(q interface{}, arr interface{}) error {
 
 func (m *MgModel) Count(q interface{}) (int, error) {
 	mc, ms := m.C()
+	if mc == nil {
+		return 0, errors.New("not inited")
+	}
 	defer ms.Close()
 	cnt, err := mc.Find(q).Count()
 	return cnt, m.pFormatError(err)
