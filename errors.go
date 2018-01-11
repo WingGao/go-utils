@@ -26,6 +26,10 @@ func NewErrNotFound() *errors.Error {
 	return errors.Wrap("不存在", 1)
 }
 
+func NewErrExisted() *errors.Error {
+	return errors.Wrap("已存在", 1)
+}
+
 func NewErrParams() *errors.Error {
 	return errors.Wrap("参数错误", 1)
 }
