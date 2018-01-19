@@ -84,7 +84,7 @@ func (c *RedisClient) Get(key string) (interface{}, error) {
 }
 
 func (c *RedisClient) GetInt(key string, def int) (int, error) {
-	key = c.FullKey(key)
+	//key = c.FullKey(key)
 	out, err := redis.Int(c.Get(key))
 	if err != nil {
 		return def, err
@@ -93,7 +93,7 @@ func (c *RedisClient) GetInt(key string, def int) (int, error) {
 }
 
 func (c *RedisClient) GetInt64(key string, def int64) (int64, error) {
-	key = c.FullKey(key)
+	//key = c.FullKey(key)
 	out, err := redis.Int64(c.Get(key))
 	if err != nil {
 		return def, err
@@ -102,7 +102,7 @@ func (c *RedisClient) GetInt64(key string, def int64) (int64, error) {
 }
 
 func (c *RedisClient) GetBytes(key string, def []byte) ([]byte, error) {
-	key = c.FullKey(key)
+	//key = c.FullKey(key)
 	out, err := redis.Bytes(c.Get(key))
 	if err != nil {
 		return def, err
@@ -112,7 +112,7 @@ func (c *RedisClient) GetBytes(key string, def []byte) ([]byte, error) {
 
 //gob.Register
 func (c *RedisClient) SetGlob(key string, ptr interface{}) (error) {
-	key = c.FullKey(key)
+	//key = c.FullKey(key)
 	var buf bytes.Buffer
 	enc := gob.NewEncoder(&buf)
 	err := enc.Encode(ptr)
@@ -123,7 +123,7 @@ func (c *RedisClient) SetGlob(key string, ptr interface{}) (error) {
 	return err
 }
 func (c *RedisClient) GetGlob(key string, out interface{}) (error) {
-	key = c.FullKey(key)
+	//key = c.FullKey(key)
 	bs, err := redis.Bytes(c.Get(key))
 	if err != nil {
 		return err
