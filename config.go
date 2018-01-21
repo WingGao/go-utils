@@ -54,6 +54,14 @@ type MConfig struct {
 	Exam struct {
 		Mysql string
 	}
+
+	Smtp struct {
+		Server   string
+		Port     int
+		SSL      bool
+		User     string
+		Password string
+	}
 }
 
 func (m MConfig) GetConfigPath() string {
