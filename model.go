@@ -545,6 +545,10 @@ func (m *ModelTime) UnsetTime() {
 	m.UpdatedAt = nil
 }
 
+type ModelSoftDelete struct {
+	DeletedAt *time.Time `json:",omitempty"`
+}
+
 func GetIDs(ms interface{}) []uint32 {
 	return funk.Map(ms, func(v IModel) uint32 {
 		if v != nil {
@@ -669,6 +673,7 @@ func SqlEscape(source string) (string) {
 	}
 	return string(desc[0:j])
 }
+
 // sql.Rows的长度
 func RowsLength(rows *sql.Rows) (l int) {
 	for rows.Next() {

@@ -72,6 +72,12 @@ func (l *ErrorList) AppendE(errs ...error) {
 	}
 }
 
+func (l *ErrorList) AppendEWrap(err error, skip int) {
+	if err != nil {
+		l.List.Add(errors.Wrap(err, skip))
+	}
+}
+
 func (l *ErrorList) FirstError() error {
 	_, err := l.List.Find(func(index int, value interface{}) bool {
 		return value != nil
