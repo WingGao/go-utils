@@ -24,6 +24,18 @@ func (v *ValueChecker) NotEmpty(value interface{}, errMsg string) bool {
 	return true
 }
 
+func (v *ValueChecker) NotError(val error, errMsg string) bool {
+	if val != nil {
+		if errMsg == "" {
+			v.errs.AppendE(errors.Wrap(val, 1))
+		} else {
+			v.errs.AppendE(errors.Wrap(errMsg, 1))
+		}
+		return false
+	}
+	return true
+}
+
 func (v *ValueChecker) FirstError() error {
 	return v.errs.FirstError()
 }
