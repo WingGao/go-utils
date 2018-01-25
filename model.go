@@ -316,12 +316,9 @@ func (m *Model) Upsert(attrs ...interface{}) (err error) {
 	return m.parent.(IModelParent).FormatError(err)
 }
 
-func (m *Model) Updates(values interface{}, ignoreProtectedAttrs ...bool) error {
-	var err error
-	if err == nil {
-		d := m.GetDB().Model(m.parent).Omit("id").Updates(values, ignoreProtectedAttrs ...)
-		err = d.Error
-	}
+func (m *Model) Updates(values interface{}, ignoreProtectedAttrs ...bool) (err error) {
+	d := m.GetDB().Model(m.parent).Omit("id").Updates(values, ignoreProtectedAttrs ...)
+	err = d.Error
 	return m.parent.(IModelParent).FormatError(err)
 }
 
