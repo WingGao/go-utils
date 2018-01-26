@@ -19,7 +19,8 @@ var (
 type IModel interface {
 	New() interface{}
 	GModel() *gorm.DB
-	GetPK() interface{}
+	PrimaryKey() string
+	PrimaryKeyZero() bool
 	GetTableName() string
 	GetModel() *Model
 	GetDB() *gorm.DB
@@ -31,6 +32,7 @@ type IModel interface {
 	Limit(limit interface{}) *gorm.DB
 	IsLoaded() bool
 	LoadAndSetId(id uint32) error
+	LoadByPk(pk interface{}) error
 	Exist(where ...interface{}) bool
 	ExistID() bool
 	FetchColumnValue(keys ... string) (out interface{})
@@ -66,6 +68,7 @@ type IModelParent interface {
 	// 用户格式化数据库错误
 	FormatError(err error) error
 	FormatFields(str string) string
+	SetPrimaryKey() interface{}
 	//Delete 操作前会自动调用，检测是否可以删除
 	//BeforeDelete(scope *gorm.Scope) error
 	//AfterDelete(scope *gorm.Scope) error
@@ -83,8 +86,19 @@ type Model struct {
 	OmitFields        []string    `gorm:"-" json:"-" bson:"-" form:"-"`
 }
 
-func (m *Model) GetPK() interface{} {
-	return m.ID
+func (m *Model) PrimaryKey() string {
+	scope, _ := m.NewScope()
+	return scope.PrimaryKey()
+}
+
+func (m *Model) PrimaryKeyZero() bool {
+	scope, _ := m.NewScope()
+	return scope.PrimaryKeyZero()
+}
+
+//生成一个新的主键，一般用于自定义主键
+func (m *Model) SetPrimaryKey() interface{} {
+	return nil
 }
 
 func (m *Model) GetTableName() string {
@@ -273,28 +287,25 @@ func (m *Model) FirstOrCreate(where ...interface{}) (err error) {
 	return m.parent.(IModelParent).FormatError(err)
 }
 
-// 会更新全部flied
+// 更新局部
 func (m *Model) Save() (err error) {
 	if m.GetDB() == nil {
 		err = errors.New("Model.DB is null")
 	} else if err == nil {
-		if m.ID > 0 {
+		scope, _ := m.NewScope()
+		if !scope.PrimaryKeyZero() {
 			//更新
-			err = m.GModel().Omit(append(m.OmitFields, "id", "created_at")...).Updates(m.parent).Error
-		} else {
-			err = m.GModel().Save(m.parent).Error
+			err = scope.DB().Omit(append(m.OmitFields, scope.PrimaryKey(), "created_at")...).Updates(m.parent).Error
+		} else { //创建
+			m.parent.(IModelParent).SetPrimaryKey()
+			err = scope.DB().Create(m.parent).Error
 		}
 	}
 	return m.parent.(IModelParent).FormatError(err)
 }
 
-func (m *Model) BeforeUpdate(scope *gorm.Scope) (err error) {
-	return
-}
-
 // 会更新全部flied, 强制调用Save方法
 func (m *Model) FSave() (err error) {
-	err = m.parent.(IModelParent).IsValid()
 	if m.GetDB() == nil {
 		err = errors.New("Model.DB is null")
 	} else if err == nil {
@@ -333,10 +344,11 @@ func (m *Model) Update(attrs ...interface{}) (error) {
 
 //只能删除自己
 func (m *Model) Delete() error {
-	if m.ID <= 0 {
-		return errors.New("Delete require ID")
+	scope, _ := m.NewScope()
+	if scope.PrimaryKeyZero() {
+		return errors.New("Delete require PK")
 	}
-	err := m.GetDB().Delete(m.parent).Error
+	err := scope.DB().Delete(m.parent).Error
 	return m.parent.(IModelParent).FormatError(err)
 }
 
@@ -370,6 +382,12 @@ func (m *Model) LoadAndSetId(id uint32) error {
 	d := m.GetDB().First(m.parent, "id = ?", id)
 	return m.parent.(IModelParent).FormatError(d.Error)
 }
+
+func (m *Model) LoadByPk(pk interface{}) error {
+	d := m.GetDB().First(m.parent, fmt.Sprintf("%s = ?", m.PrimaryKey()), pk)
+	return m.parent.(IModelParent).FormatError(d.Error)
+}
+
 func (m *Model) LoadByKey(key string, val interface{}) error {
 	col := m.FormatColumns(key)[0]
 	m.ID = 0
@@ -420,13 +438,14 @@ func (m *Model) ToMap() map[string]interface{} {
 //最好ID必须设置，不然会查询全部;如果没有定义的时候没有ID，则无法生效
 func (m *Model) Exist(where ...interface{}) bool {
 	item := funk.PtrOf(m.parent)
-	e := m.GModel().Select("id").First(item, where...).Error
+	scope, _ := m.NewScope()
+	e := scope.DB().Select(scope.PrimaryKey()).First(item, where...).Error
 	defer func() {
 		if mod, ok := item.(IModel); ok {
 			mod.GetModel().ID = 0
 		}
 	}()
-	return e == nil && item.(IModel).GetModel().ID > 0
+	return e == nil && !item.(IModel).PrimaryKeyZero()
 }
 
 func (m *Model) ExistID() bool {
