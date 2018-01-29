@@ -123,3 +123,10 @@ func ObjectGet(v, f interface{}) interface{} {
 	}
 	return nil
 }
+
+func DefaultVal(v, def interface{}) interface{} {
+	if funk.IsEmpty(v) {
+		return def
+	}
+	return v
+}

@@ -14,6 +14,15 @@ func TestMConfig_Get(t *testing.T) {
 	assert.Equal(t, true, islocal)
 }
 
+func TestMConfig_GetString(t *testing.T) {
+	conf, err := NewConfigFromFile(dry.GetenvDefault("WING_GO_CONF", ""))
+	assert.NoError(t, err)
+	s := conf.GetString("test.a", "")
+	assert.Equal(t, "a123", s)
+	s = conf.GetString("testadminsession", "")
+	assert.Equal(t, "d7e3c712-15ad-4935-a7c9-6d4fc1719fee", s)
+}
+
 func TestMConfig_AbsPath(t *testing.T) {
 	conf, err := NewConfigFromFile(dry.GetenvDefault("WING_GO_CONF", ""))
 	assert.NoError(t, err)

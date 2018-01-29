@@ -63,6 +63,7 @@ func (c *RedisClient) Del(key string) (interface{}, error) {
 }
 
 // https://redis.io/commands/set
+// EX seconds -- Set the specified expire time, in seconds.
 func (c *RedisClient) Set(key string, value interface{}, opts ...interface{}) (interface{}, error) {
 	key = c.FullKey(key)
 	return c.pool.Get().Do("SET", append([]interface{}{key, value}, opts...)...)
@@ -81,6 +82,14 @@ func (c *RedisClient) IncrBy(key string, increment int) (int64, error) {
 func (c *RedisClient) Get(key string) (interface{}, error) {
 	key = c.FullKey(key)
 	return c.pool.Get().Do("GET", key)
+}
+
+func (c *RedisClient) GetString(key string, def string) (string, error) {
+	out, err := redis.String(c.Get(key))
+	if err != nil {
+		return def, err
+	}
+	return out, err
 }
 
 func (c *RedisClient) GetInt(key string, def int) (int, error) {

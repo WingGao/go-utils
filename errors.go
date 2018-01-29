@@ -38,6 +38,10 @@ func NewErrPermission() *errors.Error {
 	return errors.Wrap("没有权限", 1)
 }
 
+func NewErrCode() *errors.Error {
+	return errors.Wrap("验证码错误", 1)
+}
+
 func Nothing(...interface{}) {
 
 }

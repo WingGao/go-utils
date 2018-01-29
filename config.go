@@ -7,6 +7,7 @@ import (
 	tconfig "github.com/RichardKnop/machinery/v1/config"
 	"path/filepath"
 	"github.com/go-errors/errors"
+	"strings"
 )
 
 var (
@@ -14,9 +15,9 @@ var (
 )
 //main config
 type MConfig struct {
-	configPath      string                 //配置文件路径
-	allMap          map[string]interface{} //保存配置,默认map[interface {}]interface {}
-	AppPath         string                 //运行路径，一般不设置，测试使用
+	configPath      string                      //配置文件路径
+	allMap          map[interface{}]interface{} //保存配置,默认map[interface {}]interface {}
+	AppPath         string                      //运行路径，一般不设置，测试使用
 	Debug           bool
 	Addr            string //服务地址
 	Host            string
@@ -69,9 +70,22 @@ func (m MConfig) GetConfigPath() string {
 }
 
 func (m MConfig) Get(key string) interface{} {
-	if v, ok := m.allMap[key]; ok {
-		return v
+	last := m.allMap
+	keys := strings.Split(key, ".")
+	for i, k := range keys {
+		if v, ok := last[k]; ok {
+			if i+1 == len(keys) { //最后一个
+				return v
+			} else { //下一级
+				if last, ok = v.(map[interface{}]interface{}); !ok { //转换失败，没有子元素
+					return nil
+				}
+			}
+		} else {
+			return nil
+		}
 	}
+
 	return nil
 }
 
@@ -114,7 +128,7 @@ func NewConfigFromFile(confPath string) (conf MConfig, err error) {
 		if err != nil {
 			return conf, err
 		} else {
-			m := make(map[string]interface{})
+			m := make(map[interface{}]interface{})
 			yaml.Unmarshal(confd, &m)
 			conf.allMap = m
 			conf.configPath = confPath

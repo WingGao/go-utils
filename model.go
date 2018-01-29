@@ -36,7 +36,8 @@ type IModel interface {
 	Exist(where ...interface{}) bool
 	ExistID() bool
 	FetchColumnValue(keys ... string) (out interface{})
-	Find(out interface{}, where ...interface{}) *gorm.DB
+	Find(out interface{}, where ...interface{}) error
+	RawFind(out interface{}, where ...interface{}) *gorm.DB
 	MakePSlice() interface{}
 	BatchInsertBad(items []*Model) (err error)
 	Save() error
@@ -212,8 +213,13 @@ func (m *Model) FetchColumnValue(keys ... string) (out interface{}) {
 	return
 }
 
+func (m *Model) Find(out interface{}, where ...interface{}) (err error) {
+	err = m.RawFind(out, where...).Error
+	return m.parent.(IModelParent).FormatError(err)
+}
+
 //用了scan的方法
-func (m *Model) Find(out interface{}, where ...interface{}) (db *gorm.DB) {
+func (m *Model) RawFind(out interface{}, where ...interface{}) (db *gorm.DB) {
 	if len(where) > 0 {
 		db = m.Table().Where(where[0], where[1:]...).Scan(out)
 	} else {
@@ -248,7 +254,7 @@ func (m *Model) Find(out interface{}, where ...interface{}) (db *gorm.DB) {
 //返回 *[]*ParentType
 func (m *Model) FindList(where ...interface{}) (interface{}, error) {
 	list := m.MakePSlice()
-	err := m.Find(list, where...).Error
+	err := m.RawFind(list, where...).Error
 	return list, err
 }
 

@@ -35,7 +35,7 @@ func AfterHandler(ictx context.Context, o interface{}, err error) {
 		return
 	}
 	if err != nil {
-		if !ignoreErros.Contains(err) {
+		if !ignoreErros.Contains(err.Error()) {
 			err2 := NewWError(err)
 			err2.Fmt()
 			ictx.Application().Logger().Error(err2.ErrorStack())
