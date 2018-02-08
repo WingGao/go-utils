@@ -69,13 +69,30 @@ type IModelParent interface {
 	// 用户格式化数据库错误
 	FormatError(err error) error
 	FormatFields(str string) string
-	SetPrimaryKey() interface{}
+	SetPrimaryKey() (key interface{}, err error)
 	//Delete 操作前会自动调用，检测是否可以删除
 	//BeforeDelete(scope *gorm.Scope) error
 	//AfterDelete(scope *gorm.Scope) error
 	//BeforeUpdate(scope *gorm.Scope) (err error)
 }
 
+/*
+
+## 自定义主键
+
+	type Order struct {
+		utils.Model        `gorm:"-"`
+		utils.ModelTime    `structs:",flatten"`
+		Serial    uint64   `gorm:"primary_key"` //订单号
+	}
+	...
+	// 自动创建主键
+	func (m *Order) SetPrimaryKey() (key interface{}, err error) {
+		key, err = uuid.NextID()
+		return
+	}
+
+ */
 type Model struct {
 	ID uint32   `gorm:"primary_key" bson:"ID"`
 	DB *gorm.DB `gorm:"-" json:"-" bson:"-" form:"-"`
@@ -98,8 +115,8 @@ func (m *Model) PrimaryKeyZero() bool {
 }
 
 //生成一个新的主键，一般用于自定义主键
-func (m *Model) SetPrimaryKey() interface{} {
-	return nil
+func (m *Model) SetPrimaryKey() (key interface{}, err error) {
+	return nil, nil
 }
 
 func (m *Model) GetTableName() string {
@@ -303,8 +320,10 @@ func (m *Model) Save() (err error) {
 			//更新
 			err = scope.DB().Omit(append(m.OmitFields, scope.PrimaryKey(), "created_at")...).Updates(m.parent).Error
 		} else { //创建
-			m.parent.(IModelParent).SetPrimaryKey()
-			err = scope.DB().Create(m.parent).Error
+			_, err = m.parent.(IModelParent).SetPrimaryKey()
+			if err == nil {
+				err = scope.DB().Create(m.parent).Error
+			}
 		}
 	}
 	return m.parent.(IModelParent).FormatError(err)
