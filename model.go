@@ -83,7 +83,7 @@ type IModelParent interface {
 	type Order struct {
 		utils.Model        `gorm:"-"`
 		utils.ModelTime    `structs:",flatten"`
-		Serial    uint64   `gorm:"primary_key"` //订单号
+		Serial    uint64   `gorm:"primary_key;not_auto_increment"` //订单号,非自增
 	}
 	...
 	// 自动创建主键
@@ -195,8 +195,9 @@ func (m *Model) FormatColumns(keys ... string) []string {
 	scope, _ := m.NewScope()
 	rkeys := make([]string, len(keys))
 	for i, v := range keys {
-		f, ok := scope.FieldByName(v)
-		if ok {
+		if StrHasLowerPrefix(v) {
+			rkeys[i] = v
+		} else if f, ok := scope.FieldByName(v); ok {
 			rkeys[i] = f.DBName
 		}
 	}

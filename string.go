@@ -59,3 +59,7 @@ func TrimSpaceArr(s []string) (out []string) {
 	}
 	return
 }
+
+func StrHasLowerPrefix(s string) bool {
+	return strings.Contains("abcdefghijklmnopqrstuvwxyz", string(s[0]))
+}
