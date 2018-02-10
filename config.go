@@ -116,6 +116,14 @@ func (m MConfig) GetMySQLString() string {
 		m.Mysql.Host, m.Mysql.Port, m.Mysql.DBName, m.Mysql.Option)
 }
 
+func (m MConfig) GetMachineryConfig() *tconfig.Config {
+	scnf := &m.Task
+	if scnf.Broker == "" { //默认使用redis
+		scnf.Broker = fmt.Sprintf("redis://%s/%d", m.Redis.Addr, m.Redis.Database)
+	}
+	return scnf
+}
+
 type WxConfig struct {
 	AppId     string
 	MchId     string
