@@ -40,7 +40,7 @@ func (c *RedisClient) newPool() *redis.Pool {
 				return nil, err
 			}
 
-			if c.Config.Database != "" {
+			if c.Config.Database > 0 {
 				_, err = conn.Do("SELECT", c.Config.Database)
 			}
 
@@ -179,11 +179,16 @@ func (c *RedisClient) Expire(key string, second int) (err error) {
 	return
 }
 
-func LoadClient(conf utils.RedisConf) error {
+func LoadClient(conf utils.RedisConf) (err error) {
 	if MainClient == nil {
-		MainClient = &RedisClient{Config: conf}
-		MainClient.pool = MainClient.newPool()
+		MainClient, err = NewRedisClient(conf)
 	}
-	_, err := MainClient.Conn()
-	return err
+	return
+}
+
+func NewRedisClient(conf utils.RedisConf) (client *RedisClient, err error) {
+	client = &RedisClient{Config: conf}
+	client.pool = client.newPool()
+	_, err = client.Conn()
+	return
 }

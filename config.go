@@ -125,9 +125,9 @@ type WxConfig struct {
 }
 
 type RedisConf struct {
-	Addr        string
+	Addr        string //host:port 127.0.0.1:6379
 	Password    string
-	Database    string
+	Database    int
 	UniqueIdKey string
 	Prefix      string
 }

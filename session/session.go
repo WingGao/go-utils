@@ -54,7 +54,7 @@ func BuildIrisSession(conf MConfig) {
 		Network:     service.DefaultRedisNetwork,
 		Addr:        rconf.Addr,
 		Password:    rconf.Password,
-		Database:    rconf.Database,
+		Database:    fmt.Sprintf("%d", rconf.Database),
 		MaxIdle:     0,
 		MaxActive:   0,
 		IdleTimeout: service.DefaultRedisIdleTimeout,
