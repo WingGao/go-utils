@@ -15,13 +15,20 @@ var (
 )
 //main config
 type MConfig struct {
-	configPath      string                      //配置文件路径
-	allMap          map[interface{}]interface{} //保存配置,默认map[interface {}]interface {}
-	AppPath         string                      //运行路径，一般不设置，测试使用
-	Debug           bool
-	Addr            string //服务地址
-	Host            string
-	Mysql           string
+	configPath string                      //配置文件路径
+	allMap     map[interface{}]interface{} //保存配置,默认map[interface {}]interface {}
+	AppPath    string                      //运行路径，一般不设置，测试使用
+	Debug      bool
+	Addr       string //服务地址
+	Host       string
+	Mysql struct {
+		Host     string
+		Port     int
+		User     string
+		Password string
+		DBName   string
+		Option   string
+	}
 	MysqlDebug      bool
 	Mongodb         string
 	DefaultPassword string `yaml:"default_password"` //默认密码
@@ -100,6 +107,11 @@ func (m MConfig) GetString(key, def string) string {
 //获得相对于配置文件的绝对路径
 func (m MConfig) AbsPath(apath string) string {
 	return getFullPath(filepath.Dir(m.configPath), apath)
+}
+
+func (m MConfig) GetMySQLString() string {
+	return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?%s", m.Mysql.User, m.Mysql.Password,
+		m.Mysql.Host, m.Mysql.Port, m.Mysql.DBName, m.Mysql.Option)
 }
 
 type WxConfig struct {
