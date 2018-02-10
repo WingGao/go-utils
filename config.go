@@ -19,6 +19,8 @@ type MConfig struct {
 	allMap     map[interface{}]interface{} //保存配置,默认map[interface {}]interface {}
 	AppPath    string                      //运行路径，一般不设置，测试使用
 	Debug      bool
+	AdminMail  string
+	Project    string //工程名字
 	Addr       string //服务地址
 	Host       string
 	Mysql struct {
