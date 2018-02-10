@@ -10,6 +10,7 @@ import (
 type ModPrimaryKey1 struct {
 	Model           `gorm:"-"`
 	Serial   string `gorm:"primary_key"`
+	//Index2   int    `gorm:"primary_key;auto_increment:false"`
 	IntField int
 }
 
@@ -17,11 +18,11 @@ func (ModPrimaryKey1) TableName() string {
 	return "test_mod_primary_key1"
 }
 
-func (m *ModPrimaryKey1) SetPrimaryKey() interface{} {
+func (m *ModPrimaryKey1) SetPrimaryKey() (interface{}, error) {
 	if m.Serial == "" {
 		m.Serial = xid.New().String()
 	}
-	return m.Serial
+	return m.Serial, nil
 }
 
 func getOneModPrimaryKey1() *ModPrimaryKey1 {
@@ -39,7 +40,9 @@ func NewModPrimaryKey1() (m *ModPrimaryKey1) {
 }
 
 func TestAutoMerge(t *testing.T) {
-	err := _db.AutoMigrate(&ModPrimaryKey1{}).Error
+	m := &ModPrimaryKey1{}
+	_db.DropTableIfExists(m)
+	err := _db.AutoMigrate(m).Error
 	assert.NoError(t, err)
 }
 

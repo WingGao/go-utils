@@ -83,7 +83,7 @@ type IModelParent interface {
 	type Order struct {
 		utils.Model        `gorm:"-"`
 		utils.ModelTime    `structs:",flatten"`
-		Serial    uint64   `gorm:"primary_key;not_auto_increment"` //订单号,非自增
+		Serial    uint64   `gorm:"primary_key;auto_increment:false"` //订单号,非自增
 	}
 	...
 	// 自动创建主键
