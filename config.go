@@ -21,8 +21,8 @@ type MConfig struct {
 	Debug      bool
 	AdminMail  string
 	Project    string //工程名字
-	Addr       string //服务地址
 	Host       string
+	Port       string //服务地址
 	Mysql struct {
 		Host     string
 		Port     int
