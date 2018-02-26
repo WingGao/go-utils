@@ -5,6 +5,7 @@ import (
 	"github.com/ungerik/go-dry"
 	"github.com/stretchr/testify/assert"
 	"net"
+	"fmt"
 )
 
 func TestMConfig_Get(t *testing.T) {
@@ -32,6 +33,6 @@ func TestMConfig_AbsPath(t *testing.T) {
 
 func TestMConfig_Addr(t *testing.T) {
 	conf, _ := NewConfigFromFile(dry.GetenvDefault("WING_GO_CONF", ""))
-	addr, _ := net.ResolveTCPAddr("tcp", conf.Addr)
+	addr, _ := net.ResolveTCPAddr("tcp", fmt.Sprintf("%s:%s", conf.Host, conf.Port))
 	assert.Equal(t, 7031, addr.Port)
 }

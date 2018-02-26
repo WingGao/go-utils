@@ -6,6 +6,8 @@ import (
 	"github.com/WingGao/go-utils"
 	"encoding/gob"
 	"bytes"
+	"github.com/json-iterator/go"
+	"github.com/emirpasic/gods/lists/arraylist"
 )
 
 const (
@@ -17,6 +19,18 @@ const (
 type RedisClient struct {
 	Config utils.RedisConf
 	pool   *redis.Pool
+}
+
+type Option struct {
+	ExpireSecond int
+}
+
+func (m Option) ToInterface() []interface{} {
+	arr := arraylist.New()
+	if m.ExpireSecond > 0 {
+		arr.Add("EX", m.ExpireSecond)
+	}
+	return arr.Values()
 }
 
 var MainClient *RedisClient
@@ -131,6 +145,7 @@ func (c *RedisClient) SetGlob(key string, ptr interface{}) (error) {
 	_, err = c.Set(key, buf.Bytes())
 	return err
 }
+
 func (c *RedisClient) GetGlob(key string, out interface{}) (error) {
 	//key = c.FullKey(key)
 	bs, err := redis.Bytes(c.Get(key))
@@ -140,6 +155,24 @@ func (c *RedisClient) GetGlob(key string, out interface{}) (error) {
 	buf := bytes.NewBuffer(bs)
 	dec := gob.NewDecoder(buf)
 	err = dec.Decode(out)
+	return err
+}
+
+func (c *RedisClient) SetJson(key string, ptr interface{}, opt *Option) (error) {
+	b, err := jsoniter.Marshal(ptr)
+	if err != nil {
+		return err
+	}
+	_, err = c.Set(key, b, opt.ToInterface()...)
+	return err
+}
+
+func (c *RedisClient) GetJson(key string, out interface{}) (error) {
+	bs, err := redis.Bytes(c.Get(key))
+	if err != nil {
+		return err
+	}
+	err = jsoniter.Unmarshal(bs, out)
 	return err
 }
 
