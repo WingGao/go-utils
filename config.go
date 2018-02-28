@@ -128,7 +128,7 @@ func (m MConfig) GetMachineryConfig() *tconfig.Config {
 type WxConfig struct {
 	AppId     string
 	MchId     string
-	ApiKey    string
+	MchApiKey    string
 	NotifyUrl string
 	Token     string //缓存用
 }
