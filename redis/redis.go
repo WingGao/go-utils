@@ -124,6 +124,14 @@ func (c *RedisClient) GetInt64(key string, def int64) (int64, error) {
 	return out, err
 }
 
+func (c *RedisClient) GetUint64(key string, def uint64) (uint64, error) {
+	out, err := redis.Uint64(c.Get(key))
+	if err != nil {
+		return def, err
+	}
+	return out, err
+}
+
 func (c *RedisClient) GetBytes(key string, def []byte) ([]byte, error) {
 	//key = c.FullKey(key)
 	out, err := redis.Bytes(c.Get(key))
