@@ -582,7 +582,11 @@ func (m *ModelTime) UnsetTime() {
 }
 
 type ModelSoftDelete struct {
-	DeletedAt *time.Time `json:",omitempty"`
+	DeletedAt *time.Time `json:",omitempty"` //deleted_at
+}
+
+func (m ModelSoftDelete) GetDeleteWhere() string {
+	return "deleted_at IS NULL"
 }
 
 func GetIDs(ms interface{}) []uint32 {
