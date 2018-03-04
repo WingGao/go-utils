@@ -48,6 +48,11 @@ func StrToInt32(s string) (r int32) {
 	return
 }
 
+func StrToUint64(s string) (r uint64) {
+	r, _ = strconv.ParseUint(s, 10, 64)
+	return
+}
+
 func StrFromUint32(u uint32) string {
 	return strconv.FormatUint(uint64(u), 10)
 }

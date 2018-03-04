@@ -23,6 +23,7 @@ type MConfig struct {
 	Project    string //工程名字
 	Host       string
 	Port       string //服务地址
+	PublicUrl  string
 	Mysql struct {
 		Host     string
 		Port     int
@@ -127,7 +128,7 @@ func (m MConfig) GetMachineryConfig() *tconfig.Config {
 type WxConfig struct {
 	AppId     string
 	MchId     string
-	ApiKey    string
+	MchApiKey    string
 	NotifyUrl string
 	Token     string //缓存用
 }

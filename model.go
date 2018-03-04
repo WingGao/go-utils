@@ -34,7 +34,7 @@ type IModel interface {
 	LoadAndSetId(id uint32) error
 	LoadByPk(pk interface{}) error
 	Exist(where ...interface{}) bool
-	ExistID() bool
+	ExistPk() bool
 	FetchColumnValue(keys ... string) (out interface{})
 	Find(out interface{}, where ...interface{}) error
 	RawFind(out interface{}, where ...interface{}) *gorm.DB
@@ -43,7 +43,7 @@ type IModel interface {
 	Save() error
 	FirstOrCreate(where ...interface{}) (err error)
 	Update(attrs ...interface{}) error
-	Upsert(attrs ...interface{}) error
+	Upsert() error
 	GetParent() interface{}
 	SetParent(p interface{})
 	IsValid() error
@@ -340,15 +340,11 @@ func (m *Model) FSave() (err error) {
 	return m.parent.(IModelParent).FormatError(err)
 }
 
-func (m *Model) Upsert(attrs ...interface{}) (err error) {
-	err = m.parent.(IModelParent).IsValid()
-	if err == nil {
-		if m.ID > 0 {
-			err = m.Update(attrs...)
-			return
-		} else {
-			err = m.GetDB().Save(m.parent).Error
-		}
+func (m *Model) Upsert() (err error) {
+	if m.ExistPk() {
+		err = m.GetDB().Save(m.parent).Error
+	} else {
+		err = m.GetDB().Create(m.parent).Error
 	}
 	return m.parent.(IModelParent).FormatError(err)
 }
@@ -463,32 +459,30 @@ func (m *Model) ToMap() map[string]interface{} {
 
 //最好ID必须设置，不然会查询全部;如果没有定义的时候没有ID，则无法生效
 func (m *Model) Exist(where ...interface{}) bool {
-	item := funk.PtrOf(m.parent)
+	item := m.New()
 	scope, _ := m.NewScope()
 	e := scope.DB().Select(scope.PrimaryKey()).First(item, where...).Error
-	defer func() {
-		if mod, ok := item.(IModel); ok {
-			mod.GetModel().ID = 0
-		}
-	}()
 	return e == nil && !item.(IModel).PrimaryKeyZero()
 }
 
-func (m *Model) ExistID() bool {
-	if m.ID <= 0 {
+func (m *Model) ExistPk() bool {
+	if m.PrimaryKeyZero() {
 		return false
 	}
-	return m.Exist("id = ?", m.ID)
+	return m.Exist(m.FormatSql("$PK = ?"), m.ID)
 }
 
 //格式化sql，添加自定义变量
 // $MTABLE = 当前表名
-func (m *Model) FormatSql(sql string, args ... interface{}) string {
+// $PK = 主键
+func (m *Model) FormatSql(sql string, args ... interface{}) (out string) {
 	scope, _ := m.NewScope()
 	if len(args) > 0 {
 		sql = fmt.Sprintf(sql, args...)
 	}
-	return strings.Replace(sql, "$MTABLE", scope.TableName(), -1)
+	out = strings.Replace(sql, "$MTABLE", scope.TableName(), -1)
+	out = strings.Replace(sql, "$PK", scope.PrimaryKey(), -1)
+	return
 }
 
 //被JOIN
@@ -588,7 +582,11 @@ func (m *ModelTime) UnsetTime() {
 }
 
 type ModelSoftDelete struct {
-	DeletedAt *time.Time `json:",omitempty"`
+	DeletedAt *time.Time `json:",omitempty"` //deleted_at
+}
+
+func (m ModelSoftDelete) GetDeleteWhere() string {
+	return "deleted_at IS NULL"
 }
 
 func GetIDs(ms interface{}) []uint32 {

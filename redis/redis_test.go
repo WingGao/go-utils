@@ -7,6 +7,8 @@ import (
 	"github.com/rs/xid"
 	"github.com/stretchr/testify/assert"
 	"encoding/gob"
+	"encoding/json"
+	"github.com/garyburd/redigo/redis"
 )
 
 func TestMain(m *testing.M) {
@@ -68,3 +70,24 @@ func TestRedisClient_Incr(t *testing.T) {
 	assert.NoError(t, err)
 }
 
+func TestRedisClient_GetUint64(t *testing.T) {
+	var val uint64 = 185135722552891230
+	key := xid.New().String()
+	MainClient.Set(key, val)
+	getVal, _ := MainClient.GetUint64(key, 0)
+	assert.Equal(t, val, getVal)
+	MainClient.Del(key)
+}
+
+func TestZadd(t *testing.T) {
+	key := xid.New().String()
+	val := struct {
+		Val uint64
+	}{Val: 185135722552891243}
+	msg, _ := json.Marshal(val)
+	MainClient.Do("ZADD", key, 1, msg)
+	items, err := redis.ByteSlices(MainClient.Do("ZRANGEBYSCORE", key, 0, 2))
+	assert.NoError(t, err)
+	t.Log(string(items[0]))
+	MainClient.Del(key)
+}
