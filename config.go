@@ -23,7 +23,7 @@ type MConfig struct {
 	Project    string //工程名字
 	Host       string
 	Port       string //服务地址
-	PublicUrl  string
+	PublicHost string //对外的部署地址 host:port
 	Mysql struct {
 		Host     string
 		Port     int
