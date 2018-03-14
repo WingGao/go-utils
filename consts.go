@@ -5,5 +5,6 @@ const (
 )
 
 var (
-	DEBUG = true
+	DEBUG          = true
+	IMAGE_EXT_LIST = []string{".jpg", ".jpeg", ".png"}
 )

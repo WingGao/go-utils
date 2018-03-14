@@ -2,6 +2,9 @@ package utils
 
 import (
 	"path"
+	"path/filepath"
+	"github.com/thoas/go-funk"
+	"strings"
 )
 
 func GetFileBaseName(s string) string {
@@ -23,4 +26,10 @@ func FileRenameExt(s, ext string) string {
 		}
 	}
 	return s + ext
+}
+
+
+func ExtIsImage(fp string) bool {
+	ext := strings.ToLower(filepath.Ext(fp))
+	return funk.ContainsString(IMAGE_EXT_LIST, ext)
 }
