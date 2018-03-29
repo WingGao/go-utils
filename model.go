@@ -114,6 +114,11 @@ func (m *Model) PrimaryKeyZero() bool {
 	return scope.PrimaryKeyZero()
 }
 
+func (m *Model) PrimaryKeyValue() interface{} {
+	scope, _ := m.NewScope()
+	return scope.PrimaryKeyValue()
+}
+
 //生成一个新的主键，一般用于自定义主键
 func (m *Model) SetPrimaryKey() (key interface{}, err error) {
 	return nil, nil
@@ -340,6 +345,11 @@ func (m *Model) FSave() (err error) {
 	return m.parent.(IModelParent).FormatError(err)
 }
 
+func (m *Model) Create() (err error) {
+	err = m.GetDB().Create(m.parent).Error
+	return m.parent.(IModelParent).FormatError(err)
+}
+
 func (m *Model) Upsert() (err error) {
 	if m.ExistPk() {
 		err = m.GetDB().Save(m.parent).Error
@@ -469,7 +479,7 @@ func (m *Model) ExistPk() bool {
 	if m.PrimaryKeyZero() {
 		return false
 	}
-	return m.Exist(m.FormatSql("$PK = ?"), m.ID)
+	return m.Exist(m.FormatSql("$PK = ?"), m.PrimaryKeyValue())
 }
 
 //格式化sql，添加自定义变量
