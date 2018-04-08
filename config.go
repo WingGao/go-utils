@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"github.com/go-errors/errors"
 	"strings"
+	"github.com/ungerik/go-dry"
 )
 
 var (
@@ -31,6 +32,7 @@ type MConfig struct {
 		Password string
 		DBName   string
 		Option   string
+		CreateDB bool //创建对应数据库
 	}
 	MysqlDebug      bool
 	Mongodb         string
@@ -128,7 +130,7 @@ func (m MConfig) GetMachineryConfig() *tconfig.Config {
 type WxConfig struct {
 	AppId     string
 	MchId     string
-	MchApiKey    string
+	MchApiKey string
 	NotifyUrl string
 	Token     string //缓存用
 }
@@ -168,6 +170,7 @@ func NewConfigFromFile(confPath string) (conf MConfig, err error) {
 			} else {
 				conf.WebApps = getFullPath(conf.AppPath, conf.WebApps)
 			}
+			conf.Mysql.Host = formatEnv(conf.Mysql.Host)
 		}
 	}
 	return
@@ -193,4 +196,11 @@ func LoadConfig(confPath string) (MConfig, error) {
 	fmt.Println("WebApps:", conf.WebApps)
 	DefaultConfig = conf
 	return conf, err
+}
+
+func formatEnv(v string) string {
+	if strings.HasPrefix(v, "$") {
+		return dry.GetenvDefault(string([]rune(v)[1:]), "")
+	}
+	return v
 }
