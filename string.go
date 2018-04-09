@@ -30,7 +30,8 @@ func RandIntString(n int) string {
 
 func SubString(s string, start, length int) (sub string) {
 	length = MinInt(length, len(s))
-	return s[start:length]
+	sr := []rune(s) // for unicode
+	return string(sr[start:length])
 }
 
 func StrIsEmpty(s string) bool {
