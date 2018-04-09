@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"path"
 	"path/filepath"
 	"github.com/thoas/go-funk"
 	"strings"
@@ -15,7 +14,7 @@ func GetFileBaseName(s string) string {
 			break
 		}
 	}
-	return path.Base(out)
+	return filepath.Base(out)
 }
 
 //ext需要带上'.', eg: '.doc'
