@@ -29,8 +29,12 @@ func RandIntString(n int) string {
 }
 
 func SubString(s string, start, length int) (sub string) {
-	length = MinInt(length, len(s))
 	sr := []rune(s) // for unicode
+	length = MinInt(length, len(sr))
+	if length == 0 {
+		return ""
+	}
+
 	return string(sr[start:length])
 }
 
