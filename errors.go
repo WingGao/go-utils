@@ -57,12 +57,12 @@ func FirstError(es ...error) error {
 }
 
 type ErrorList struct {
-	List *sll.List
+	list *sll.List
 }
 
 func NewErrorList() *ErrorList {
 	l := &ErrorList{}
-	l.List = sll.New()
+	l.list = sll.New()
 	return l
 }
 
@@ -71,22 +71,23 @@ func (l *ErrorList) AppendE(errs ...error) {
 	for _, v := range errs {
 		if v != nil {
 			//l.List.Add(errors.Wrap(v, 1))
-			l.List.Add(v)
+			l.list.Add(v)
 		}
 	}
 }
 
 func (l *ErrorList) AppendEWrap(err error, skip int) {
 	if err != nil {
-		l.List.Add(errors.Wrap(err, skip))
+		l.list.Add(errors.Wrap(err, skip))
 	}
 }
 
 func (l *ErrorList) FirstError() error {
-	_, err := l.List.Find(func(index int, value interface{}) bool {
-		return value != nil
-	})
-	if err == nil {
+	//_, err := l.list.Find(func(index int, value interface{}) bool {
+	//	return value != nil
+	//})
+	err, ok := l.list.Get(0)
+	if !ok {
 		return nil
 	}
 	return err.(error)
