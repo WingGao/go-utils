@@ -220,6 +220,13 @@ func (c *RedisClient) Expire(key string, second int) (err error) {
 	return
 }
 
+// KEYS, 补全前缀
+func (c *RedisClient) Keys(pattern string) (keys []string, err error) {
+	pattern = c.FullKey(pattern)
+	keys, err = redis.Strings(c.Do("KEYS", pattern))
+	return
+}
+
 func LoadClient(conf utils.RedisConf) (err error) {
 	if MainClient == nil {
 		MainClient, err = NewRedisClient(conf)
