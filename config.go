@@ -128,11 +128,14 @@ func (m MConfig) GetMachineryConfig() *tconfig.Config {
 }
 
 type WxConfig struct {
-	AppId     string
-	MchId     string
-	MchApiKey string
-	NotifyUrl string
-	Token     string //缓存用
+	AppId             string
+	AppKey            string
+	MchId             string
+	MchApiKey         string
+	NotifyUrl         string
+	EnableTokenServer bool `yaml:"enable_tokenserver"`
+	EnableJsTicket    bool `yaml:"enable_jsticket"`
+	Token             string //缓存用
 }
 
 type RedisConf struct {

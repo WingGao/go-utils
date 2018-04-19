@@ -19,6 +19,7 @@ import (
 	"github.com/json-iterator/go"
 	"fmt"
 	"github.com/jinzhu/copier"
+	"gopkg.in/chanxuehong/wechat.v2/oauth2"
 )
 
 type XSession struct {
@@ -32,6 +33,7 @@ type XSession struct {
 	Username string
 	LastTime time.Time
 	WxOpenId string
+	WxToken  *oauth2.Token
 }
 type IXSession interface {
 	IsClear() bool
