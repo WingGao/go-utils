@@ -62,7 +62,6 @@ func BuildIrisSession(conf MConfig) {
 		IdleTimeout: service.DefaultRedisIdleTimeout,
 		Prefix:      _sessionKeyPrefix})
 
-	_rdb.Async(true)
 	iris.RegisterOnInterrupt(func() {
 		_rdb.Close()
 	})
@@ -256,13 +255,10 @@ func ClearUserAllSessions(uid uint32) (err error) {
 	for i, v := range sids {
 		_session.DestroyByID(v)
 		if i == 0 { //初始化
-			_rdb.Load("")
+			//_rdb.Load("")
 		}
 		//手动调用，可能不在内存里
-		_rdb.Sync(sessions.SyncPayload{
-			SessionID: v,
-			Action:    sessions.ActionDestroy,
-		})
+		_rdb.Release(v)
 	}
 	//删除自己
 	uredis.MainClient.Del(userKey)

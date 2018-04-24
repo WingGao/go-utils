@@ -7,14 +7,13 @@ import (
 	"github.com/kataras/iris/httptest"
 	"mtest"
 	"os"
-	"github.com/WingGao/go-utils"
 	uredis "github.com/WingGao/go-utils/redis"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestMain(m *testing.M) {
 	mtest.PreEnv()
-	testConf, _ := utils.LoadConfig(os.Getenv("NXPT_GO_CONF"))
+	testConf := mtest.GetConfig()
 	uredis.LoadClient(testConf.Redis)
 	BuildIrisSession(testConf)
 	os.Exit(m.Run())
