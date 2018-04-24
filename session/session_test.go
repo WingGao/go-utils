@@ -20,24 +20,32 @@ func TestMain(m *testing.M) {
 }
 func TestXSession_ToGob(t *testing.T) {
 	sess := &XSession{Uid: 123}
-	g, _ := sess.ToGob()
+	g, _ := sess.ToJSON()
 	t.Logf("session: %s", g)
-	s2, _ := NewSessionFromGob(g)
+	s2, _ := NewSessionFromJSON(g)
 	t.Logf("%#v", s2)
 }
 
 func TestSessionFromIris(t *testing.T) {
 	val := XSession{
-		Uid: 666,
+		Username: "testname",
 	}
 	app := iris.New()
 	app.Post("/set", func(ctx context.Context) {
-		sess, _ := NewSessionFromIris(ctx, "")
+		sess, _ := NewSessionFromIris(ctx, "sess")
 		sess.Uid = val.Uid
-		sess.SaveIrisD()
+		if err := sess.SaveIrisD(); err != nil {
+			t.Error(err)
+			ctx.StatusCode(403)
+		}
 	})
 	app.Get("/get", func(ctx context.Context) {
-		sess, _ := NewSessionFromIris(ctx, "")
+		sess, err := NewSessionFromIris(ctx, "sess")
+		if err != nil {
+			t.Error(err)
+			ctx.StatusCode(403)
+			return
+		}
 		if sess.Uid == val.Uid {
 			ctx.JSON(val)
 		} else {

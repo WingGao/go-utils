@@ -14,27 +14,31 @@ import (
 var (
 	DefaultConfig MConfig
 )
+
+type DbConfig struct {
+	Host     string
+	Port     int
+	User     string
+	Password string
+	DBName   string
+	Option   string
+	CreateDB bool //创建对应数据库
+}
+
 //main config
 type MConfig struct {
-	configPath string                      //配置文件路径
-	allMap     map[interface{}]interface{} //保存配置,默认map[interface {}]interface {}
-	AppPath    string                      //运行路径，一般不设置，测试使用
-	Debug      bool
-	AdminMail  string
-	Project    string //工程名字
-	Host       string
-	Port       string //服务地址
-	PublicHost string //对外的部署地址 host:port
-	Mysql struct {
-		Host     string
-		Port     int
-		User     string
-		Password string
-		DBName   string
-		Option   string
-		CreateDB bool //创建对应数据库
-	}
+	configPath      string                      //配置文件路径
+	allMap          map[interface{}]interface{} //保存配置,默认map[interface {}]interface {}
+	AppPath         string                      //运行路径，一般不设置，测试使用
+	Debug           bool
+	AdminMail       string
+	Project         string //工程名字
+	Host            string
+	Port            string //服务地址
+	PublicHost      string //对外的部署地址 host:port
+	Mysql           DbConfig
 	MysqlDebug      bool
+	Postgresql      DbConfig
 	Mongodb         string
 	DefaultPassword string `yaml:"default_password"` //默认密码
 	MediaPath       string

@@ -15,7 +15,6 @@ import (
 	"time"
 	"net/http/httptest"
 	"net/http"
-	"encoding/json"
 	"github.com/json-iterator/go"
 	"fmt"
 	"github.com/jinzhu/copier"
@@ -130,7 +129,7 @@ func NewSessionFromIris(ctx context.Context, key string) (*XSession, error) {
 	if val == nil {
 		return &XSession{ctx: ctx, key: key, Iris: sess}, nil
 	}
-	xsess, err := NewSessionFromGob(val.([]byte))
+	xsess, err := NewSessionFromJSON(val.(string))
 	xsess.RefreshAuto()
 	xsess.ctx = ctx
 	xsess.key = key
@@ -139,16 +138,16 @@ func NewSessionFromIris(ctx context.Context, key string) (*XSession, error) {
 	return xsess, err
 }
 
-func NewSessionFromGob(bs []byte) (*XSession, error) {
+func NewSessionFromJSON(bs string) (*XSession, error) {
 	//buf := bytes.NewBuffer(bs)
 	//dec := gob.NewDecoder(buf)
 	sess := &XSession{}
 	//err := dec.Decode(&sess)
-	err := jsoniter.Unmarshal(bs, sess)
+	err := jsoniter.UnmarshalFromString(bs, sess)
 	return sess, err
 }
 
-func (x *XSession) ToGob() ([]byte, error) {
+func (x *XSession) ToJSON() (string, error) {
 	//var buf bytes.Buffer
 	//enc := gob.NewEncoder(&buf)
 	////make a copy
@@ -158,7 +157,7 @@ func (x *XSession) ToGob() ([]byte, error) {
 	//dx.Iris = nil
 	//err := enc.Encode(dx)
 	//return buf.Bytes(), err
-	return json.Marshal(x)
+	return jsoniter.MarshalToString(x)
 }
 
 func (x *XSession) UpdateExpiration(expires time.Duration) {
@@ -185,7 +184,7 @@ func (x *XSession) SaveIris(ctx context.Context, key string) error {
 		x.isClear = false
 	}
 
-	g, err := x.ToGob()
+	g, err := x.ToJSON()
 	sess := x.Iris
 	if sess == nil {
 		sess = _session.Start(ctx)
