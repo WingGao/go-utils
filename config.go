@@ -118,9 +118,20 @@ func (m MConfig) AbsPath(apath string) string {
 	return getFullPath(filepath.Dir(m.configPath), apath)
 }
 
-func (m MConfig) GetMySQLString() string {
+func (m MConfig) GetMySQLString(dbname string) string {
+	if dbname == "" {
+		dbname = m.Mysql.DBName
+	}
 	return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?%s", m.Mysql.User, m.Mysql.Password,
-		m.Mysql.Host, m.Mysql.Port, m.Mysql.DBName, m.Mysql.Option)
+		m.Mysql.Host, m.Mysql.Port, dbname, m.Mysql.Option)
+}
+
+func (m MConfig) GetPostgresqlString(dbname string) string {
+	if dbname == "" {
+		dbname = m.Postgresql.DBName
+	}
+	return fmt.Sprintf("postgres://%s:%s@%s:%d/%s?%s", m.Postgresql.User, m.Postgresql.Password,
+		m.Postgresql.Host, m.Postgresql.Port, dbname, m.Postgresql.Option)
 }
 
 func (m MConfig) GetMachineryConfig() *tconfig.Config {
