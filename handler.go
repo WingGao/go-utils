@@ -3,6 +3,7 @@ package utils
 import (
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/context"
+	"github.com/kataras/iris/core/router"
 	"encoding/json"
 	"github.com/go-playground/form"
 	"github.com/json-iterator/go"
@@ -111,4 +112,18 @@ func FormHasValue(ctx context.Context, name string) bool {
 		return true
 	}
 	return false
+}
+
+// 替换路由
+func ReplaceRoute(app *iris.Application, r *router.Route) {
+	old := app.GetRoute(r.Name)
+	if old.MainHandlerName != r.MainHandlerName {
+		//替换
+		routers := app.GetRoutes()
+		for i, v := range routers {
+			if v.Name == r.Name {
+				routers[i] = r
+			}
+		}
+	}
 }
