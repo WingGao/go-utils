@@ -365,12 +365,14 @@ func (m *Model) Updates(values interface{}, ignoreProtectedAttrs ...bool) (err e
 	return m.parent.(IModelParent).FormatError(err)
 }
 
-func (m *Model) Update(attrs ...interface{}) (error) {
-	err := m.parent.(IModelParent).IsValid()
-	if err == nil {
-		d := m.GetDB().Model(m.parent).Omit("id").Update(attrs...)
-		err = d.Error
+func (m *Model) Update(attrs ...interface{}) (err error) {
+	if m.PrimaryKeyZero() {
+		return errors.New("pk is nil")
 	}
+
+	d := m.GetDB().Model(m.parent).Omit("id").Update(attrs...)
+	err = d.Error
+
 	return m.parent.(IModelParent).FormatError(err)
 }
 
