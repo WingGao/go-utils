@@ -78,6 +78,7 @@ type MConfig struct {
 		SSL      bool
 		User     string
 		Password string
+		From     string
 	}
 }
 
