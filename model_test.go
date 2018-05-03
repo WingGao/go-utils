@@ -12,11 +12,17 @@ type testMod2 struct {
 }
 type testMod struct {
 	Model
+	Field1 string
+	Field2 string
+	Field3 string
+	Field4 int `gorm:"-"`
+	Field5 int
 }
 
 func newMod() *testMod {
 	m := &testMod{}
 	m.SetParent(m)
+	m.SetDB(_db)
 	return m
 }
 func newMod2() *testMod2 {
@@ -73,4 +79,10 @@ func TestModel_New(t *testing.T) {
 	assert.Equal(t, uint32(2), nele.Addr().Interface().(*TestA).ID)
 	assert.Equal(t, uint32(1), a.ID)
 	assert.Equal(t, uint32(3), b.(*TestA).ID)
+}
+
+func TestModel_GetFieldsSql(t *testing.T) {
+	mod := newMod()
+	t.Log(mod.GetFieldsSql([]string{"field3"}, "b.", ""))
+	t.Log(mod.GetFieldsSql([]string{"field3"}, "b.", "c_"))
 }

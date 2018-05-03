@@ -58,6 +58,8 @@ type IModel interface {
 	SetSaveAssociations(v bool)
 	//Association(column string)
 	Table() *gorm.DB
+	// 获得 select 的语句
+	GetFieldsSql(ignore []string, prefix string, asprefix string) string
 }
 
 type IGetDB interface {
@@ -498,7 +500,7 @@ func (m *Model) FormatSql(sql string, args ... interface{}) (out string) {
 }
 
 //被JOIN
-// selectKeysMap = nil | map[string]string k:to
+// selectKeysMap = nil | map[string]string k:to | string
 // SELECT <map> FROM ... JOIN <m.TableName> ON <m.TableName>.<rkey> == <g.Table>.<lkey>
 func (m *Model) JoinBy(g *gorm.DB, selectKeysMap interface{}, lkey, rkey, jtype string) *gorm.DB {
 	table := m.GetTableName()
@@ -514,6 +516,8 @@ func (m *Model) JoinBy(g *gorm.DB, selectKeysMap interface{}, lkey, rkey, jtype 
 				attrs = append(attrs, fmt.Sprintf("`%v`.`%v` as `%v`", table, k, to))
 			}
 		}
+	} else if sq, ok := selectKeysMap.(string); ok {
+		attrs = []string{sq}
 	}
 	g = g.Select(attrs).Joins(
 		fmt.Sprintf("%s JOIN `%s` ON `%s`.`%s` = `%s`.`%s`", jtype, table, table, rkey, scope.TableName(), lkey))
@@ -576,6 +580,31 @@ func (m *Model) New() interface{} {
 	n := PtrOf(m.parent)
 	reflect.ValueOf(n).Elem().FieldByName("Model").Set(reflect.ValueOf(Model{parent: n, DB: m.GetDB()}))
 	return n
+}
+
+func (m *Model) GetFieldsSql(ignore []string, table string, asprefix string) string {
+	scope, _ := m.NewScope()
+	fields := scope.Fields()
+	sb := StringBuilder{}
+	for _, f := range fields {
+		if f.IsIgnored {
+			continue
+		}
+		if funk.ContainsString(ignore, f.DBName) {
+			continue
+		}
+		if sb.Len() > 0 {
+			sb.Write(", ")
+		}
+		if table != "" {
+			sb.Write(table, ".")
+		}
+		sb.Write("`", f.DBName, "`")
+		if asprefix != "" {
+			sb.Write(" AS `", asprefix, f.DBName, "`")
+		}
+	}
+	return sb.String()
 }
 
 type IModelTime interface {

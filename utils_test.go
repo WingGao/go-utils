@@ -5,6 +5,9 @@ import (
 	"os"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
+	"path/filepath"
+	"fmt"
+	"runtime"
 )
 
 var (
@@ -13,8 +16,11 @@ var (
 )
 
 func TestMain(m *testing.M) {
-	testConfig, _ = LoadConfig(os.Getenv("WING_GO_CONF"))
-	db, err := gorm.Open("mysql", testConfig.Mysql)
+	_, filename, _, _ := runtime.Caller(0)
+	host, _ := os.Hostname()
+	testEnvFile, _ := filepath.Abs(filepath.Join(filename, fmt.Sprintf("../_tests/config_test.%s.yaml", host)))
+	testConfig, _ = LoadConfig(testEnvFile)
+	db, err := gorm.Open("mysql", testConfig.GetMySQLString(""))
 	if err != nil {
 		panic(err)
 	}

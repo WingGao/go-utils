@@ -1,0 +1,40 @@
+# wing自用
+# 文件的相对路径都是相对于该配置文件的 1
+debug: true
+host: localhost
+port: 7092
+publichost: t04.sc.suamo-h5.com:8201 #对外的部署地址 host:port
+project: etdb
+mysql: #新项目需要修改
+  host: 192.168.2.1
+  port: 3306
+  user: root
+  password: root
+  dbname: sail
+  option: charset=utf8mb4&parseTime=True&loc=Local
+
+#mongodb: [user:pass@]host1[:port1][,host2[:port2],...][/database][?options]
+mongodb: 192.168.2.1/etdb #新项目需要修改
+#cookie过期 -1=浏览器关闭 0=不过期 >0秒
+cookie_expires: 0
+#创建用户的默认密码
+default_password: 123456
+#所有上传媒体的存储路径
+mediapath: ../../temp/etdb
+webapps: ../../webapps/etdb
+#最大媒体文件
+max_media_size: 1G
+
+#任务配置
+task:
+  broker: #默认使用redis
+  result_backend: redis://localhost:6379/2
+  results_expire_in: 3600000
+  default_queue: etdb_tasks  #新项目需要修改
+
+redis:
+  addr: 127.0.0.1:6379
+  password:
+  database: 3
+  unique_id_key: REDIS_UNIQUE_ID_KEY
+  prefix: etdb_  #新项目需要修改
