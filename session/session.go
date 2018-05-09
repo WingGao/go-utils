@@ -9,7 +9,7 @@ import (
 	. "github.com/WingGao/go-utils"
 	//"fmt"
 	"errors"
-	cdb "core/db"
+	cdb "suamo/core/db"
 	uredis "github.com/WingGao/go-utils/redis"
 	//pxdb "px/db"
 	"time"
