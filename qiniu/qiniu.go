@@ -8,10 +8,6 @@ import (
 	"fmt"
 )
 
-var (
-	client *Client
-)
-
 type Client struct {
 	mac          *qbox.Mac
 	bucket       string
@@ -19,7 +15,7 @@ type Client struct {
 }
 
 func NewClient(accessKey, secretKey, bucket string) (c *Client, err error) {
-	client = &Client{
+	client := &Client{
 		mac:    qbox.NewMac(accessKey, secretKey),
 		bucket: bucket,
 	}
@@ -37,7 +33,7 @@ func (m *Client) Put(localFile, key string) (err error) {
 		Scope: fmt.Sprintf("%s:%s", m.bucket, key), //允许覆盖
 	}
 	token := putPolicy.UploadToken(m.mac)
-	err = client.formUploader.PutFile(context.Background(), &ret, token, key, localFile, &putExtra)
+	err = m.formUploader.PutFile(context.Background(), &ret, token, key, localFile, &putExtra)
 	return
 }
 

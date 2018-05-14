@@ -25,6 +25,11 @@ type DbConfig struct {
 	CreateDB bool //创建对应数据库
 }
 
+type ThirdPartConfig struct {
+	Key    string
+	Secret string
+}
+
 //main config
 type MConfig struct {
 	configPath      string                      //配置文件路径
@@ -38,6 +43,7 @@ type MConfig struct {
 	PublicHost      string //对外的部署地址 host:port
 	Mysql           DbConfig
 	MysqlDebug      bool
+	AutoBackup      bool //自动备份
 	Postgresql      DbConfig
 	Mongodb         string
 	DefaultPassword string `yaml:"default_password"` //默认密码
@@ -80,6 +86,7 @@ type MConfig struct {
 		Password string
 		From     string
 	}
+	Qiniu ThirdPartConfig //七牛
 }
 
 func (m MConfig) GetConfigPath() string {
