@@ -43,6 +43,7 @@ type IModel interface {
 	Save() error
 	FirstOrCreate(where ...interface{}) (err error)
 	Update(attrs ...interface{}) error
+	Updates(values interface{}, ignoreProtectedAttrs ...bool) (err error)
 	Upsert() error
 	GetParent() interface{}
 	SetParent(p interface{})
@@ -388,8 +389,8 @@ func (m *Model) Delete() error {
 	return m.parent.(IModelParent).FormatError(err)
 }
 
-//批量删除
-func (m *Model) BatchDelete(ids []uint32) (err error) {
+//更具id删除
+func (m *Model) DeleteByIDs(ids []uint32) (err error) {
 	tx := m.DB.Begin()
 	err = tx.Where("id IN (?)", ids).Delete(m.parent).Error
 	if err != nil {
@@ -397,6 +398,11 @@ func (m *Model) BatchDelete(ids []uint32) (err error) {
 	} else {
 		tx.Commit()
 	}
+	return m.parent.(IModelParent).FormatError(err)
+}
+
+func (m *Model) DeleteBy(where ...interface{}) error {
+	err := m.GetDB().Delete(m.parent, where...).Error
 	return m.parent.(IModelParent).FormatError(err)
 }
 
@@ -628,6 +634,11 @@ type ModelSoftDelete struct {
 
 func (m ModelSoftDelete) GetDeleteWhere() string {
 	return "deleted_at IS NULL"
+}
+
+func (ModelSoftDelete) UnDelete(mi IModel) error {
+	err := mi.Table().Unscoped().Model(mi.GetParent()).Updates(map[string]interface{}{"deleted_at": nil}, false).Error
+	return mi.FormatError(err)
 }
 
 func GetIDs(ms interface{}) []uint32 {
