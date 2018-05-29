@@ -150,6 +150,13 @@ func (m MConfig) GetMachineryConfig() *tconfig.Config {
 	return scnf
 }
 
+func (m MConfig) BuildUrl(relpath string) string {
+	if !strings.HasPrefix(relpath, "/") {
+		relpath = "/" + relpath
+	}
+	return fmt.Sprintf("http://%s%s", m.PublicHost, relpath)
+}
+
 type WxConfig struct {
 	AppId             string
 	AppKey            string

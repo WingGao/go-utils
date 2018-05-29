@@ -10,7 +10,6 @@ import (
 var (
 	ERR_REQUIRE_LOGIN = errors.New("require login")
 	ERR_REQUIRE_ADMIN = errors.New("require admin")
-	ERR_NO_ACCOUNT    = errors.New("no such account")
 	ERR_NO_PERMISSION = errors.New("no permission")
 	ERR_CANNOT_MODIFY = errors.New("cannot modify")
 	ErrNoItem         = errors.New("no such item")
@@ -18,7 +17,7 @@ var (
 	ErrNotMatch       = errors.New("not match")
 	ErrFormat         = errors.New("format error")
 
-	UtilsErrList = []*errors.Error{ERR_REQUIRE_LOGIN, ERR_REQUIRE_ADMIN, ERR_NO_ACCOUNT,
+	UtilsErrList = []*errors.Error{ERR_REQUIRE_LOGIN, ERR_REQUIRE_ADMIN,
 		ERR_NO_PERMISSION, ERR_CANNOT_MODIFY, ErrNoItem, ErrExisted, ErrNotMatch}
 )
 
@@ -40,6 +39,10 @@ func NewErrPermission() *errors.Error {
 
 func NewErrCode() *errors.Error {
 	return errors.Wrap("验证码错误", 1)
+}
+
+func NewErrNoAccount() *errors.Error {
+	return errors.Wrap("账户不存在", 1)
 }
 
 func Nothing(...interface{}) {
