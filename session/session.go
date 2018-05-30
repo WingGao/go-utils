@@ -59,7 +59,7 @@ func BuildIrisSession(conf MConfig) {
 		MaxIdle:     0,
 		MaxActive:   0,
 		IdleTimeout: service.DefaultRedisIdleTimeout,
-		Prefix:      _sessionKeyPrefix})
+		Prefix:      rconf.Prefix + _sessionKeyPrefix})
 
 	iris.RegisterOnInterrupt(func() {
 		_rdb.Close()

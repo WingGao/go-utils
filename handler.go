@@ -127,3 +127,9 @@ func ReplaceRoute(app *iris.Application, r *router.Route) {
 		}
 	}
 }
+
+// 合并同路由
+func RouteAddHandlers(app *iris.Application, method, subdomain, unparsedPath string, handlers ... context.Handler) {
+	old := app.GetRoute(method + subdomain + unparsedPath)
+	old.Handlers = append(old.Handlers, handlers...) // 添加最后1个
+}
