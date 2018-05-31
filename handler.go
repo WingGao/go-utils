@@ -10,6 +10,7 @@ import (
 	"github.com/emirpasic/gods/sets/hashset"
 	"net/url"
 	"net/http"
+	"strings"
 )
 
 var ignoreErros = hashset.New()
@@ -132,4 +133,22 @@ func ReplaceRoute(app *iris.Application, r *router.Route) {
 func RouteAddHandlers(app *iris.Application, method, subdomain, unparsedPath string, handlers ... context.Handler) {
 	old := app.GetRoute(method + subdomain + unparsedPath)
 	old.Handlers = append(old.Handlers, handlers...) // 添加最后1个
+}
+
+func GetHandlerIp(c context.Context) string {
+	if ip := c.Request().Header.Get("X-Forwarded-For"); ip != "" {
+		ips := strings.Split(ip, ",")
+		if len(ips) > 0 && ips[0] != "" {
+			rip := strings.Split(ips[0], ":")
+			return rip[0]
+		}
+	} else {
+		ip := strings.Split(c.Request().RemoteAddr, ":")
+		if len(ip) > 0 {
+			if ip[0] != "[" {
+				return ip[0]
+			}
+		}
+	}
+	return ""
 }

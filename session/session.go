@@ -33,6 +33,7 @@ type XSession struct {
 	LastTime time.Time
 	WxOpenId string
 	WxToken  *oauth2.Token
+	Items    map[string]interface{}
 }
 type IXSession interface {
 	IsClear() bool
@@ -241,6 +242,21 @@ func (x *XSession) RefreshAuto() {
 	if x.Uid > 0 && time.Now().After(x.LastTime.Add(5*time.Minute)) {
 		x.Refresh()
 	}
+}
+
+func (x *XSession) Set(key string, val interface{}) {
+	if x.Items == nil {
+		x.Items = make(map[string]interface{}, 50)
+	}
+	x.Items[key] = val
+}
+
+func (x *XSession) Get(key string) (val interface{}, ok bool) {
+	if x.Items == nil {
+		return nil, false
+	}
+	val, ok = x.Items[key]
+	return
 }
 
 //删除所有的用户登录session
