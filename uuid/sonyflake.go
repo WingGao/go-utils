@@ -9,6 +9,7 @@ import (
 
 var (
 	client    *sonyflake.Sonyflake
+	_config   Config
 	machineId uint16
 )
 
@@ -17,30 +18,32 @@ const (
 )
 
 type Config struct {
+	ProjectName string
 	IgnoreExist bool
 }
 
 func heartbeat() {
 	for {
 		//5秒的冗余时间
-		redis.MainClient.Expire(getMachineKey(machineId), int(heartBeatDuration/time.Second)+5)
+		redis.MainClient.Expire(getMachineKey(_config.ProjectName, machineId), int(heartBeatDuration/time.Second)+5)
 		time.Sleep(heartBeatDuration)
 		//fmt.Println("sonyflake heartbeat")
 	}
 }
 
-func getMachineKey(u uint16) string {
-	return fmt.Sprintf("wing-utils-snoyflake-%d", u)
+func getMachineKey(prefix string, u uint16) string {
+	return fmt.Sprintf("%s_wing-utils-snoyflake-%d", prefix, u)
 }
 
 func Init(cnf Config) {
 	if client != nil {
 		return
 	}
+	_config = cnf
 	client = sonyflake.NewSonyflake(sonyflake.Settings{
 		//StartTime: time.Now(),
 		CheckMachineID: func(u uint16) bool {
-			if v, _ := redis.MainClient.Incr(getMachineKey(u)); v > 1 {
+			if v, _ := redis.MainClient.Incr(getMachineKey(cnf.ProjectName, u)); v > 1 {
 				if cnf.IgnoreExist {
 					//忽律已存在
 				} else {
@@ -66,7 +69,7 @@ func Init(cnf Config) {
 
 // 销毁
 func Destroy() {
-	redis.MainClient.Del(getMachineKey(machineId))
+	redis.MainClient.Del(getMachineKey(_config.ProjectName, machineId))
 	machineId = 0
 	client = nil
 }

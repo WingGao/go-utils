@@ -237,3 +237,7 @@ func formatEnv(v string) string {
 	}
 	return v
 }
+
+func IsDebug() bool {
+	return DefaultConfig.Debug
+}

@@ -134,7 +134,7 @@ func NewWError(e interface{}) *WError {
 //我们只需要知道最短路径
 func (e *WError) Fmt() {
 	for i, frame := range e.Frames {
-		if frame.Package == "main" || strings.HasSuffix(frame.File, "/mcmd/main.go") {
+		if frame.Package == "main" || strings.HasSuffix(frame.File, "/mcmd/serv/main.go") {
 			e.Frames = e.Frames[:i+1]
 			break
 		}
