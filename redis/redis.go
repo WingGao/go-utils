@@ -228,6 +228,13 @@ func (c *RedisClient) Expire(key string, second int) (err error) {
 	return
 }
 
+// EXISTS
+func (c *RedisClient) Exists(key string) bool {
+	key = c.FullKey(key)
+	res, err := redis.Int(c.Do("EXISTS", key))
+	return res == 1 && err == nil
+}
+
 // KEYS, 补全前缀
 func (c *RedisClient) Keys(pattern string) (keys []string, err error) {
 	pattern = c.FullKey(pattern)

@@ -4,6 +4,8 @@ import (
 	"github.com/thoas/go-funk"
 	"github.com/go-errors/errors"
 	"regexp"
+	"reflect"
+	"fmt"
 )
 
 var (
@@ -75,6 +77,27 @@ func (v *ValueChecker) Contains(val, items interface{}, errMsg string) bool {
 		return true
 	} else {
 		return v.addErr(errMsg)
+	}
+}
+
+// 长度满足 len(val) >= minLength
+// errMsg = "长度少于{minLength}"
+func (v *ValueChecker) LenLager(val interface{}, minLength int, errMsg string) bool {
+	if v.shouldSkip() {
+		return false
+	}
+	exLen := 0
+	vType := reflect.TypeOf(val)
+	switch vType.Kind() {
+	case reflect.String:
+		exLen = len(val.(string))
+	case reflect.Array, reflect.Slice, reflect.Map:
+		exLen = vType.Len()
+	}
+	if exLen >= minLength {
+		return true
+	} else {
+		return v.addErr(fmt.Sprintf("长度少于%d", minLength))
 	}
 }
 
