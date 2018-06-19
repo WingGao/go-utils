@@ -87,6 +87,12 @@ type MConfig struct {
 		From     string
 	}
 	Qiniu ThirdPartConfig //七牛
+	Aliyun struct {
+		ThirdPartConfig            `yaml:",inline"`
+		RegionId            string
+		SmsSign             string `yaml:"sms_sign"`
+		SmsTemplateRegister string `yaml:"sms_template_register"`
+	}
 }
 
 func (m MConfig) GetConfigPath() string {
