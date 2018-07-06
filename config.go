@@ -23,6 +23,7 @@ type DbConfig struct {
 	DBName   string
 	Option   string
 	CreateDB bool //创建对应数据库
+	NotCheck bool //是否检查
 }
 
 type ThirdPartConfig struct {
