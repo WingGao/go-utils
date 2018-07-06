@@ -45,12 +45,13 @@ type MConfig struct {
 	MysqlDebug      bool
 	AutoBackup      bool //自动备份
 	Postgresql      DbConfig
+	ElasticSearch   DbConfig `yaml:"elastic"`
 	Mongodb         string
-	DefaultPassword string `yaml:"default_password"` //默认密码
+	DefaultPassword string   `yaml:"default_password"` //默认密码
 	MediaPath       string
 	WebApps         string
-	MaxMediaSize    string `yaml:"max_media_size"`
-	CookieExpires   int64  `yaml:"cookie_expires"`
+	MaxMediaSize    string   `yaml:"max_media_size"`
+	CookieExpires   int64    `yaml:"cookie_expires"`
 	SiteCreator struct {
 		Mysql string
 		WpDir string

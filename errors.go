@@ -114,6 +114,12 @@ func PrintError(err error) {
 	//fmt.Println(errN.ErrorStack())
 }
 
+func PanicIfErr(err error) {
+	if err != nil {
+		panic(errors.Wrap(err, 1))
+	}
+}
+
 type WError struct {
 	Err    *errors.Error
 	Frames []errors.StackFrame

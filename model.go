@@ -21,6 +21,7 @@ type IModel interface {
 	GModel() *gorm.DB
 	PrimaryKey() string
 	PrimaryKeyZero() bool
+	PrimaryKeyValue() interface{}
 	GetTableName() string
 	GetModel() *Model
 	GetDB() *gorm.DB
@@ -38,6 +39,7 @@ type IModel interface {
 	FetchColumnValue(keys ... string) (out interface{})
 	Find(out interface{}, where ...interface{}) error
 	RawFind(out interface{}, where ...interface{}) *gorm.DB
+	//创建对应父Slice切片的地址,指针 *[]*ParentType
 	MakePSlice() interface{}
 	BatchInsertBad(items []*Model) (err error)
 	Save() error
@@ -98,7 +100,7 @@ type IModelParent interface {
  */
 type Model struct {
 	ID uint32   `gorm:"primary_key" bson:"ID"`
-	DB *gorm.DB `gorm:"-" json:"-" bson:"-" form:"-"`
+	DB *gorm.DB `gorm:"-" json:"-" bson:"-" form:"-" es:"-"`
 	// 指向父的指针
 	parent            interface{} `gorm:"-"`
 	associationColumn []string    `gorm:"-"`

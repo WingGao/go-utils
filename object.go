@@ -145,3 +145,33 @@ func DefaultVal(v, def interface{}) interface{} {
 	}
 	return v
 }
+
+func SizeOf(v interface{}) int {
+	t := reflect.ValueOf(v)
+	if t.Kind() == reflect.Ptr {
+		t = t.Elem()
+	}
+	switch t.Kind() {
+	case reflect.Slice, reflect.Array:
+		return t.Len()
+
+	}
+	return -1
+}
+
+func RedirectValue(value reflect.Value) reflect.Value {
+	for {
+		if !value.IsValid() || value.Kind() != reflect.Ptr {
+			return value
+		}
+
+		res := reflect.Indirect(value)
+
+		// Test for a circular type.
+		if res.Kind() == reflect.Ptr && value.Pointer() == res.Pointer() {
+			return value
+		}
+
+		value = res
+	}
+}
