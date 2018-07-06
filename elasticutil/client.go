@@ -18,11 +18,19 @@ func (c *EsClient) GetFullIndex(name string) string {
 	return c.Prefix + "_" + name
 }
 
-func (c *EsClient) SyncMySQLModel(mod utils.IModel) (err error) {
+func (c *EsClient) SyncMySQLModelAll(mod utils.IModel) (err error) {
 	step := 500
+	ctx := context.Background()
+	//先清空
+	indexName := c.GetFullIndex(mod.GetTableName())
+	_, err = c.DeleteIndex(indexName).Do(ctx)
+	if err != nil {
+		return
+	}
+
+	//批量插入
 	bs := c.Bulk()
 	bs.Index(c.GetFullIndex(mod.GetTableName())).Type("doc")
-	ctx := context.Background()
 	for i := 0; ; i++ {
 		items := mod.MakePSlice()
 		err = mod.Table().Limit(step).Offset(i * step).Scan(items).Error
@@ -45,6 +53,22 @@ func (c *EsClient) SyncMySQLModel(mod utils.IModel) (err error) {
 			break
 		}
 	}
+	return
+}
+
+func (c *EsClient) UpsertMySQLModelOne(mod utils.IModel) (err error) {
+	ctx := context.Background()
+	_, err = c.Update().Index(c.GetFullIndex(mod.GetTableName())).Type("doc").
+		Id(fmt.Sprintf("%v", mod.PrimaryKeyValue())).Doc(mod).DocAsUpsert(true).
+		Do(ctx)
+	return
+}
+
+func (c *EsClient) DeleteMySQLModelOne(mod utils.IModel) (err error) {
+	ctx := context.Background()
+	_, err = c.Delete().Index(c.GetFullIndex(mod.GetTableName())).Type("doc").
+		Id(fmt.Sprintf("%v", mod.PrimaryKeyValue())).
+		Do(ctx)
 	return
 }
 

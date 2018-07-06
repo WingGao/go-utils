@@ -394,12 +394,17 @@ func (m *Model) Delete() error {
 //更具id删除
 func (m *Model) DeleteByIDs(ids []uint32) (err error) {
 	tx := m.DB.Begin()
-	err = tx.Where("id IN (?)", ids).Delete(m.parent).Error
-	if err != nil {
-		tx.Rollback()
-	} else {
-		tx.Commit()
+	mod := m.New().(IModel).GetModel()
+	for _, id := range ids {
+		mod.ID = id
+		err = mod.Delete()
+		if err != nil {
+			tx.Rollback()
+			return
+		}
 	}
+
+	tx.Commit()
 	return m.parent.(IModelParent).FormatError(err)
 }
 
