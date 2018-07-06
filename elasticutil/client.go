@@ -23,7 +23,7 @@ func (c *EsClient) SyncMySQLModelAll(mod utils.IModel) (err error) {
 	ctx := context.Background()
 	//先清空
 	indexName := c.GetFullIndex(mod.GetTableName())
-	_, err = c.DeleteIndex(indexName).Do(ctx)
+	_, err = c.DeleteByQuery(indexName).Query(elastic.NewMatchAllQuery()).Do(ctx)
 	if err != nil {
 		return
 	}
