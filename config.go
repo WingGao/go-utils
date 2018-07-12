@@ -95,6 +95,7 @@ type MConfig struct {
 		SmsSign             string `yaml:"sms_sign"`
 		SmsTemplateRegister string `yaml:"sms_template_register"`
 	}
+	Vips string //vips路径， '-'表示不需要
 }
 
 func (m MConfig) GetConfigPath() string {

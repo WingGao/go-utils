@@ -507,8 +507,9 @@ func (m *Model) FormatSql(sql string, args ... interface{}) (out string) {
 	if len(args) > 0 {
 		sql = fmt.Sprintf(sql, args...)
 	}
-	out = strings.Replace(sql, "$MTABLE", scope.TableName(), -1)
-	out = strings.Replace(sql, "$PK", scope.PrimaryKey(), -1)
+	out = sql
+	out = strings.Replace(out, "$MTABLE", scope.TableName(), -1)
+	out = strings.Replace(out, "$PK", scope.PrimaryKey(), -1)
 	return
 }
 
