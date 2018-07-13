@@ -22,8 +22,9 @@ type DbConfig struct {
 	Password string
 	DBName   string
 	Option   string
-	CreateDB bool //创建对应数据库
-	NotCheck bool //是否检查
+	CreateDB bool                  //创建对应数据库
+	NotCheck bool                  //是否检查
+	StartCmd string `yaml:"start"` //启动命令
 }
 
 type ThirdPartConfig struct {
