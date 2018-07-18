@@ -9,6 +9,7 @@ import (
 	"github.com/go-errors/errors"
 	"strings"
 	"github.com/ungerik/go-dry"
+	"os"
 )
 
 var (
@@ -38,6 +39,8 @@ type MConfig struct {
 	allMap          map[interface{}]interface{} //保存配置,默认map[interface {}]interface {}
 	AppPath         string                      //运行路径，一般不设置，测试使用
 	Debug           bool
+	UID             int //linux uid
+	GID             int //linux gid
 	AdminMail       string
 	Project         string //工程名字
 	Host            string
@@ -165,6 +168,22 @@ func (m MConfig) BuildUrl(relpath string) string {
 		relpath = "/" + relpath
 	}
 	return fmt.Sprintf("http://%s%s", m.PublicHost, relpath)
+}
+
+//创建目录，并制定默认uid，gid
+func (m MConfig) MkdirAll(fp string, mod os.FileMode) (err error) {
+	err = os.MkdirAll(fp, mod)
+	if err != nil {
+		return
+	}
+	if m.UID > 0 || m.GID > 0 {
+		err = os.Chown(fp, m.UID, m.GID)
+	}
+	return
+}
+//创建目录，并制定默认uid，gid
+func (m MConfig) MkdirAllDef(fp string) (err error) {
+	return m.MkdirAll(fp, DEFAULT_FILEMODE)
 }
 
 type WxConfig struct {
