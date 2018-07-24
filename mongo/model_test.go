@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 	"github.com/WingGao/go-utils"
-	"gopkg.in/mgo.v2"
+	"github.com/globalsign/mgo"
 	"github.com/stretchr/testify/assert"
 	"mtest"
 	"github.com/jinzhu/copier"

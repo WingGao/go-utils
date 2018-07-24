@@ -27,8 +27,8 @@
 package mongo
 
 import (
-	"gopkg.in/mgo.v2/bson"
-	"gopkg.in/mgo.v2"
+	"github.com/globalsign/mgo/bson"
+	"github.com/globalsign/mgo"
 	"github.com/thoas/go-funk"
 	sll "github.com/emirpasic/gods/lists/singlylinkedlist"
 	"reflect"
