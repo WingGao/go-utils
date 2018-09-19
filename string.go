@@ -5,6 +5,7 @@ import (
 	"time"
 	"strconv"
 	"strings"
+	"github.com/thoas/go-funk"
 )
 
 var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
@@ -46,6 +47,11 @@ func StrToUint32(s string) (r uint32) {
 	a, _ := strconv.ParseUint(s, 10, 32)
 	r = uint32(a)
 	return
+}
+
+//数组
+func StrToUint32Arr(s string) (r []uint32) {
+	return funk.Map(strings.Split(s, ","), StrToUint32).([]uint32)
 }
 func StrToInt32(s string) (r int32) {
 	a, _ := strconv.ParseUint(s, 10, 32)
