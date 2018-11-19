@@ -81,8 +81,8 @@ func (v *ValueChecker) Contains(val, items interface{}, errMsg string) bool {
 }
 
 // 长度满足 len(val) >= minLength
-// errMsg = "长度少于{minLength}"
-func (v *ValueChecker) LenLager(val interface{}, minLength int, errMsg string) bool {
+// errMsg = "{name}长度少于{minLength}"
+func (v *ValueChecker) LenLager(val interface{}, minLength int, name string) bool {
 	if v.shouldSkip() {
 		return false
 	}
@@ -97,7 +97,7 @@ func (v *ValueChecker) LenLager(val interface{}, minLength int, errMsg string) b
 	if exLen >= minLength {
 		return true
 	} else {
-		return v.addErr(fmt.Sprintf("长度少于%d", minLength))
+		return v.addErr(fmt.Sprintf("%s长度少于%d", name, minLength))
 	}
 }
 

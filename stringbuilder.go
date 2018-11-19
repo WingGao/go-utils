@@ -42,6 +42,10 @@ func (self *StringBuilder) Uint(value uint) *StringBuilder {
 	self.buffer.WriteString(strconv.FormatUint(uint64(value), 10))
 	return self
 }
+func (self *StringBuilder) Uint32(value uint32) *StringBuilder {
+	self.buffer.WriteString(strconv.FormatUint(uint64(value), 10))
+	return self
+}
 
 func (self *StringBuilder) Float(value float64) *StringBuilder {
 	self.buffer.WriteString(strconv.FormatFloat(value, 'f', -1, 64))
