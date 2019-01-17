@@ -29,6 +29,8 @@ type DbConfig struct {
 }
 
 type ThirdPartConfig struct {
+	Name  string
+	AppID  string
 	Key    string
 	Secret string
 }
@@ -181,6 +183,7 @@ func (m MConfig) MkdirAll(fp string, mod os.FileMode) (err error) {
 	}
 	return
 }
+
 //创建目录，并制定默认uid，gid
 func (m MConfig) MkdirAllDef(fp string) (err error) {
 	return m.MkdirAll(fp, DEFAULT_FILEMODE)
@@ -192,9 +195,10 @@ type WxConfig struct {
 	MchId             string
 	MchApiKey         string
 	NotifyUrl         string
-	EnableTokenServer bool `yaml:"enable_tokenserver"`
-	EnableJsTicket    bool `yaml:"enable_jsticket"`
+	EnableTokenServer bool              `yaml:"enable_tokenserver"`
+	EnableJsTicket    bool              `yaml:"enable_jsticket"`
 	Token             string //缓存用
+	Miniapps          []ThirdPartConfig `yaml:"mini"`
 }
 
 type RedisConf struct {
