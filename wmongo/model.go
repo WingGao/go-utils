@@ -122,7 +122,7 @@ func (m *MgModel) Save() error {
 	if m.Id.IsZero() {
 		m.Id = primitive.NewObjectID()
 	}
-	if ti, ok := m.parent.(MgTimeModel); ok { //添加时间
+	if ti, ok := m.parent.(IMgTimeModel); ok { //添加时间
 		ti.AutoNow()
 	}
 	mc, _ := m.C()
@@ -237,6 +237,10 @@ func (m *MgModel) FormatError(err error) error {
 
 type MgTimeModel struct {
 	UpdatedAt *time.Time `bson:"UpdatedAt"`
+}
+
+type IMgTimeModel interface {
+	AutoNow()
 }
 
 func (m *MgTimeModel) AutoNow() {

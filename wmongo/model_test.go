@@ -42,9 +42,11 @@ func NewModelA() (m *ModelA) {
 	m.SetParent(m)
 	return
 }
+
 func testP(p IMgParent) {
 	p.FormatError(nil)
 }
+
 func TestMgModel_Save(t *testing.T) {
 	mod := NewModelA()
 	testP(mod)
@@ -54,6 +56,7 @@ func TestMgModel_Save(t *testing.T) {
 	err := mod.Save()
 	assert.NoError(t, err)
 	assert.NotEmpty(t, mod.Id)
+	assert.NotEmpty(t, mod.UpdatedAt)
 	id1 := mod.Id
 	mod.FieldStr = "2"
 	err = mod.Save()
