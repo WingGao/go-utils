@@ -1,33 +1,33 @@
-package mongo
+package wmongo
 
 import (
+	"context"
+	"github.com/WingGao/go-utils"
+	"github.com/stretchr/testify/assert"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"os"
 	"testing"
-	"github.com/WingGao/go-utils"
-	"github.com/globalsign/mgo"
-	"github.com/stretchr/testify/assert"
-	"mtest"
-	"github.com/jinzhu/copier"
 )
 
 var (
 	testConfig utils.MConfig
-	msess      *mgo.Session
+	msess      *mongo.Client
+	lastId     primitive.ObjectID
 )
 
 func TestMain(m *testing.M) {
-	testConfig, _ = utils.LoadConfig(os.Getenv("WING_GO_CONF"))
-	mgo.SetDebug(true)
-	mgo.SetLogger(GetLogger())
-	msess, _ = mgo.Dial(testConfig.Mongodb)
+	msess, _ = mongo.Connect(context.Background(), options.Client().ApplyURI("mongodb://localhost:27017"))
 	os.Exit(m.Run())
 }
 
 type ModelA struct {
-	MgModel     `bson:",inline"`
-	MgTimeModel `bson:",inline"`
+	MgModel      `bson:",inline"`
+	MgTimeModel  `bson:",inline"`
 	FieldStr     string
 	FieldStructs []EmModel
+	FieldStrB    string `bson:"field_b"`
 }
 type EmModel struct {
 	FieldA string
@@ -38,7 +38,7 @@ func (ModelA) TableName() string {
 }
 
 func NewModelA() (m *ModelA) {
-	m = &ModelA{MgModel: MgModel{Session: msess, DbName: "nxpt_dev"}}
+	m = &ModelA{MgModel: MgModel{Client: msess, DbName: "go_test"}}
 	m.SetParent(m)
 	return
 }
@@ -50,6 +50,7 @@ func TestMgModel_Save(t *testing.T) {
 	testP(mod)
 	mod.FieldStr = "1"
 	mod.FieldStructs = []EmModel{EmModel{FieldA: "11"}, EmModel{FieldA: "22"},}
+	mod.FieldStrB = "alias"
 	err := mod.Save()
 	assert.NoError(t, err)
 	assert.NotEmpty(t, mod.Id)
@@ -58,30 +59,32 @@ func TestMgModel_Save(t *testing.T) {
 	err = mod.Save()
 	assert.NoError(t, err)
 	assert.Equal(t, id1, mod.Id)
-	mtest.OutputJson(mod)
+	lastId = id1
 }
 
 func TestMgModel_LoadById(t *testing.T) {
 	mod := NewModelA()
-	err := mod.LoadById("59fae3686154b3790cdc7f81")
+	err := mod.LoadById(lastId)
 	assert.NoError(t, err)
 	assert.Equal(t, "2", mod.FieldStr)
-	mtest.OutputJson(mod)
 }
 
 func TestToObjectId(t *testing.T) {
-	mod := NewModelA()
-	a := struct {
-		Id string
-	}{"5a16b6117aff15ead7d498da"}
-	copier.Copy(mod, a)
-	mod.Id = ToObjectId(mod.Id)
-	assert.Equal(t, "5a16b6117aff15ead7d498da", mod.Id.Hex())
+	idHex := "5ccad2fb3825f66ccd642ebe"
+	//id, _ := primitive.ObjectIDFromHex(idHex)
+	assert.Equal(t, 24, len(idHex))
+	id2 := ToObjectId(idHex)
+	assert.Equal(t, idHex, id2.Hex())
+	assert.Equal(t, idHex, ToObjectId(id2).Hex())
 }
 
 func TestGetMSetIgnore(t *testing.T) {
 	mod := NewModelA()
 	mod.AutoNow()
-	upm := GetMSetIgnore(mod,"fieldstr")
+	upm := GetMSetIgnore(mod, "fieldstr")
+	assert.NotContains(t, upm["$set"], "fieldstr")
+	assert.Contains(t, upm["$set"], "UpdatedAt")
+	upm = GetMSetIgnore(mod, " ")
+	assert.Contains(t, upm["$set"], "fieldstr")
 	t.Log(MarshalJSONStr(upm))
 }

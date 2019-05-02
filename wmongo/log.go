@@ -1,4 +1,4 @@
-package mongo
+package wmongo
 
 import (
 	"github.com/sirupsen/logrus"

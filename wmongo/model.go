@@ -1,0 +1,281 @@
+// 用来方便MongoDB对象创建
+// MgModel
+//	type HugoScorePageRecord struct {
+//		mongo.MgModel                                            `bson:",inline" structs:",flatten"`
+//		PageID                  uint32                           `bson:"PageID"`                  //评分表ID
+//		CourseHourInteractionID uint32                           `bson:"CourseHourInteractionID"` //互动ID course_hour_interaction_id
+//		Result                  map[string]HugoScorePageQuestion `bson:"Result"`
+//		ToUserID                uint32                           `bson:"ToUserID"` //被评价者
+//		ToUser                  *Student                         `bson:"-" json:",omitempty"`
+//		FromUserID              uint32                           `bson:"FromUserID"` //评论者
+//	}
+/*
+	func (HugoScorePageRecord) TableName() string {
+		return "px_hugo_page_record"
+	}
+
+	func NewHugoScorePageRecord(d interface{}) (m *HugoScorePageRecord) {
+		m = &HugoScorePageRecord{}
+		if d != nil {
+			copier.Copy(m, d)
+		}
+		m.MgModel = mongo.MgModel{Session: _mgodb, DbName: mgoName}
+		m.SetParent(m)
+		return
+	}
+*/
+package wmongo
+
+import (
+	"context"
+	"github.com/go-errors/errors"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+	"strings"
+	"time"
+)
+
+// MongoDB结构的通用
+// 如果新增加域，需要在one()里也添加对应复制
+type MgModel struct {
+	Id primitive.ObjectID `bson:"_id"`
+	//IdHex   string        `bson:"-"`
+	Client *mongo.Client `bson:"-" json:"-"`
+	DbName string        `bson:"-" json:"-"`
+	// 指向父的指针
+	parent interface{} `bson:"-"`
+}
+
+type IMgModel interface {
+	GetModel() *MgModel
+	SetModel(n *MgModel)
+	SetParent(p interface{})
+	GetParent() interface{}
+	C() (c *MgCollection, s *mongo.Client)
+	UpdateId(update interface{}) error
+}
+type IMgParent interface {
+	TableName() string
+	FormatError(err error) error
+	BeforeDelete() error
+	BeforeSave() error
+}
+
+func (m *MgModel) SetModel(n *MgModel) {
+	m.Client = n.Client
+	m.DbName = n.DbName
+}
+
+func (m *MgModel) GetModel() *MgModel {
+	return m
+}
+
+func (m *MgModel) GetParent() interface{} {
+	return m.parent
+}
+
+//基本可以用作初始化
+func (m *MgModel) SetParent(p interface{}) {
+	m.parent = p
+}
+
+//需要手动关闭session
+func (m *MgModel) GetClient() *mongo.Client {
+	if m.Client == nil {
+		return nil
+	}
+	return m.Client
+}
+
+//关闭所有获取到的session
+func (m *MgModel) CloseAllSession() {
+	//if m.createdSessions != nil {
+	//	for i := 0; i < m.createdSessions.Size(); i++ {
+	//		if s, ok := m.createdSessions.Get(i); ok && s != nil {
+	//			s.(*mgo.Session).Close()
+	//		}
+	//	}
+	//	m.createdSessions.Clear()
+	//}
+}
+
+func (m *MgModel) C() (c *MgCollection, s *mongo.Client) {
+	s = m.GetClient()
+	if s == nil {
+		return
+	}
+	c = NewMgCollection(s.Database(m.DbName).Collection(m.parent.(IMgParent).TableName()))
+	return
+}
+
+//保存前置
+func (m *MgModel) BeforeSave() error {
+	return nil
+}
+
+//注意，会完全覆盖
+func (m *MgModel) Save() error {
+	if err := m.parent.(IMgParent).BeforeSave(); err != nil {
+		return err
+	}
+	if m.Id.IsZero() {
+		m.Id = primitive.NewObjectID()
+	}
+	if ti, ok := m.parent.(MgTimeModel); ok { //添加时间
+		ti.AutoNow()
+	}
+	mc, _ := m.C()
+	res, err := mc.UpsertId(m.Id, m.parent)
+	if err != nil {
+		return m.parent.(IMgParent).FormatError(err)
+	}
+	if res.UpsertedID != nil { // 只有新插入的有
+		m.Id = res.UpsertedID.(primitive.ObjectID)
+	}
+	return nil
+}
+
+func (m *MgModel) LoadById(id interface{}) error {
+	mc, _ := m.C()
+	//err := m.One(mc.FindId(ToObjectId(id)), m.parent)
+	err := mc.FindId(id, m.parent)
+	return m.pFormatError(err)
+}
+
+//注意，如果局部更新，请传$set
+func (m *MgModel) UpdateId(update interface{}) error {
+	mc, _ := m.C()
+	_, err := mc.UpdateId(m.Id, update)
+	return m.pFormatError(err)
+}
+
+func (m *MgModel) UpdateIdSet(update interface{}) error {
+	mc, _ := m.C()
+	//defer ms.Close()
+	_, err := mc.UpdateId(m.Id, BSet(update))
+	return m.pFormatError(err)
+}
+
+func (m *MgModel) FindOne(q interface{}, out interface{}) error {
+	mc, _ := m.C()
+	//err := m.One(mc.Find(q), out)
+	res := mc.FindOne(context.Background(), q)
+	err := DecodeSingleRes(res, out)
+	return m.pFormatError(err)
+}
+
+//func (m *MgModel) FindAll(q interface{}, arr interface{}) error {
+//	mc, ms := m.C()
+//	defer ms.Close()
+//	err := mc.Find(q).All(arr)
+//	return m.pFormatError(err)
+//}
+
+func (m *MgModel) Count(q interface{}) (int, error) {
+	//mc, _ := m.C()
+	//if mc == nil {
+	//	return 0, errors.New("not inited")
+	//}
+	//defer ms.Close()
+	//cnt, err := mc.Find(q).Count()
+	//return cnt, m.pFormatError(err)
+	return 0, errors.New("not implement")
+}
+
+func (m *MgModel) Exist(q bson.M) bool {
+	//mc, ms := m.C()
+	//defer ms.Close()
+	//cnt, _ := mc.Find(q).Limit(1).Count()
+	//return cnt > 0
+	panic("not implement")
+	return false
+}
+
+//删除前置
+func (m *MgModel) BeforeDelete() error {
+	return nil
+}
+func (m *MgModel) DeleteId() error {
+	if err := m.parent.(IMgParent).BeforeDelete(); err != nil {
+		return err
+	}
+	mc, _ := m.C()
+	//defer ms.Close()
+	_, err := mc.RemoveId(m.Id)
+	return err
+}
+
+//由于mgo的赋值会替换全部属性，所以需要重新赋值
+//func (m *MgModel) One(q *mgo.Query, out interface{}) error {
+//	var oldM interface{}
+//	if om, ok := out.(IMgModel); ok {
+//		oldM = funk.PtrOf(*om.GetModel())
+//	}
+//	err := q.One(out)
+//	if err == nil && oldM != nil {
+//		m := out.(IMgModel).GetModel()
+//		m.parent = out
+//		m.Client = oldM.(*MgModel).Client
+//		m.DbName = oldM.(*MgModel).DbName
+//	}
+//	return err
+//}
+func (m *MgModel) pFormatError(err error) error {
+	if err != nil {
+		if p, ok := m.parent.(IMgParent); ok {
+			return p.FormatError(err)
+		}
+	}
+	return err
+}
+
+// 格式化错误
+func (m *MgModel) FormatError(err error) error {
+	return err
+}
+
+type MgTimeModel struct {
+	UpdatedAt *time.Time `bson:"UpdatedAt"`
+}
+
+func (m *MgTimeModel) AutoNow() {
+	now := time.Now()
+	m.UpdatedAt = &now
+}
+
+//转换ObjectId, 支持 ObjectId, string
+func ToObjectId(in interface{}) (oid primitive.ObjectID) {
+	//_id是24位
+	if s, ok := in.(string); ok && len(s) == 24 {
+		oid, _ = primitive.ObjectIDFromHex(s)
+		return
+	} else if id, ok := in.(primitive.ObjectID); ok {
+		return id
+	}
+	return primitive.NilObjectID
+}
+
+func DecodeSingleRes(sr *mongo.SingleResult, out interface{}) (err error) {
+	err = sr.Err()
+	if err == nil {
+		err = sr.Decode(out)
+	}
+	return
+}
+
+//func ScanOne(q *mgo.Query, out interface{}) (err error) {
+//	out := funk.PtrOf(out.parent)
+//	return
+//}
+//
+
+//有些版本的MongoDB会报错，可以使用该方法忽律
+func IgnoreDuplicateKey(err error) error {
+	if err != nil {
+		if strings.HasPrefix(err.Error(), "E11000 duplicate key error") {
+			return nil
+		}
+	}
+	return err
+}

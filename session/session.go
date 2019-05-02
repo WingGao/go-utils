@@ -9,7 +9,6 @@ import (
 	. "github.com/WingGao/go-utils"
 	//"fmt"
 	"errors"
-	cdb "suamo/core/db"
 	uredis "github.com/WingGao/go-utils/redis"
 	//pxdb "px/db"
 	"time"
@@ -207,34 +206,9 @@ func (x *XSession) SaveIrisD() error {
 func (x *XSession) IsValued() bool {
 	return x.Uid > 0
 }
-func IsAdmin(group uint32) bool {
-	return group == cdb.GROUP_ADMIN
-}
-func (x *XSession) IsAdmin() bool {
-	return IsAdmin(x.Group)
-}
-
-func (x *XSession) Account() (s *cdb.Account) {
-	if x.Uid > 0 {
-		s = cdb.NewAccount()
-		err := s.LoadAndSetId(x.Uid)
-		if err != nil {
-			return nil
-		}
-	}
-	return
-}
 func (x *XSession) Refresh() {
-	acc := x.Account()
-	if acc == nil {
-		//清空
-		x.Clear()
-	} else {
-		x.Group = acc.Group
-		x.LastTime = time.Now()
-	}
+	//TODO 测试
 }
-
 //自动session检查
 func (x *XSession) RefreshAuto() {
 	//5分钟检查一次session
