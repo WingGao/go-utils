@@ -29,7 +29,7 @@ type DbConfig struct {
 }
 
 type ThirdPartConfig struct {
-	Name  string
+	Name   string
 	AppID  string
 	Key    string
 	Secret string
@@ -54,12 +54,12 @@ type MConfig struct {
 	Postgresql      DbConfig
 	ElasticSearch   DbConfig `yaml:"elastic"`
 	Mongodb         string
-	DefaultPassword string   `yaml:"default_password"` //默认密码
+	DefaultPassword string `yaml:"default_password"` //默认密码
 	MediaPath       string
 	WebApps         string
-	MaxMediaSize    string   `yaml:"max_media_size"`
-	CookieExpires   int64    `yaml:"cookie_expires"`
-	SiteCreator struct {
+	MaxMediaSize    string `yaml:"max_media_size"`
+	CookieExpires   int64  `yaml:"cookie_expires"`
+	SiteCreator     struct {
 		Mysql string
 		WpDir string
 	}
@@ -94,14 +94,15 @@ type MConfig struct {
 		Password string
 		From     string
 	}
-	Qiniu ThirdPartConfig //七牛
+	Qiniu  ThirdPartConfig //七牛
 	Aliyun struct {
-		ThirdPartConfig            `yaml:",inline"`
+		ThirdPartConfig     `yaml:",inline"`
 		RegionId            string
 		SmsSign             string `yaml:"sms_sign"`
 		SmsTemplateRegister string `yaml:"sms_template_register"`
 	}
-	Vips string //vips路径， '-'表示不需要
+	Vips    string //vips路径， '-'表示不需要
+	GraphQL GraphQLConf
 }
 
 func (m MConfig) GetConfigPath() string {
@@ -195,8 +196,8 @@ type WxConfig struct {
 	MchId             string
 	MchApiKey         string
 	NotifyUrl         string
-	EnableTokenServer bool              `yaml:"enable_tokenserver"`
-	EnableJsTicket    bool              `yaml:"enable_jsticket"`
+	EnableTokenServer bool `yaml:"enable_tokenserver"`
+	EnableJsTicket    bool `yaml:"enable_jsticket"`
 	Token             string //缓存用
 	Miniapps          []ThirdPartConfig `yaml:"mini"`
 }
@@ -207,6 +208,9 @@ type RedisConf struct {
 	Database    int
 	UniqueIdKey string
 	Prefix      string
+}
+type GraphQLConf struct {
+	Path string
 }
 
 func NewConfigFromFile(confPath string) (conf MConfig, err error) {
@@ -235,6 +239,9 @@ func NewConfigFromFile(confPath string) (conf MConfig, err error) {
 				conf.WebApps = filepath.Join(conf.AppPath, "webapps")
 			} else {
 				conf.WebApps = getFullPath(conf.AppPath, conf.WebApps)
+			}
+			if conf.GraphQL.Path != "" {
+				conf.GraphQL.Path = getFullPath(conf.AppPath, conf.GraphQL.Path)
 			}
 			conf.Mysql.Host = formatEnv(conf.Mysql.Host)
 		}
