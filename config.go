@@ -17,15 +17,16 @@ var (
 )
 
 type DbConfig struct {
-	Host     string
-	Port     int
-	User     string
-	Password string
-	DBName   string
-	Option   string
-	CreateDB bool                  //创建对应数据库
-	NotCheck bool                  //是否检查
-	StartCmd string `yaml:"start"` //启动命令
+	Host        string
+	Port        int
+	User        string
+	Password    string
+	DBName      string
+	Option      string
+	CreateDB    bool                  //创建对应数据库
+	NotCheck    bool                  //是否检查
+	StartCmd    string `yaml:"start"` //启动命令
+	AutoMigrate bool                  //自动建表
 }
 
 type ThirdPartConfig struct {
