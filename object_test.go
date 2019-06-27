@@ -69,7 +69,7 @@ type structSameName2 struct {
 func printFields(t *testing.T, val reflect.Value) {
 	for i := 0; i < val.NumField(); i++ {
 		tfield := val.Type().Field(i)
-		fmt.Sprintf("a", "b")
+		fmt.Sprintf("%s", "b")
 		t.Logf("%s %s", tfield.Name, tfield.Type)
 	}
 }

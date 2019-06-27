@@ -1,19 +1,26 @@
 package redis
 
 import (
-	"testing"
-	"os"
-	"github.com/WingGao/go-utils"
-	"github.com/rs/xid"
-	"github.com/stretchr/testify/assert"
 	"encoding/gob"
 	"encoding/json"
-	"github.com/garyburd/redigo/redis"
+	"github.com/WingGao/go-utils"
+	"github.com/gomodule/redigo/redis"
+	"github.com/rs/xid"
+	"github.com/stretchr/testify/assert"
+	"os"
+	"testing"
+)
+
+var (
+	clientCl *RedisClientCl
 )
 
 func TestMain(m *testing.M) {
-	testConf, _ := utils.LoadConfig(os.Getenv("NXPT_GO_CONF"))
-	LoadClient(testConf.Redis)
+	utils.DefaultConfig.Redis = utils.RedisConf{
+		Shards: []string{"10.114.31.202:6423", "10.114.31.210:6434", "10.114.31.210:6435", "10.114.31.211:6456", "10.114.31.211:6457", "10.114.31.202:6424"},
+		Prefix: "test:",
+	}
+	clientCl = NewRedisClientCl(utils.DefaultConfig.Redis)
 	os.Exit(m.Run())
 }
 

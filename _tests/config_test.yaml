@@ -1,0 +1,4 @@
+#测试的配置文件
+configfile: /Users/gaoyunyun/Projs/WozhuWebServ/dev/conf/config_haokai.imacdev.yaml
+
+'wing-mbp.local': /Users/ppd-03020144/Projs/go-web/dev/conf/config_ppdgzg.dev.yaml

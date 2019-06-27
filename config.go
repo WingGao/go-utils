@@ -201,10 +201,17 @@ type WxConfig struct {
 	EnableJsTicket    bool `yaml:"enable_jsticket"`
 	Token             string //缓存用
 	Miniapps          []ThirdPartConfig `yaml:"mini"`
+	Corp              WxCorpConf
+}
+type WxCorpConf struct {
+	CorpId        string
+	CorpSecret    string
+	OauthRedirect string `yaml:"oauth_redirect"`
 }
 
 type RedisConf struct {
-	Addr        string //host:port 127.0.0.1:6379
+	Addr        string   //host:port 127.0.0.1:6379
+	Shards       []string //host:port 127.0.0.1:6379
 	Password    string
 	Database    int
 	UniqueIdKey string

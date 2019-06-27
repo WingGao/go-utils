@@ -22,10 +22,11 @@ require (
 	github.com/garyburd/redigo v1.6.0
 	github.com/gavv/monotime v0.0.0-20190418164738-30dba4353424 // indirect
 	github.com/globalsign/mgo v0.0.0
-
 	github.com/go-errors/errors v1.0.1
 	github.com/go-playground/form v3.1.4+incompatible
+	github.com/go-redis/redis v6.15.2+incompatible
 	github.com/go-sql-driver/mysql v1.4.1
+	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/imdario/mergo v0.3.7
 	github.com/imkira/go-interpol v1.1.0 // indirect
 	github.com/iris-contrib/blackfriday v2.0.0+incompatible // indirect

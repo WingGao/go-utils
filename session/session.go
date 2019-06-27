@@ -209,6 +209,7 @@ func (x *XSession) IsValued() bool {
 func (x *XSession) Refresh() {
 	//TODO 测试
 }
+
 //自动session检查
 func (x *XSession) RefreshAuto() {
 	//5分钟检查一次session
@@ -236,18 +237,14 @@ func (x *XSession) Get(key string) (val interface{}, ok bool) {
 //删除所有的用户登录session
 func ClearUserAllSessions(uid uint32) (err error) {
 	userKey := fmt.Sprintf("core_user_%d_sids", uid)
-	sids := []string{}
-	err = uredis.MainClient.Csmembers(userKey, &sids)
-	if err != nil {
-		return
+	sids, err2 := uredis.MainClient.SMembersMap(userKey)
+	if err2 != nil {
+		return err2
 	}
-	for i, v := range sids {
-		_session.DestroyByID(v)
-		if i == 0 { //初始化
-			//_rdb.Load("")
-		}
+	for k, _ := range sids {
+		_session.DestroyByID(k)
 		//手动调用，可能不在内存里
-		_rdb.Release(v)
+		_rdb.Release(k)
 	}
 	//删除自己
 	uredis.MainClient.Del(userKey)

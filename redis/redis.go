@@ -1,24 +1,42 @@
 package redis
 
 import (
-	"github.com/garyburd/redigo/redis"
-	"time"
-	"github.com/WingGao/go-utils"
-	"encoding/gob"
 	"bytes"
-	"github.com/json-iterator/go"
+	"encoding/gob"
+	"github.com/WingGao/go-utils"
 	"github.com/emirpasic/gods/lists/arraylist"
+	gredis "github.com/go-redis/redis"
+	"github.com/gomodule/redigo/redis"
+	"github.com/json-iterator/go"
+	"time"
 )
 
 const (
 	REDIS_UNIQUE_ID_KEY = "REDIS_UNIQUE_ID_KEY"
 )
 
+type RedisClient interface {
+	FullKey(key string) string
+	Do(commandName string, args ...interface{}) (interface{}, error)
+	Set(key string, value interface{}, opts ...interface{}) (interface{}, error)
+	Get(key string) (interface{}, error)
+	Del(key string) (interface{}, error)
+	Expire(key string, second int) (err error)
+	Incr(key string) (int64, error)
+	IncrBy(key string, increment int) (int64, error)
+	SMembersMap(key string) (map[string]struct{}, error)
+	Keys(pattern string) (keys []string, err error)
+	Ping() error
+	SetGlob(key string, ptr interface{}, opt *Option) (error)
+	GetGlob(key string, out interface{}) (error)
+}
+
 // 一般我们在一个系统里面使用redis
 // 所以该Client下的基本命令都会自动追加Prefix
-type RedisClient struct {
+type RedisClientOne struct {
 	Config utils.RedisConf
 	pool   *redis.Pool
+	cc     *gredis.ClusterClient
 }
 
 type Option struct {
@@ -33,14 +51,15 @@ func (m Option) ToInterface() []interface{} {
 	return arr.Values()
 }
 
-var MainClient *RedisClient
+var MainClient RedisClient
+var Client2 RedisClient
 
 //获取附带Prefix的完整key
-func (c *RedisClient) FullKey(key string) string {
+func (c *RedisClientOne) FullKey(key string) string {
 	return c.Config.Prefix + key
 }
 
-func (c *RedisClient) newPool() *redis.Pool {
+func (c *RedisClientOne) newPool() *redis.Pool {
 	return &redis.Pool{
 		MaxIdle:     3,
 		IdleTimeout: 240 * time.Second,
@@ -62,43 +81,49 @@ func (c *RedisClient) newPool() *redis.Pool {
 		},
 	}
 }
-func (c *RedisClient) Conn() (redis.Conn, error) {
+func (c *RedisClientOne) useCluster() {
+	var cc = gredis.NewClusterClient(&gredis.ClusterOptions{
+		Addrs: c.Config.Shards,
+	})
+	c.cc = cc
+}
+func (c *RedisClientOne) Conn() (redis.Conn, error) {
 	con := c.pool.Get()
 	return con, con.Err()
 }
 
-func (c *RedisClient) Do(commandName string, args ...interface{}) (interface{}, error) {
+func (c *RedisClientOne) Do(commandName string, args ...interface{}) (interface{}, error) {
 	return c.pool.Get().Do(commandName, args...)
 }
 
-func (c *RedisClient) Del(key string) (interface{}, error) {
+func (c *RedisClientOne) Del(key string) (interface{}, error) {
 	key = c.FullKey(key)
 	return c.Do("DEL", key)
 }
 
 // https://redis.io/commands/set
 // EX seconds -- Set the specified expire time, in seconds.
-func (c *RedisClient) Set(key string, value interface{}, opts ...interface{}) (interface{}, error) {
+func (c *RedisClientOne) Set(key string, value interface{}, opts ...interface{}) (interface{}, error) {
 	key = c.FullKey(key)
 	return c.pool.Get().Do("SET", append([]interface{}{key, value}, opts...)...)
 }
 
-func (c *RedisClient) Incr(key string) (int64, error) {
+func (c *RedisClientOne) Incr(key string) (int64, error) {
 	key = c.FullKey(key)
 	out, err := redis.Int64(c.pool.Get().Do("INCR", key))
 	return out, err
 }
-func (c *RedisClient) IncrBy(key string, increment int) (int64, error) {
+func (c *RedisClientOne) IncrBy(key string, increment int) (int64, error) {
 	key = c.FullKey(key)
 	return redis.Int64(c.pool.Get().Do("INCRBY", key, increment))
 }
 
-func (c *RedisClient) Get(key string) (interface{}, error) {
+func (c *RedisClientOne) Get(key string) (interface{}, error) {
 	key = c.FullKey(key)
 	return c.pool.Get().Do("GET", key)
 }
 
-func (c *RedisClient) GetString(key string, def string) (string, error) {
+func (c *RedisClientOne) GetString(key string, def string) (string, error) {
 	out, err := redis.String(c.Get(key))
 	if err != nil {
 		return def, err
@@ -106,7 +131,7 @@ func (c *RedisClient) GetString(key string, def string) (string, error) {
 	return out, err
 }
 
-func (c *RedisClient) GetInt(key string, def int) (int, error) {
+func (c *RedisClientOne) GetInt(key string, def int) (int, error) {
 	//key = c.FullKey(key)
 	out, err := redis.Int(c.Get(key))
 	if err != nil {
@@ -115,7 +140,7 @@ func (c *RedisClient) GetInt(key string, def int) (int, error) {
 	return out, err
 }
 
-func (c *RedisClient) GetInt64(key string, def int64) (int64, error) {
+func (c *RedisClientOne) GetInt64(key string, def int64) (int64, error) {
 	//key = c.FullKey(key)
 	out, err := redis.Int64(c.Get(key))
 	if err != nil {
@@ -124,7 +149,7 @@ func (c *RedisClient) GetInt64(key string, def int64) (int64, error) {
 	return out, err
 }
 
-func (c *RedisClient) GetUint32(key string, def uint32) (uint32, error) {
+func (c *RedisClientOne) GetUint32(key string, def uint32) (uint32, error) {
 	out, err := redis.Uint64(c.Get(key))
 	if err != nil {
 		return def, err
@@ -132,7 +157,7 @@ func (c *RedisClient) GetUint32(key string, def uint32) (uint32, error) {
 	return uint32(out), err
 }
 
-func (c *RedisClient) GetUint64(key string, def uint64) (uint64, error) {
+func (c *RedisClientOne) GetUint64(key string, def uint64) (uint64, error) {
 	out, err := redis.Uint64(c.Get(key))
 	if err != nil {
 		return def, err
@@ -140,7 +165,7 @@ func (c *RedisClient) GetUint64(key string, def uint64) (uint64, error) {
 	return out, err
 }
 
-func (c *RedisClient) GetBytes(key string, def []byte) ([]byte, error) {
+func (c *RedisClientOne) GetBytes(key string, def []byte) ([]byte, error) {
 	//key = c.FullKey(key)
 	out, err := redis.Bytes(c.Get(key))
 	if err != nil {
@@ -150,31 +175,15 @@ func (c *RedisClient) GetBytes(key string, def []byte) ([]byte, error) {
 }
 
 //gob.Register
-func (c *RedisClient) SetGlob(key string, ptr interface{}) (error) {
-	//key = c.FullKey(key)
-	var buf bytes.Buffer
-	enc := gob.NewEncoder(&buf)
-	err := enc.Encode(ptr)
-	if err != nil {
-		return err
-	}
-	_, err = c.Set(key, buf.Bytes())
-	return err
+func (c *RedisClientOne) SetGlob(key string, ptr interface{}, opt *Option) (error) {
+	return SetGlob(c, key, ptr, opt)
 }
 
-func (c *RedisClient) GetGlob(key string, out interface{}) (error) {
-	//key = c.FullKey(key)
-	bs, err := redis.Bytes(c.Get(key))
-	if err != nil {
-		return err
-	}
-	buf := bytes.NewBuffer(bs)
-	dec := gob.NewDecoder(buf)
-	err = dec.Decode(out)
-	return err
+func (c *RedisClientOne) GetGlob(key string, out interface{}) (error) {
+	return GetGlob(c, key, out)
 }
 
-func (c *RedisClient) SetJson(key string, ptr interface{}, opt *Option) (error) {
+func (c *RedisClientOne) SetJson(key string, ptr interface{}, opt *Option) (error) {
 	b, err := jsoniter.Marshal(ptr)
 	if err != nil {
 		return err
@@ -183,7 +192,7 @@ func (c *RedisClient) SetJson(key string, ptr interface{}, opt *Option) (error) 
 	return err
 }
 
-func (c *RedisClient) GetJson(key string, out interface{}) (error) {
+func (c *RedisClientOne) GetJson(key string, out interface{}) (error) {
 	bs, err := redis.Bytes(c.Get(key))
 	if err != nil {
 		return err
@@ -193,7 +202,7 @@ func (c *RedisClient) GetJson(key string, out interface{}) (error) {
 }
 
 // SADD
-func (c *RedisClient) Csadd(key string, members ...interface{}) (added bool, err error) {
+func (c *RedisClientOne) Csadd(key string, members ...interface{}) (added bool, err error) {
 	key = c.FullKey(key)
 	added, err = redis.Bool(c.Do("SADD", append([]interface{}{key}, members...)...))
 	return
@@ -201,18 +210,12 @@ func (c *RedisClient) Csadd(key string, members ...interface{}) (added bool, err
 
 // SMEMBERS
 //
-func (c *RedisClient) Csmembers(key string, out interface{}) (err error) {
-	key = c.FullKey(key)
-	rep, err1 := redis.Values(c.Do("SMEMBERS", key))
-	if err1 != nil {
-		return err1
-	}
-	err = redis.ScanSlice(rep, out)
-	return
+func (c *RedisClientOne) SMembersMap(key string) (map[string]struct{}, error) {
+	panic("not implied")
 }
 
 // SISMEMBER
-func (c *RedisClient) Csismember(key string, item interface{}) (ok bool, err error) {
+func (c *RedisClientOne) Csismember(key string, item interface{}) (ok bool, err error) {
 	key = c.FullKey(key)
 	rep, err1 := redis.Bool(c.Do("SISMEMBER", key, item))
 	if err1 != nil {
@@ -222,24 +225,32 @@ func (c *RedisClient) Csismember(key string, item interface{}) (ok bool, err err
 }
 
 // EXPIRE
-func (c *RedisClient) Expire(key string, second int) (err error) {
+func (c *RedisClientOne) Expire(key string, second int) (err error) {
 	key = c.FullKey(key)
 	_, err = c.Do("EXPIRE", key, second)
 	return
 }
 
 // EXISTS
-func (c *RedisClient) Exists(key string) bool {
+func (c *RedisClientOne) Exists(key string) bool {
 	key = c.FullKey(key)
 	res, err := redis.Int(c.Do("EXISTS", key))
 	return res == 1 && err == nil
 }
 
 // KEYS, 补全前缀
-func (c *RedisClient) Keys(pattern string) (keys []string, err error) {
+func (c *RedisClientOne) Keys(pattern string) (keys []string, err error) {
 	pattern = c.FullKey(pattern)
 	keys, err = redis.Strings(c.Do("KEYS", pattern))
 	return
+}
+
+func (c *RedisClientOne) Info() (string, error) {
+	return redis.String(c.Do("INFO"))
+}
+
+func (c *RedisClientOne) Ping() error {
+	panic("implement me")
 }
 
 func LoadClient(conf utils.RedisConf) (err error) {
@@ -249,9 +260,47 @@ func LoadClient(conf utils.RedisConf) (err error) {
 	return
 }
 
-func NewRedisClient(conf utils.RedisConf) (client *RedisClient, err error) {
-	client = &RedisClient{Config: conf}
-	client.pool = client.newPool()
-	_, err = client.Conn()
+func NewRedisClient(conf utils.RedisConf) (c RedisClient, err error) {
+	client := &RedisClientOne{Config: conf}
+	if len(conf.Shards) > 0 {
+		Client2 = NewRedisClientCl(conf)
+		c = Client2
+	} else {
+		client.pool = client.newPool()
+		c = client
+	}
+	//TODO ping
+	//_, err = client.Conn()
 	return
+}
+
+//gob.Register
+func SetGlob(c RedisClient, key string, ptr interface{}, opt *Option) (error) {
+	//key = c.FullKey(key)
+	var buf bytes.Buffer
+	enc := gob.NewEncoder(&buf)
+	err := enc.Encode(ptr)
+	if err != nil {
+		return err
+	}
+	if opt != nil {
+
+		_, err = c.Set(key, buf.Bytes(), opt.ToInterface()...)
+	} else {
+
+		_, err = c.Set(key, buf.Bytes())
+	}
+	return err
+}
+
+func GetGlob(c RedisClient, key string, out interface{}) (error) {
+	//key = c.FullKey(key)
+	bs, err := redis.Bytes(c.Get(key))
+	if err != nil {
+		return err
+	}
+	buf := bytes.NewBuffer(bs)
+	dec := gob.NewDecoder(buf)
+	err = dec.Decode(out)
+	return err
 }
