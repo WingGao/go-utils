@@ -1,23 +1,23 @@
 package session
 
 import (
+	. "github.com/WingGao/go-utils"
 	"github.com/kataras/iris"
+	"github.com/kataras/iris/context"
 	"github.com/kataras/iris/sessions"
 	"github.com/kataras/iris/sessions/sessiondb/redis"
 	"github.com/kataras/iris/sessions/sessiondb/redis/service"
-	"github.com/kataras/iris/context"
-	. "github.com/WingGao/go-utils"
 	//"fmt"
 	"errors"
 	uredis "github.com/WingGao/go-utils/redis"
+	"fmt"
+	"github.com/chanxuehong/wechat/oauth2"
+	"github.com/jinzhu/copier"
+	"github.com/json-iterator/go"
+	"net/http"
+	"net/http/httptest"
 	//pxdb "px/db"
 	"time"
-	"net/http/httptest"
-	"net/http"
-	"github.com/json-iterator/go"
-	"fmt"
-	"github.com/jinzhu/copier"
-	"gopkg.in/chanxuehong/wechat.v2/oauth2"
 )
 
 type XSession struct {
