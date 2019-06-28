@@ -9,8 +9,8 @@ import (
 	"github.com/kataras/iris/sessions/sessiondb/redis/service"
 	//"fmt"
 	"errors"
-	uredis "github.com/WingGao/go-utils/redis"
 	"fmt"
+	uredis "github.com/WingGao/go-utils/redis"
 	"github.com/chanxuehong/wechat/oauth2"
 	"github.com/jinzhu/copier"
 	"github.com/json-iterator/go"
@@ -237,14 +237,14 @@ func (x *XSession) Get(key string) (val interface{}, ok bool) {
 //删除所有的用户登录session
 func ClearUserAllSessions(uid uint32) (err error) {
 	userKey := fmt.Sprintf("core_user_%d_sids", uid)
-	sids, err2 := uredis.MainClient.SMembersMap(userKey)
+	sids, err2 := uredis.MainClient.SMembers(userKey).Result()
 	if err2 != nil {
 		return err2
 	}
-	for k, _ := range sids {
-		_session.DestroyByID(k)
+	for _, v := range sids {
+		_session.DestroyByID(v)
 		//手动调用，可能不在内存里
-		_rdb.Release(k)
+		_rdb.Release(v)
 	}
 	//删除自己
 	uredis.MainClient.Del(userKey)

@@ -25,7 +25,7 @@ type Config struct {
 func heartbeat() {
 	for {
 		//5秒的冗余时间
-		redis.MainClient.Expire(getMachineKey(_config.ProjectName, machineId), int(heartBeatDuration/time.Second)+5)
+		redis.MainClient.ExpireSecond(getMachineKey(_config.ProjectName, machineId), int(heartBeatDuration/time.Second)+5)
 		time.Sleep(heartBeatDuration)
 		//fmt.Println("sonyflake heartbeat")
 	}
@@ -43,7 +43,7 @@ func Init(cnf Config) {
 	client = sonyflake.NewSonyflake(sonyflake.Settings{
 		//StartTime: time.Now(),
 		CheckMachineID: func(u uint16) bool {
-			if v, _ := redis.MainClient.Incr(getMachineKey(cnf.ProjectName, u)); v > 1 {
+			if v, _ := redis.MainClient.Incr(getMachineKey(cnf.ProjectName, u)).Result(); v > 1 {
 				if cnf.IgnoreExist {
 					//忽律已存在
 				} else {
