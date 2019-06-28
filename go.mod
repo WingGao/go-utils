@@ -24,8 +24,9 @@ require (
 	github.com/globalsign/mgo v0.0.0
 	github.com/go-errors/errors v1.0.1
 	github.com/go-playground/form v3.1.4+incompatible
-	github.com/go-redis/redis v6.15.2+incompatible
+	github.com/go-redis/redis v0.0.0-20190626123411-a28bb0bd25c8
 	github.com/go-sql-driver/mysql v1.4.1
+	github.com/golang/protobuf v1.3.1 // indirect
 	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/imdario/mergo v0.3.7
 	github.com/imkira/go-interpol v1.1.0 // indirect
@@ -71,6 +72,11 @@ require (
 	github.com/yudai/golcs v0.0.0-20170316035057-ecda9a501e82 // indirect
 	github.com/yudai/pp v2.0.1+incompatible // indirect
 	go.mongodb.org/mongo-driver v1.0.0
+	golang.org/x/crypto v0.0.0-20190621222207-cc06ce4a13d4 // indirect
+	golang.org/x/net v0.0.0-20190620200207-3b0461eec859 // indirect
+	golang.org/x/sys v0.0.0-20190626221950-04f50cda93cb // indirect
+	golang.org/x/text v0.3.2 // indirect
+	golang.org/x/tools v0.0.0-20190628021728-85b1a4bcd4e6 // indirect
 	gopkg.in/chanxuehong/wechat.v2 v2.0.0-20190402080805-fa408c6cc20d
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gopkg.in/ini.v1 v1.42.0 // indirect

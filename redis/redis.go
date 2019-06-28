@@ -17,8 +17,7 @@ type RedisClient interface {
 	gredis.UniversalClient
 	FullKey(key string) string
 	GetConfig() utils.RedisConf
-	ExpireSecond(key string, second int) (bool,error)
-	Do(commandName string, args ...interface{}) (*gredis.Cmd)
+	ExpireSecond(key string, second int) (bool, error)
 	SetGlob(key string, ptr interface{}, opt *Option) (error)
 	GetGlob(key string, out interface{}) (error)
 }
@@ -26,6 +25,7 @@ type RedisClient interface {
 type Option struct {
 	ExpireSecond int
 }
+
 func (m Option) ToInterface() []interface{} {
 	arr := arraylist.New()
 	if m.ExpireSecond > 0 {
@@ -33,7 +33,6 @@ func (m Option) ToInterface() []interface{} {
 	}
 	return arr.Values()
 }
-
 
 var MainClient RedisClient
 //
@@ -264,6 +263,8 @@ func NewRedisClient(conf utils.RedisConf) (c RedisClient, err error) {
 	}
 	uc := gredis.NewUniversalClient(uoption)
 	c = &RedisUniversalClient{UniversalClient: uc, Config: conf}
+	uc.AddHook(&rhook{client: c.(*RedisUniversalClient)})
+
 	//TODO ping
 	//_, err = client.Conn()
 	return

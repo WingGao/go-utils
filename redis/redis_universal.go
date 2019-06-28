@@ -1,9 +1,18 @@
 package redis
 
 import (
+	"context"
+	"fmt"
 	"github.com/WingGao/go-utils"
 	gredis "github.com/go-redis/redis"
 	"time"
+)
+
+var (
+	CMD_WITH_KEY = map[string]bool{
+		"get": true,
+		"set": true,
+	}
 )
 
 type RedisUniversalClient struct {
@@ -22,11 +31,37 @@ func (c *RedisUniversalClient) FullKey(key string) string {
 	return c.Config.Prefix + key
 }
 
-//
-func (c *RedisUniversalClient) Do(commandName string, args ...interface{}) (*gredis.Cmd) {
-	cmd := gredis.NewCmd(append([]interface{}{commandName}, args...)...)
-	c.Process(cmd)
-	return cmd
+type rhook struct {
+	client *RedisUniversalClient
+}
+
+func (hk rhook) BeforeProcess(ctx context.Context, cmd gredis.Cmder) (context.Context, error) {
+	// 更改名称
+	cmdName := cmd.Name()
+	if v, ok := CMD_WITH_KEY[cmdName]; ok {
+		if v {
+			args := cmd.Args()
+			key := args[1].(string)
+			args[1] = hk.client.FullKey(key)
+		} else {
+			// pass
+		}
+	} else {
+		panic(fmt.Sprintf("redis command [%s] not checked", cmdName))
+	}
+	return ctx, nil
+}
+
+func (rhook) AfterProcess(ctx context.Context, cmd gredis.Cmder) (context.Context, error) {
+	return ctx, nil
+}
+
+func (rhook) BeforeProcessPipeline(ctx context.Context, cmds []gredis.Cmder) (context.Context, error) {
+	return ctx, nil
+}
+
+func (rhook) AfterProcessPipeline(ctx context.Context, cmds []gredis.Cmder) (context.Context, error) {
+	return ctx, nil
 }
 
 //func (c *RedisClientCl) do(commandName string, args ...interface{}) (*gredis.Cmd) {
