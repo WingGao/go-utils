@@ -10,6 +10,12 @@ import (
 
 var (
 	CMD_WITH_KEY = map[string]bool{
+		"decr": true,
+		"decrby": true,
+		"expire": true,
+		"expireat": true,
+		"incr": true,
+		"incrby": true,
 		"get": true,
 		"set": true,
 	}

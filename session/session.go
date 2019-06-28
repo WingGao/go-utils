@@ -46,7 +46,7 @@ var (
 	_session          *sessions.Sessions
 	_errNotSet        = errors.New("utils.session not set")
 	_rdb              *redis.Database
-	_sessionKeyPrefix = "core_sid_"
+	_sessionKeyPrefix = "core:sid:"
 )
 
 func BuildIrisSession(conf MConfig) {
@@ -236,7 +236,7 @@ func (x *XSession) Get(key string) (val interface{}, ok bool) {
 
 //删除所有的用户登录session
 func ClearUserAllSessions(uid uint32) (err error) {
-	userKey := fmt.Sprintf("core_user_%d_sids", uid)
+	userKey := fmt.Sprintf("core:user:sids:%d", uid)
 	sids, err2 := uredis.MainClient.SMembers(userKey).Result()
 	if err2 != nil {
 		return err2
@@ -249,4 +249,11 @@ func ClearUserAllSessions(uid uint32) (err error) {
 	//删除自己
 	uredis.MainClient.Del(userKey)
 	return
+}
+
+//记录到登录列表,目前我们把登录列表放在redis中
+func AddUserLoginSession(uid uint32, sid string) error {
+	userKey := fmt.Sprintf("core:user:sids:%d", uid)
+	_, err := uredis.MainClient.SAdd(userKey, sid).Result()
+	return err
 }

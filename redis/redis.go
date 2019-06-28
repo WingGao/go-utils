@@ -3,6 +3,7 @@ package redis
 import (
 	"bytes"
 	"encoding/gob"
+	"fmt"
 	"github.com/WingGao/go-utils"
 	"github.com/emirpasic/gods/lists/arraylist"
 	gredis "github.com/go-redis/redis"
@@ -254,9 +255,11 @@ func LoadClient(conf utils.RedisConf) (err error) {
 }
 
 func NewRedisClient(conf utils.RedisConf) (c RedisClient, err error) {
-
 	uoption := &gredis.UniversalOptions{}
-	if len(conf.Shards) > 0 {
+	if conf.CacheCloudUrl != "" {
+		fmt.Println("redis use cachecloud")
+		uoption.Addrs, err = GetCacheCloud(conf.CacheCloudUrl)
+	} else if len(conf.Shards) > 0 {
 		uoption.Addrs = conf.Shards
 	} else {
 		uoption.Addrs = []string{conf.Addr}
