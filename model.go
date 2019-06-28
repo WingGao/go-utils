@@ -36,7 +36,7 @@ type IModel interface {
 	LoadByPk(pk interface{}) error
 	Exist(where ...interface{}) bool
 	ExistPk() bool
-	FetchColumnValue(keys ... string) (out interface{})
+	FetchColumnValue(keys ...string) (out interface{})
 	Find(out interface{}, where ...interface{}) error
 	RawFind(out interface{}, where ...interface{}) *gorm.DB
 	//创建对应父Slice切片的地址,指针 *[]*ParentType
@@ -53,7 +53,7 @@ type IModel interface {
 	FormatError(err error) error
 	Delete() error
 	Where(query interface{}, args ...interface{}) *gorm.DB
-	FormatSql(sql string, args ... interface{}) string
+	FormatSql(sql string, args ...interface{}) string
 	SetDBOpt(name string, value interface{}) *gorm.DB
 	//连贯操作
 	Select(query interface{}, args ...interface{}) *gorm.DB
@@ -97,7 +97,7 @@ type IModelParent interface {
 		return
 	}
 
- */
+*/
 type Model struct {
 	ID uint32   `gorm:"primary_key" bson:"ID"`
 	DB *gorm.DB `gorm:"-" json:"-" bson:"-" form:"-" es:"-"`
@@ -201,7 +201,7 @@ func (m *Model) NewScope() (*gorm.Scope, error) {
 	return m.GetDB().NewScope(m.parent), nil
 }
 
-func (m *Model) FormatColumns(keys ... string) []string {
+func (m *Model) FormatColumns(keys ...string) []string {
 	scope, _ := m.NewScope()
 	rkeys := make([]string, len(keys))
 	for i, v := range keys {
@@ -219,7 +219,7 @@ func (m *Model) Limit(limit interface{}) *gorm.DB {
 }
 
 //只返回第一个
-func (m *Model) FetchColumnValue(keys ... string) (out interface{}) {
+func (m *Model) FetchColumnValue(keys ...string) (out interface{}) {
 	if m.ID == 0 || m.parent == nil {
 
 	} else {
@@ -329,7 +329,7 @@ func (m *Model) Save() (err error) {
 		scope, _ := m.NewScope()
 		if !scope.PrimaryKeyZero() {
 			//更新
-			err = scope.DB().Omit(append(m.OmitFields, scope.PrimaryKey(), "created_at")...).Updates(m.parent).Error
+			err = scope.DB().Omit(append(m.OmitFields, scope.PrimaryKey(), COL_CREATED_AT)...).Updates(m.parent).Error
 		} else { //创建
 			_, err = m.parent.(IModelParent).SetPrimaryKey()
 			if err == nil {
@@ -502,7 +502,7 @@ func (m *Model) ExistPk() bool {
 //格式化sql，添加自定义变量
 // $MTABLE = 当前表名
 // $PK = 主键
-func (m *Model) FormatSql(sql string, args ... interface{}) (out string) {
+func (m *Model) FormatSql(sql string, args ...interface{}) (out string) {
 	scope, _ := m.NewScope()
 	if len(args) > 0 {
 		sql = fmt.Sprintf(sql, args...)
@@ -621,13 +621,19 @@ func (m *Model) GetFieldsSql(ignore []string, table string, asprefix string) str
 	return sb.String()
 }
 
+// TODO 更好的自定义方式
+const (
+	COL_CREATED_AT = "inserttime"
+	COL_UPDATED_AT = "updattime"
+)
+
 type IModelTime interface {
 	UnsetTime()
 }
 
 type ModelTime struct {
-	CreatedAt *time.Time `json:",omitempty"`
-	UpdatedAt *time.Time `json:",omitempty"` //updated_at
+	CreatedAt *time.Time `gorm:"Column:inserttime" json:",omitempty"`
+	UpdatedAt *time.Time `gorm:"Column:updattime" json:",omitempty"` //updated_at
 	//DeletedAt *time.Time `sql:"index"`
 }
 
@@ -635,9 +641,16 @@ func (m *ModelTime) UnsetTime() {
 	m.CreatedAt = nil
 	m.UpdatedAt = nil
 }
+func (m *ModelTime) ColNameCreatedAt() string {
+	return COL_CREATED_AT
+}
+func (m *ModelTime) ColNameUpdateAt() string {
+	return COL_UPDATED_AT
+}
 
 type ModelSoftDelete struct {
-	DeletedAt *time.Time `json:",omitempty"` //deleted_at
+	DeletedAt *time.Time `gorm:"index" json:",omitempty"` //deleted_at
+	IsActive  *bool       `gorm:"Column:isactive;index;DEFAULT:1"`
 }
 
 func (m ModelSoftDelete) GetDeleteWhere() string {
