@@ -9,15 +9,17 @@ import (
 )
 
 var (
-	CMD_WITH_KEY = map[string]bool{
-		"decr": true,
-		"decrby": true,
-		"expire": true,
-		"expireat": true,
-		"incr": true,
-		"incrby": true,
-		"get": true,
-		"set": true,
+	CMD_WITH_KEY = map[string]int{
+		"decr":     1,
+		"decrby":   1,
+		"expire":   1,
+		"expireat": 1,
+		"incr":     1,
+		"incrby":   1,
+		"get":      1,
+		"set":      1,
+		"scan":     0,
+		"ping":     -1,
 	}
 )
 
@@ -45,12 +47,17 @@ func (hk rhook) BeforeProcess(ctx context.Context, cmd gredis.Cmder) (context.Co
 	// 更改名称
 	cmdName := cmd.Name()
 	if v, ok := CMD_WITH_KEY[cmdName]; ok {
-		if v {
-			args := cmd.Args()
-			key := args[1].(string)
-			args[1] = hk.client.FullKey(key)
+		args := cmd.Args()
+		if v > 0 {
+			key := args[v].(string)
+			args[v] = hk.client.FullKey(key)
 		} else {
-			// pass
+			switch cmdName {
+			case "scan":
+				if len(args) > 2 && args[2] == "match" {
+					args[3] = hk.client.FullKey(args[3].(string))
+				}
+			}
 		}
 	} else {
 		panic(fmt.Sprintf("redis command [%s] not checked", cmdName))

@@ -2,11 +2,12 @@ package session
 
 import (
 	. "github.com/WingGao/go-utils"
+	"github.com/WingGao/go-utils/session/redis"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/context"
 	"github.com/kataras/iris/sessions"
-	"github.com/kataras/iris/sessions/sessiondb/redis"
 	"github.com/kataras/iris/sessions/sessiondb/redis/service"
+
 	//"fmt"
 	"errors"
 	"fmt"
@@ -25,6 +26,7 @@ type XSession struct {
 	Iris     *sessions.Session `json:"-"`
 	key      string //保存在iris中的键
 	isClear  bool
+	parent   interface{}
 	Sid      string
 	Uid      uint32
 	Group    uint32
@@ -40,6 +42,7 @@ type IXSession interface {
 	IsValued() bool
 	Refresh()
 	RefreshAuto()
+	New() interface{}
 }
 
 var (
@@ -51,7 +54,7 @@ var (
 
 func BuildIrisSession(conf MConfig) {
 	rconf := conf.Redis
-	_rdb = redis.New(service.Config{
+	_rdb = redis.New(uredis.MainClient, service.Config{
 		Network:     service.DefaultRedisNetwork,
 		Addr:        rconf.Addr,
 		Password:    rconf.Password,
@@ -59,7 +62,7 @@ func BuildIrisSession(conf MConfig) {
 		MaxIdle:     0,
 		MaxActive:   0,
 		IdleTimeout: service.DefaultRedisIdleTimeout,
-		Prefix:      rconf.Prefix + _sessionKeyPrefix})
+		Prefix:      _sessionKeyPrefix})
 
 	iris.RegisterOnInterrupt(func() {
 		_rdb.Close()
