@@ -20,7 +20,7 @@ var _ sessions.Database = (*Database)(nil)
 
 // New returns a new redis database.
 func New(rd redis.RedisClient, cfg ...service.Config) *Database {
-	db := &Database{redis: rd}
+	db := &Database{redis: rd, config: cfg[0]}
 	pong, err := db.redis.Ping().Result()
 	if err != nil {
 		golog.Debugf("error connecting to redis: %v", err)

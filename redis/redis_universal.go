@@ -16,8 +16,10 @@ var (
 		"expireat": 1,
 		"incr":     1,
 		"incrby":   1,
+		"del":      1,
 		"get":      1,
 		"set":      1,
+		"ttl":      1,
 		"scan":     0,
 		"ping":     -1,
 	}

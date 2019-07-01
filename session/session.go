@@ -236,6 +236,13 @@ func (x *XSession) Get(key string) (val interface{}, ok bool) {
 	val, ok = x.Items[key]
 	return
 }
+func (x *XSession) GetString(key string) (val string, ok bool) {
+	if v1, o1 := x.Get(key); !o1 {
+		return "", false
+	} else {
+		return v1.(string), true
+	}
+}
 
 //删除所有的用户登录session
 func ClearUserAllSessions(uid uint32) (err error) {
