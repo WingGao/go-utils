@@ -157,6 +157,8 @@ func (m *Model) GModel() *gorm.DB {
 	return m.GetDB().Model(m.parent)
 }
 
+// 开始事务处理
+// 后续结束事务需要手动调用其他方法
 func (m *Model) Begin() *gorm.DB {
 	m.tx = m.DB.Begin()
 	return m.tx
@@ -370,6 +372,7 @@ func (m *Model) Updates(values interface{}, ignoreProtectedAttrs ...bool) (err e
 	return m.parent.(IModelParent).FormatError(err)
 }
 
+// 更新单个属性
 func (m *Model) Update(attrs ...interface{}) (err error) {
 	if m.PrimaryKeyZero() {
 		return errors.New("pk is nil")
@@ -650,7 +653,7 @@ func (m *ModelTime) ColNameUpdateAt() string {
 
 type ModelSoftDelete struct {
 	DeletedAt *time.Time `gorm:"index" json:",omitempty"` //deleted_at
-	IsActive  *bool       `gorm:"Column:isactive;index;DEFAULT:1"`
+	IsActive  *bool      `gorm:"Column:isactive;index;DEFAULT:1"`
 }
 
 func (m ModelSoftDelete) GetDeleteWhere() string {

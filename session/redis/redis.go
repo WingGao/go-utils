@@ -33,7 +33,7 @@ func New(rd redis.RedisClient, cfg ...service.Config) *Database {
 
 // Config returns the configuration for the redis server bridge, you can change them.
 func (db *Database) Config() *service.Config {
-	return nil
+	return &db.config
 }
 func (db *Database) ttl(key string) (seconds int64, hasExpiration bool, found bool) {
 	redisVal, err := db.redis.TTL(db.config.Prefix + key).Result()
@@ -102,7 +102,7 @@ func (db *Database) OnUpdateExpiration(sid string, newExpires time.Duration) err
 	return db.UpdateTTLMany(sid, int64(newExpires.Seconds()))
 }
 
-const delim = "_"
+const delim = ":"
 
 func makeKey(sid, key string) string {
 	return sid + delim + key
