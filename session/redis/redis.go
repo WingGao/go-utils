@@ -11,6 +11,7 @@ import (
 )
 
 // Database the redis back-end session database for the sessions.
+// github.com/kataras/iris/sessions/sessiondb/redis/database.go
 type Database struct {
 	redis  redis.RedisClient
 	config service.Config
@@ -40,7 +41,11 @@ func (db *Database) ttl(key string) (seconds int64, hasExpiration bool, found bo
 	if err != nil {
 		return -2, false, false
 	}
-	seconds = int64(redisVal.Seconds())
+	if redisVal > 0 {
+		seconds = int64(redisVal.Seconds())
+	} else {
+		seconds = int64(redisVal)
+	}
 	// if -1 means the key has unlimited life time.
 	hasExpiration = seconds > -1
 	// if -2 means key does not exist.
@@ -55,7 +60,7 @@ func (db *Database) Acquire(sid string, expires time.Duration) sessions.LifeTime
 	seconds, hasExpiration, found := db.ttl(sid)
 	if !found {
 		// not found, create an entry with ttl and return an empty lifetime, session manager will do its job.
-		if err := db.redis.Set(sid, sid, time.Duration(expires.Seconds())*time.Second); err != nil {
+		if err := db.redis.Set(db.config.Prefix+sid, sid, time.Duration(expires.Seconds())*time.Second); err != nil {
 			golog.Debug(err)
 		}
 
@@ -70,7 +75,6 @@ func (db *Database) Acquire(sid string, expires time.Duration) sessions.LifeTime
 	return sessions.LifeTime{Time: time.Now().Add(time.Duration(seconds) * time.Second)}
 }
 
-// https://redis.io/commands/expire#refreshing-expires
 func (db *Database) getKeys(prefix string) (*sll.List, error) {
 	iter := db.redis.Scan(0, db.config.Prefix+prefix+"*", 9999999999).Iterator()
 	l := sll.New()
@@ -82,7 +86,7 @@ func (db *Database) getKeys(prefix string) (*sll.List, error) {
 	}
 	return l, nil
 }
-func (db *Database) UpdateTTLMany(prefix string, newSecondsLifeTime int64) error {
+func (db *Database) updateTTLMany(prefix string, newSecondsLifeTime int64) error {
 	keys, err := db.getKeys(prefix)
 	if err != nil {
 		return err
@@ -99,10 +103,10 @@ func (db *Database) UpdateTTLMany(prefix string, newSecondsLifeTime int64) error
 // OnUpdateExpiration will re-set the database's session's entry ttl.
 // https://redis.io/commands/expire#refreshing-expires
 func (db *Database) OnUpdateExpiration(sid string, newExpires time.Duration) error {
-	return db.UpdateTTLMany(sid, int64(newExpires.Seconds()))
+	return db.updateTTLMany(sid, int64(newExpires.Seconds()))
 }
 
-const delim = ":"
+const delim = "_"
 
 func makeKey(sid, key string) string {
 	return sid + delim + key
@@ -117,14 +121,14 @@ func (db *Database) Set(sid string, lifetime sessions.LifeTime, key string, valu
 		return
 	}
 
-	if err = db.redis.Set(makeKey(sid, key), valueBytes, lifetime.DurationUntilExpiration()).Err(); err != nil {
+	if err = db.redis.Set(db.config.Prefix+makeKey(sid, key), valueBytes, lifetime.DurationUntilExpiration()).Err(); err != nil {
 		golog.Debug(err)
 	}
 }
 
 // Get retrieves a session value based on the key.
 func (db *Database) Get(sid string, key string) (value interface{}) {
-	db.get(makeKey(sid, key), &value)
+	db.get(db.config.Prefix+makeKey(sid, key), &value)
 	return
 }
 
@@ -167,7 +171,7 @@ func (db *Database) Len(sid string) (n int) {
 
 // Delete removes a session key value based on its key.
 func (db *Database) Delete(sid string, key string) (deleted bool) {
-	err := db.redis.Del(makeKey(sid, key)).Err()
+	err := db.redis.Del(db.config.Prefix + makeKey(sid, key)).Err()
 	if err != nil {
 		golog.Error(err)
 	}
