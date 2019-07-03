@@ -6,7 +6,7 @@ require (
 	github.com/RichardKnop/machinery v1.6.2
 	github.com/ajg/form v1.5.1 // indirect
 	github.com/aliyun/alibaba-cloud-sdk-go v0.0.0-20190430075129-62f3cb8727f4
-	github.com/chanxuehong/rand v0.0.0-20180830053958-4b3aff17f488 // indirect
+	github.com/chanxuehong/wechat v0.0.0-20190521093015-fafb751f9916
 	github.com/deckarep/golang-set v1.7.1 // indirect
 	github.com/docker/docker v1.13.1
 	github.com/elazarl/goproxy v0.0.0-20190421051319-9d40249d3c2f // indirect
@@ -15,20 +15,20 @@ require (
 	github.com/fatih/structs v1.1.0
 	github.com/flosch/pongo2 v0.0.0-20181225140029-79872a7b2769 // indirect
 	github.com/fortytw2/leaktest v1.3.0 // indirect
-	github.com/garyburd/redigo v1.6.0
 	github.com/gavv/monotime v0.0.0-20190418164738-30dba4353424 // indirect
 	github.com/globalsign/mgo v0.0.0
 	github.com/go-errors/errors v1.0.1
 	github.com/go-playground/form v3.1.4+incompatible
 	github.com/go-redis/redis v0.0.0-20190626123411-a28bb0bd25c8
 	github.com/go-sql-driver/mysql v1.4.1
+	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
 	github.com/golang/protobuf v1.3.1 // indirect
-	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/imdario/mergo v0.3.7
 	github.com/jinzhu/copier v0.0.0-20180308034124-7e38e58719c3
 	github.com/jinzhu/gorm v1.9.5
 	github.com/json-iterator/go v1.1.6
 	github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88 // indirect
+	github.com/kataras/golog v0.0.0-20180321173939-03be10146386
 	github.com/kataras/iris v11.1.1+incompatible
 	github.com/klauspost/compress v1.5.0 // indirect
 	github.com/klauspost/cpuid v1.2.1 // indirect
@@ -52,12 +52,14 @@ require (
 	github.com/xeipuuv/gojsonschema v1.1.0 // indirect
 	github.com/yudai/pp v2.0.1+incompatible // indirect
 	go.mongodb.org/mongo-driver v1.0.0
+	go.uber.org/atomic v1.4.0 // indirect
+	go.uber.org/multierr v1.1.0 // indirect
+	go.uber.org/zap v1.10.0
 	golang.org/x/crypto v0.0.0-20190621222207-cc06ce4a13d4 // indirect
 	golang.org/x/net v0.0.0-20190620200207-3b0461eec859 // indirect
+	golang.org/x/sync v0.0.0-20190423024810-112230192c58 // indirect
 	golang.org/x/sys v0.0.0-20190626221950-04f50cda93cb // indirect
 	golang.org/x/text v0.3.2 // indirect
-	golang.org/x/tools v0.0.0-20190628021728-85b1a4bcd4e6 // indirect
-	gopkg.in/chanxuehong/wechat.v2 v2.0.0-20190402080805-fa408c6cc20d
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gopkg.in/ini.v1 v1.42.0 // indirect
 	gopkg.in/yaml.v2 v2.2.2
