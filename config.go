@@ -1,15 +1,16 @@
 package utils
 
 import (
-	"io/ioutil"
-	"gopkg.in/yaml.v2"
+	"encoding/base64"
 	"fmt"
 	tconfig "github.com/RichardKnop/machinery/v1/config"
-	"path/filepath"
 	"github.com/go-errors/errors"
-	"strings"
 	"github.com/ungerik/go-dry"
+	"gopkg.in/yaml.v2"
+	"io/ioutil"
 	"os"
+	"path/filepath"
+	"strings"
 )
 
 var (
@@ -49,6 +50,7 @@ type MConfig struct {
 	Host            string
 	Port            string //服务地址
 	PublicHost      string //对外的部署地址 host:port
+	MasterKey       string
 	Mysql           DbConfig
 	MysqlDebug      bool
 	AutoBackup      bool //自动备份
@@ -190,6 +192,20 @@ func (m MConfig) MkdirAll(fp string, mod os.FileMode) (err error) {
 //创建目录，并制定默认uid，gid
 func (m MConfig) MkdirAllDef(fp string) (err error) {
 	return m.MkdirAll(fp, DEFAULT_FILEMODE)
+}
+
+func (m MConfig) EncryptToBase64(plain string) string {
+	key := []byte(m.MasterKey)
+	outb := dry.EncryptAES(key, []byte(plain))
+	outs := base64.StdEncoding.EncodeToString(outb)
+	return outs
+}
+
+func (m MConfig) DecryptFromBase64(sec string) string {
+	key := []byte(m.MasterKey)
+	secb, _ := base64.StdEncoding.DecodeString(sec)
+	outb := dry.DecryptAES(key, secb)
+	return string(outb)
 }
 
 type WxConfig struct {
