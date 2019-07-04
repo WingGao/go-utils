@@ -167,6 +167,7 @@ func (m MConfig) GetMachineryConfig() *tconfig.Config {
 	return scnf
 }
 
+// 拼接处完整的对外地址，http协议
 func (m MConfig) BuildUrl(relpath string) string {
 	if !strings.HasPrefix(relpath, "/") {
 		relpath = "/" + relpath
