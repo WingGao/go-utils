@@ -8,6 +8,9 @@ var (
 	_logger *zap.Logger
 )
 
+func init() {
+	_logger, _ = zap.NewDevelopment()
+}
 func SetLogger(logger *zap.Logger) {
 	_logger = logger
 }
