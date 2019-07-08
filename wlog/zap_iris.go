@@ -37,7 +37,8 @@ func (c *ZapToIris) Check(ent zapcore.Entry, ce *zapcore.CheckedEntry) *zapcore.
 }
 
 func (c *ZapToIris) Write(ent zapcore.Entry, fields []zapcore.Field) error {
-	e := errors.Wrap(error(nil), 4)
+	e := errors.Wrap(error(nil),3)
+	//e := errors.New(error(nil))
 	// 0 /Users/ppd-03020144/Projs/go-web/src/github.com/WingGao/go-utils/wlog/zap_iris.go
 	// 1 /Users/ppd-03020144/go/pkg/mod/go.uber.org/zap@v1.10.0/zapcore/entry.go
 	// 2 /Users/ppd-03020144/go/pkg/mod/go.uber.org/zap@v1.10.0/sugar.go
@@ -46,7 +47,8 @@ func (c *ZapToIris) Write(ent zapcore.Entry, fields []zapcore.Field) error {
 	var linef errors.StackFrame
 	for _, l := range e.Callers() {
 		linef = errors.NewStackFrame(l)
-		if !strings.HasPrefix(linef.Package, "go.uber.org") {
+		//fmt.Println(linef)
+		if !strings.HasPrefix(linef.Package, "go.uber.org") && !strings.Contains(linef.File, "mod/go.uber.org") {
 			break
 		}
 	}

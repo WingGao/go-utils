@@ -1,10 +1,11 @@
 package utils
 
 import (
-	"encoding/base64"
+	"encoding/hex"
 	"fmt"
 	tconfig "github.com/RichardKnop/machinery/v1/config"
 	"github.com/go-errors/errors"
+	"github.com/micro/go-micro/registry"
 	"github.com/ungerik/go-dry"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
@@ -35,9 +36,6 @@ type ThirdPartConfig struct {
 	AppID  string
 	Key    string
 	Secret string
-}
-type GrpcConfig struct {
-	Port int
 }
 
 //main config
@@ -198,16 +196,16 @@ func (m MConfig) MkdirAllDef(fp string) (err error) {
 	return m.MkdirAll(fp, DEFAULT_FILEMODE)
 }
 
-func (m MConfig) EncryptToBase64(plain string) string {
+func (m MConfig) EncryptToHex(plain string) string {
 	key := []byte(m.MasterKey)
 	outb := dry.EncryptAES(key, []byte(plain))
-	outs := base64.StdEncoding.EncodeToString(outb)
+	outs := hex.EncodeToString(outb)
 	return outs
 }
 
-func (m MConfig) DecryptFromBase64(sec string) string {
+func (m MConfig) DecryptFromHex(sec string) string {
 	key := []byte(m.MasterKey)
-	secb, _ := base64.StdEncoding.DecodeString(sec)
+	secb, _ := hex.DecodeString(sec)
 	outb := dry.DecryptAES(key, secb)
 	return string(outb)
 }
@@ -242,6 +240,12 @@ type RedisConf struct {
 type GraphQLConf struct {
 	Path string
 }
+
+type GrpcConfig struct {
+	Port        int
+	ServicesMap map[string][]registry.Node `yaml:"services"`
+}
+
 
 func NewConfigFromFile(confPath string) (conf MConfig, err error) {
 	if confPath == "" {
