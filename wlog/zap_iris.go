@@ -6,6 +6,7 @@ import (
 	"github.com/kataras/golog"
 	"github.com/kataras/iris"
 	"go.uber.org/zap/zapcore"
+	"strings"
 )
 
 var (
@@ -37,7 +38,19 @@ func (c *ZapToIris) Check(ent zapcore.Entry, ce *zapcore.CheckedEntry) *zapcore.
 
 func (c *ZapToIris) Write(ent zapcore.Entry, fields []zapcore.Field) error {
 	e := errors.Wrap(error(nil), 4)
-	linef := errors.NewStackFrame(e.Callers()[0])
+	// 0 /Users/ppd-03020144/Projs/go-web/src/github.com/WingGao/go-utils/wlog/zap_iris.go
+	// 1 /Users/ppd-03020144/go/pkg/mod/go.uber.org/zap@v1.10.0/zapcore/entry.go
+	// 2 /Users/ppd-03020144/go/pkg/mod/go.uber.org/zap@v1.10.0/sugar.go
+	// 3 /Users/ppd-03020144/go/pkg/mod/go.uber.org/zap@v1.10.0/sugar.go
+	//e.StackFrames()
+	var linef errors.StackFrame
+	for _, l := range e.Callers() {
+		linef = errors.NewStackFrame(l)
+		if !strings.HasPrefix(linef.Package, "go.uber.org") {
+			break
+		}
+	}
+	//linef := errors.NewStackFrame(e.Callers()[0])
 	// 转换level
 	il := zapToIrisLevelMap[ent.Level]
 	c.app.Logger().Log(il, fmt.Sprintf("%s:%d\n    ", linef.File, linef.LineNumber), ent.Message)

@@ -51,7 +51,7 @@ func (w *WCluster) keepAlive() {
 	for {
 		select {
 		case <-ticker:
-			wlog.S().Debugf("keep alive %#v", w)
+			//wlog.S().Debugf("keep alive %#v", w)
 			if w.isMaster {
 				// 保活
 				redis.MainClient.Expire(fmt.Sprintf("util:cluster:%s_master", w.GroupName), 30*time.Second)

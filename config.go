@@ -36,6 +36,9 @@ type ThirdPartConfig struct {
 	Key    string
 	Secret string
 }
+type GrpcConfig struct {
+	Port int
+}
 
 //main config
 type MConfig struct {
@@ -50,6 +53,7 @@ type MConfig struct {
 	Host            string
 	Port            string //服务地址
 	PublicHost      string //对外的部署地址 host:port
+	Grpc            GrpcConfig
 	MasterKey       string
 	Mysql           DbConfig
 	MysqlDebug      bool
