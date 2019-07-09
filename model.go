@@ -635,8 +635,8 @@ type IModelTime interface {
 }
 
 type ModelTime struct {
-	CreatedAt *time.Time `gorm:"Column:inserttime" json:",omitempty"`
-	UpdatedAt *time.Time `gorm:"Column:updattime" json:",omitempty"` //updated_at
+	CreatedAt *time.Time `gorm:"Column:inserttime;index:idx_inserttime;default:CURRENT_TIMESTAMP;comment:'插入时间'" json:",omitempty"`
+	UpdatedAt *time.Time `gorm:"Column:updattime;index:idx_updatetime;default:CURRENT_TIMESTAMP;comment:'更新时间'" json:",omitempty"` //updated_at
 	//DeletedAt *time.Time `sql:"index"`
 }
 
@@ -652,8 +652,8 @@ func (m *ModelTime) ColNameUpdateAt() string {
 }
 
 type ModelSoftDelete struct {
-	DeletedAt *time.Time `gorm:"index" json:",omitempty"` //deleted_at
-	IsActive  *bool      `gorm:"Column:isactive;index;DEFAULT:1"`
+	DeletedAt *time.Time `gorm:"index:idx_deleted_at" json:",omitempty"` //deleted_at
+	IsActive  *bool      `gorm:"Column:isactive;index:idx_isactive;DEFAULT:1;COMMENT:'逻辑删除(1:保留,0:删除)'"`
 }
 
 func (m ModelSoftDelete) GetDeleteWhere() string {

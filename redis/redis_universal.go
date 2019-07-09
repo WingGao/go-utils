@@ -19,6 +19,7 @@ var (
 		"del":      1,
 		"get":      1,
 		"set":      1,
+		"sadd":     1,
 		"ttl":      1,
 		"scan":     0,
 		"ping":     -1,
