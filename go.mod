@@ -4,6 +4,7 @@ go 1.12
 
 require (
 	github.com/RichardKnop/machinery v1.6.2
+	github.com/Shopify/sarama v1.23.0
 	github.com/ajg/form v1.5.1 // indirect
 	github.com/aliyun/alibaba-cloud-sdk-go v0.0.0-20190430075129-62f3cb8727f4
 	github.com/chanxuehong/wechat v0.0.0-20190521093015-fafb751f9916
@@ -57,6 +58,7 @@ require (
 	golang.org/x/sys v0.0.0-20190626221950-04f50cda93cb // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gopkg.in/ini.v1 v1.42.0 // indirect
+	gopkg.in/jcmturner/goidentity.v3 v3.0.0 // indirect
 	gopkg.in/yaml.v2 v2.2.2
 	qiniupkg.com/x v7.0.8+incompatible // indirect
 )

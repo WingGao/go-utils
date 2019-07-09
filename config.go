@@ -108,6 +108,8 @@ type MConfig struct {
 	}
 	Vips    string //vips路径， '-'表示不需要
 	GraphQL GraphQLConf
+	Kafka   KafkaConfig
+	Log     LogConfig
 }
 
 func (m MConfig) GetConfigPath() string {
@@ -246,6 +248,13 @@ type GrpcConfig struct {
 	ServicesMap map[string][]registry.Node `yaml:"services"`
 }
 
+type KafkaConfig struct {
+	AppId     string
+	Addresses string
+}
+type LogConfig struct {
+	Kafka bool
+}
 
 func NewConfigFromFile(confPath string) (conf MConfig, err error) {
 	if confPath == "" {

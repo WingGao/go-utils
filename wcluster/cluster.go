@@ -21,6 +21,7 @@ type WCluster struct {
 	isMaster        bool
 	onMasterChanges map[string]func() // 如果状态发生改变
 	keepCnt         uint64
+	OnCheckMaster   func(w *WCluster) bool
 }
 
 func NewCluster(id, groupName string) (w *WCluster, err error) {
@@ -35,6 +36,12 @@ func (w *WCluster) ID() string {
 	return w.id
 }
 func (w *WCluster) IsMaster() bool {
+	if w.OnCheckMaster != nil {
+		return w.OnCheckMaster(w)
+	}
+	return w.isMaster
+}
+func (w *WCluster) IsMasterRaw() bool {
 	return w.isMaster
 }
 
