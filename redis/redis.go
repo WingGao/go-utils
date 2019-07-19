@@ -21,6 +21,8 @@ type RedisClient interface {
 	ExpireSecond(key string, second int) (bool, error)
 	SetGlob(key string, ptr interface{}, opt *Option) (error)
 	GetGlob(key string, out interface{}) (error)
+	DelAll(keyPatter string) (count uint64, err error)
+	Batch(keyPatter string, batchSize int, act func(keys []string) error) (count uint64, err error)
 }
 
 type Option struct {

@@ -4,7 +4,9 @@ import (
 	"context"
 	"fmt"
 	"github.com/WingGao/go-utils"
+	"github.com/WingGao/go-utils/wlog"
 	gredis "github.com/go-redis/redis"
+	"strings"
 	"time"
 )
 
@@ -38,6 +40,8 @@ func (c *RedisUniversalClient) ExpireSecond(key string, second int) (bool, error
 func (c *RedisUniversalClient) GetConfig() utils.RedisConf {
 	return c.Config
 }
+
+// 约定，不能使用与c.Config.Prefix 一样的开头
 func (c *RedisUniversalClient) FullKey(key string) string {
 	return c.Config.Prefix + key
 }
@@ -53,7 +57,9 @@ func (hk rhook) BeforeProcess(ctx context.Context, cmd gredis.Cmder) (context.Co
 		args := cmd.Args()
 		if v > 0 {
 			key := args[v].(string)
-			args[v] = hk.client.FullKey(key)
+			if !strings.HasPrefix(key, hk.client.Config.Prefix) {
+				args[v] = hk.client.FullKey(key)
+			}
 		} else {
 			switch cmdName {
 			case "scan":
@@ -62,6 +68,7 @@ func (hk rhook) BeforeProcess(ctx context.Context, cmd gredis.Cmder) (context.Co
 				}
 			}
 		}
+		wlog.S().Debugf("%#v", cmd)
 	} else {
 		panic(fmt.Sprintf("redis command [%s] not checked", cmdName))
 	}
@@ -135,6 +142,34 @@ func (c *RedisUniversalClient) SetGlob(key string, ptr interface{}, opt *Option)
 
 func (c *RedisUniversalClient) GetGlob(key string, out interface{}) (error) {
 	return GetGlob(c, key, out)
+}
+
+func (c *RedisUniversalClient) DelAll(keyPatter string) (count uint64, err error) {
+	return c.Batch(keyPatter, 300, func(keys []string) error {
+		// keys已经
+		return c.Del(keys...).Err()
+	})
+}
+
+// 批量操作 act如果返回err则停止遍历
+// 出来的keys已经FullKey了
+func (c *RedisUniversalClient) Batch(keyPatter string, batchSize int, act func(keys []string) error) (count uint64, err error) {
+	var cursor uint64 = 0
+	var keys []string
+	for {
+		keys, cursor = c.Scan(cursor, keyPatter, int64(batchSize)).Val()
+		lenKey := uint64(len(keys))
+		if lenKey > 0 {
+			if err = act(keys); err != nil {
+				return
+			}
+		}
+		count += lenKey
+		if cursor <= 0 {
+			break
+		}
+	}
+	return
 }
 
 //
