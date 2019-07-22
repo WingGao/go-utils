@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
-	"github.com/WingGao/go-utils"
 	"github.com/emirpasic/gods/lists/arraylist"
 	gredis "github.com/go-redis/redis"
 	"time"
@@ -17,7 +16,7 @@ const (
 type RedisClient interface {
 	gredis.UniversalClient
 	FullKey(key string) string
-	GetConfig() utils.RedisConf
+	GetConfig() RedisConf
 	ExpireSecond(key string, second int) (bool, error)
 	SetGlob(key string, ptr interface{}, opt *Option) (error)
 	GetGlob(key string, out interface{}) (error)
@@ -249,14 +248,14 @@ var MainClient RedisClient
 //	panic("implement me")
 //}
 
-func LoadClient(conf utils.RedisConf) (err error) {
+func LoadClient(conf RedisConf) (err error) {
 	if MainClient == nil {
 		MainClient, err = NewRedisClient(conf)
 	}
 	return
 }
 
-func NewRedisClient(conf utils.RedisConf) (c RedisClient, err error) {
+func NewRedisClient(conf RedisConf) (c RedisClient, err error) {
 	uoption := &gredis.UniversalOptions{}
 	if conf.CacheCloudUrl != "" {
 		fmt.Println("redis use cachecloud")

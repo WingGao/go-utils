@@ -3,7 +3,7 @@ package utils
 import "os"
 
 const (
-	XSESSION_KEY = "xsession"
+
 )
 
 var (

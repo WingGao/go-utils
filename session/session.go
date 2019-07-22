@@ -1,7 +1,6 @@
 package session
 
 import (
-	. "github.com/WingGao/go-utils"
 	"github.com/WingGao/go-utils/session/redis"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/context"
@@ -20,7 +19,9 @@ import (
 	//pxdb "px/db"
 	"time"
 )
-
+const (
+	XSESSION_KEY = "xsession"
+)
 type XSession struct {
 	ctx      context.Context
 	Iris     *sessions.Session `json:"-"`
@@ -52,8 +53,7 @@ var (
 	_sessionKeyPrefix = "core:sid:"
 )
 
-func BuildIrisSession(conf MConfig) {
-	rconf := conf.Redis
+func BuildIrisSession(rconf uredis.RedisConf,cookieExpire int64) {
 	_rdb = redis.New(uredis.MainClient, service.Config{
 		Network:     service.DefaultRedisNetwork,
 		Addr:        rconf.Addr,
@@ -68,7 +68,7 @@ func BuildIrisSession(conf MConfig) {
 		_rdb.Close()
 	})
 
-	exp := time.Duration(conf.CookieExpires)
+	exp := time.Duration(cookieExpire)
 	if exp > 0 {
 		exp = exp * time.Second
 	}

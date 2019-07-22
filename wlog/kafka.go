@@ -3,7 +3,7 @@ package wlog
 import (
 	"fmt"
 	"github.com/Shopify/sarama"
-	"github.com/WingGao/go-utils"
+	ucore "github.com/WingGao/go-utils/core"
 	"github.com/go-errors/errors"
 	"github.com/ungerik/go-dry"
 	"go.uber.org/zap/zapcore"
@@ -11,14 +11,16 @@ import (
 	"time"
 )
 
-func NewZapToKafka(producer sarama.AsyncProducer, topic, appid string) *ZapToKafka {
-	return &ZapToKafka{producer: producer, topic: topic, appid: appid, name: dry.RealNetIP()}
+func NewZapToKafka(producer sarama.AsyncProducer, topic, appid, logName string) *ZapToKafka {
+	return &ZapToKafka{producer: producer, topic: topic, appid: appid, name: dry.RealNetIP(),
+		logName: logName}
 }
 
 type ZapToKafka struct {
 	appid    string
 	topic    string
 	name     string
+	logName  string
 	producer sarama.AsyncProducer
 }
 
@@ -46,12 +48,12 @@ func (c *ZapToKafka) Write(ent zapcore.Entry, fields []zapcore.Field) error {
 	lmsg := &logMessage{
 		AppId:         c.appid,
 		ThreadName:    c.name,
-		LogName:       utils.DefaultConfig.Project,
+		LogName:       c.logName,
 		Level:         ent.Level.String(),
 		LayoutMessage: strMsg,
-		TimeStamp:     now.Unix()*1000,
+		TimeStamp:     now.Unix() * 1000,
 	}
-	js := utils.JsonMarshalToString(lmsg)
+	js := ucore.JsonMarshalToString(lmsg)
 	msg := &sarama.ProducerMessage{
 		Topic:     c.topic,
 		Value:     sarama.StringEncoder(js),

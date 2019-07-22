@@ -1,4 +1,4 @@
-package uhandler
+package whandler
 
 import (
 	"github.com/kataras/iris"

@@ -4,6 +4,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	tconfig "github.com/RichardKnop/machinery/v1/config"
+	"github.com/WingGao/go-utils/redis"
 	"github.com/go-errors/errors"
 	"github.com/micro/go-micro/registry"
 	"github.com/ungerik/go-dry"
@@ -69,7 +70,7 @@ type MConfig struct {
 		WpDir string
 	}
 	WxConfig WxConfig `yaml:"wechat"`
-	Redis    RedisConf
+	Redis    redis.RedisConf
 	Task     tconfig.Config
 
 	Cms struct {
@@ -230,15 +231,7 @@ type WxCorpConf struct {
 	OauthRedirect string `yaml:"oauth_redirect"`
 }
 
-type RedisConf struct {
-	Addr          string   //host:port 127.0.0.1:6379
-	Shards        []string //host:port 127.0.0.1:6379
-	Password      string
-	Database      int
-	UniqueIdKey   string
-	Prefix        string
-	CacheCloudUrl string
-}
+
 type GraphQLConf struct {
 	Path string
 }
@@ -319,8 +312,4 @@ func formatEnv(v string) string {
 		return dry.GetenvDefault(string([]rune(v)[1:]), "")
 	}
 	return v
-}
-
-func IsDebug() bool {
-	return DefaultConfig.Debug
 }

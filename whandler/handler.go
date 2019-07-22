@@ -1,15 +1,17 @@
-package utils
+package whandler
 
 import (
+	"encoding/json"
+	ucore "github.com/WingGao/go-utils/core"
+	"github.com/WingGao/go-utils/wlog"
+	"github.com/emirpasic/gods/sets/hashset"
+	"github.com/go-playground/form"
+	"github.com/json-iterator/go"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/context"
 	"github.com/kataras/iris/core/router"
-	"encoding/json"
-	"github.com/go-playground/form"
-	"github.com/json-iterator/go"
-	"github.com/emirpasic/gods/sets/hashset"
-	"net/url"
 	"net/http"
+	"net/url"
 	"strings"
 )
 
@@ -38,9 +40,9 @@ func AfterHandler(ictx context.Context, o interface{}, err error) {
 	}
 	if err != nil {
 		if !ignoreErros.Contains(err.Error()) {
-			err2 := NewWError(err)
+			err2 := ucore.NewWError(err)
 			err2.Fmt()
-			ictx.Application().Logger().Error(err2.ErrorStack())
+			wlog.S().Error(err2.ErrorStack())
 		}
 		ictx.StatusCode(iris.StatusBadRequest)
 		ictx.JSON(ErrJson{Err: err.Error()})
@@ -71,7 +73,7 @@ func ParseFormIris(ictx context.Context, params interface{}) (err error) {
 	err = dec.Decode(params, ictx.FormValues())
 	if err != nil {
 		ictx.Application().Logger().Warnf("Error when reading form: " + err.Error())
-		err = NewErrParams()
+		err = ucore.NewErrParams()
 	}
 	return
 }

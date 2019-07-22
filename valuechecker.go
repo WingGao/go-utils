@@ -1,11 +1,12 @@
 package utils
 
 import (
-	"github.com/thoas/go-funk"
-	"github.com/go-errors/errors"
-	"regexp"
-	"reflect"
 	"fmt"
+	ucore "github.com/WingGao/go-utils/core"
+	"github.com/go-errors/errors"
+	"github.com/thoas/go-funk"
+	"reflect"
+	"regexp"
 )
 
 var (
@@ -15,13 +16,13 @@ var (
 //简单值检查
 // 应该只使用true情况，不要使用`!xxx`这种
 type ValueChecker struct {
-	errs        *ErrorList
+	errs        *ucore.ErrorList
 	SkipOnError bool //遇到错误是否跳过
 }
 
 func NewValueChecker() (v *ValueChecker) {
 	v = &ValueChecker{SkipOnError: true}
-	v.errs = NewErrorList()
+	v.errs = ucore.NewErrorList()
 	return
 }
 

@@ -3,7 +3,6 @@ package redis
 import (
 	"context"
 	"fmt"
-	"github.com/WingGao/go-utils"
 	"github.com/WingGao/go-utils/wlog"
 	gredis "github.com/go-redis/redis"
 	"strings"
@@ -30,14 +29,14 @@ var (
 
 type RedisUniversalClient struct {
 	gredis.UniversalClient
-	Config utils.RedisConf
+	Config RedisConf
 }
 
 func (c *RedisUniversalClient) ExpireSecond(key string, second int) (bool, error) {
 	return c.Expire(key, time.Duration(second)*time.Second).Result()
 }
 
-func (c *RedisUniversalClient) GetConfig() utils.RedisConf {
+func (c *RedisUniversalClient) GetConfig() RedisConf {
 	return c.Config
 }
 
