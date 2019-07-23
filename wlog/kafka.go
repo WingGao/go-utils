@@ -67,6 +67,7 @@ func (c *ZapToKafka) Write(ent zapcore.Entry, fields []zapcore.Field) error {
 		Value:     sarama.StringEncoder(js),
 		Timestamp: now,
 	}
+	//fmt.Printf("send %#v\n", msg)
 	c.producer.Input() <- msg
 	return nil
 }

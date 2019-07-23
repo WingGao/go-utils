@@ -636,7 +636,7 @@ type IModelTime interface {
 
 type ModelTime struct {
 	CreatedAt *time.Time `gorm:"Column:inserttime;index:idx_inserttime;default:CURRENT_TIMESTAMP;comment:'插入时间'" json:",omitempty"`
-	UpdatedAt *time.Time `gorm:"Column:updattime;index:idx_updatetime;default:CURRENT_TIMESTAMP;comment:'更新时间'" json:",omitempty"` //updated_at
+	UpdatedAt *time.Time `gorm:"Column:updatetime;index:idx_updatetime;default:CURRENT_TIMESTAMP;comment:'更新时间'" json:",omitempty"` //updated_at
 	//DeletedAt *time.Time `sql:"index"`
 }
 
