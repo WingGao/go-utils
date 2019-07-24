@@ -75,6 +75,7 @@ type IModelParent interface {
 	FormatError(err error) error
 	FormatFields(str string) string
 	SetPrimaryKey() (key interface{}, err error)
+	CheckUnique() error // 检查唯一性，在使用软删除的时候同时使用，默认BeforeSave的时候调用
 	//Delete 操作前会自动调用，检测是否可以删除
 	//BeforeDelete(scope *gorm.Scope) error
 	//AfterDelete(scope *gorm.Scope) error
@@ -583,6 +584,15 @@ func (m *Model) FormatError(err error) error {
 		}
 	}
 	return err
+}
+
+func (m *Model) BeforeSave(scope *gorm.Scope) error {
+	return m.parent.(IModelParent).CheckUnique()
+}
+// 用来手动检查unique的情况，在软删除使用的情况下需要用到
+// 默认会在`BeforeSave`的时候调用
+func (m *Model) CheckUnique() error {
+	return nil
 }
 
 func (m *Model) BeforeDelete(scope *gorm.Scope) error {
