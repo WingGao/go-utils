@@ -1,4 +1,4 @@
-package core
+package ucore
 
 import (
 	"bytes"

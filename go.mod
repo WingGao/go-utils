@@ -14,10 +14,10 @@ require (
 	github.com/elazarl/goproxy/ext v0.0.0-20190421051319-9d40249d3c2f // indirect
 	github.com/emirpasic/gods v1.12.0
 	github.com/fatih/structs v1.1.0
-	github.com/flosch/pongo2 v0.0.0-20181225140029-79872a7b2769 // indirect
 	github.com/fortytw2/leaktest v1.3.0 // indirect
 	github.com/gavv/monotime v0.0.0-20190418164738-30dba4353424 // indirect
 	github.com/globalsign/mgo v0.0.0
+	github.com/go-check/check v1.0.0-20180628173108-788fd7840127 // indirect
 	github.com/go-errors/errors v1.0.1
 	github.com/go-playground/form v3.1.4+incompatible
 	github.com/go-redis/redis v0.0.0-20190626123411-a28bb0bd25c8
@@ -27,13 +27,12 @@ require (
 	github.com/jinzhu/gorm v1.9.5
 	github.com/json-iterator/go v1.1.6
 	github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88 // indirect
-	github.com/kataras/golog v0.0.0-20180321173939-03be10146386
+	github.com/kataras/golog v0.0.0-20190624001437-99c81de45f40
 	github.com/kataras/iris v11.1.1+incompatible
 	github.com/klauspost/compress v1.5.0 // indirect
 	github.com/klauspost/cpuid v1.2.1 // indirect
 	github.com/mailru/easyjson v0.0.0-20190403194419-1ea4449da983 // indirect
 	github.com/micro/go-micro v1.7.0
-	github.com/microcosm-cc/bluemonday v1.0.2 // indirect
 	github.com/olivere/elastic v6.2.17+incompatible
 	github.com/parnurzeal/gorequest v0.2.15
 	github.com/qiniu/api.v7 v7.2.5+incompatible
@@ -55,7 +54,6 @@ require (
 	go.uber.org/multierr v1.1.0 // indirect
 	go.uber.org/zap v1.10.0
 	golang.org/x/crypto v0.0.0-20190621222207-cc06ce4a13d4 // indirect
-	golang.org/x/sys v0.0.0-20190626221950-04f50cda93cb // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gopkg.in/ini.v1 v1.42.0 // indirect
 	gopkg.in/jcmturner/goidentity.v3 v3.0.0 // indirect

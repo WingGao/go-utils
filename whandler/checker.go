@@ -1,7 +1,7 @@
 package whandler
 
 import (
-	ucore "github.com/WingGao/go-utils/core"
+	ucore "github.com/WingGao/go-utils/ucore"
 	. "github.com/WingGao/go-utils/session"
 )
 

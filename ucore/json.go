@@ -1,4 +1,4 @@
-package core
+package ucore
 
 import "github.com/json-iterator/go"
 

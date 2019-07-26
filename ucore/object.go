@@ -1,4 +1,4 @@
-package utils
+package ucore
 
 import (
 	"github.com/thoas/go-funk"

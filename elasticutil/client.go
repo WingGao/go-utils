@@ -1,12 +1,13 @@
 package elasticutil
 
 import (
-	"github.com/olivere/elastic"
-	"github.com/WingGao/go-utils"
-	"github.com/thoas/go-funk"
-	"reflect"
 	"context"
 	"fmt"
+	"github.com/WingGao/go-utils"
+	ucore "github.com/WingGao/go-utils/ucore"
+	"github.com/olivere/elastic"
+	"github.com/thoas/go-funk"
+	"reflect"
 )
 
 type EsClient struct {
@@ -49,7 +50,7 @@ func (c *EsClient) SyncMySQLModelAll(mod utils.IModel) (err error) {
 		if err1 != nil {
 			return err1
 		}
-		if utils.SizeOf(items) < step {
+		if ucore.SizeOf(items) < step {
 			break
 		}
 	}

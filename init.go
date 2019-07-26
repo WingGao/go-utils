@@ -1,7 +1,7 @@
 package utils
 
 import (
-	ucore "github.com/WingGao/go-utils/core"
+	ucore "github.com/WingGao/go-utils/ucore"
 	"github.com/WingGao/go-utils/session"
 	"github.com/WingGao/go-utils/whandler"
 )

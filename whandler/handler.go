@@ -2,7 +2,7 @@ package whandler
 
 import (
 	"encoding/json"
-	ucore "github.com/WingGao/go-utils/core"
+	ucore "github.com/WingGao/go-utils/ucore"
 	"github.com/WingGao/go-utils/wlog"
 	"github.com/emirpasic/gods/sets/hashset"
 	"github.com/go-playground/form"

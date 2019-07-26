@@ -2,7 +2,7 @@ package wlog
 
 import (
 	"github.com/Shopify/sarama"
-	ucore "github.com/WingGao/go-utils/core"
+	ucore "github.com/WingGao/go-utils/ucore"
 	"github.com/ungerik/go-dry"
 	"go.uber.org/zap/zapcore"
 	"time"

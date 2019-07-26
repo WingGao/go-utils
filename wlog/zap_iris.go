@@ -63,7 +63,7 @@ func (c *ZapToIris) Write(ent zapcore.Entry, fields []zapcore.Field) error {
 	//linef := errors.NewStackFrame(e.Callers()[0])
 	// 转换level
 	il := zapToIrisLevelMap[ent.Level]
-	c.app.Logger().Log(il, strMsg, ent.Message)
+	c.app.Logger().Log(il, strMsg)
 	return nil
 }
 

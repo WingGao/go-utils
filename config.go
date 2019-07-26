@@ -246,7 +246,9 @@ type KafkaConfig struct {
 	Addresses string
 }
 type LogConfig struct {
+	NoStd bool
 	Kafka bool
+	Request bool
 }
 
 func NewConfigFromFile(confPath string) (conf MConfig, err error) {

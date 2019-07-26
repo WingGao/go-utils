@@ -3,7 +3,6 @@ package redis
 import (
 	"context"
 	"fmt"
-	"github.com/WingGao/go-utils/wlog"
 	gredis "github.com/go-redis/redis"
 	"strings"
 	"time"
@@ -67,7 +66,7 @@ func (hk rhook) BeforeProcess(ctx context.Context, cmd gredis.Cmder) (context.Co
 				}
 			}
 		}
-		wlog.S().Debugf("%#v", cmd)
+		//wlog.S().Debugf("%#v", cmd)
 	} else {
 		panic(fmt.Sprintf("redis command [%s] not checked", cmdName))
 	}

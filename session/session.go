@@ -5,7 +5,7 @@ import (
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/context"
 	"github.com/kataras/iris/sessions"
-	"github.com/kataras/iris/sessions/sessiondb/redis/service"
+	sredis "github.com/kataras/iris/sessions/sessiondb/redis"
 
 	//"fmt"
 	"errors"
@@ -54,14 +54,12 @@ var (
 )
 
 func BuildIrisSession(rconf uredis.RedisConf,cookieExpire int64) {
-	_rdb = redis.New(uredis.MainClient, service.Config{
-		Network:     service.DefaultRedisNetwork,
+	_rdb = redis.New(uredis.MainClient, sredis.Config{
+		Network:     sredis.DefaultRedisNetwork,
 		Addr:        rconf.Addr,
 		Password:    rconf.Password,
 		Database:    fmt.Sprintf("%d", rconf.Database),
-		MaxIdle:     0,
 		MaxActive:   0,
-		IdleTimeout: service.DefaultRedisIdleTimeout,
 		Prefix:      _sessionKeyPrefix})
 
 	iris.RegisterOnInterrupt(func() {
@@ -206,7 +204,7 @@ func (x *XSession) SaveIrisD() error {
 	return x.SaveIris(x.ctx, x.key)
 }
 
-func (x *XSession) IsValued() bool {
+func (x *XSession) IsValid() bool {
 	return x.Uid > 0
 }
 func (x *XSession) Refresh() {

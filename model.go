@@ -1,15 +1,16 @@
 package utils
 
 import (
-	"time"
-	"github.com/jinzhu/gorm"
-	"reflect"
-	"github.com/go-errors/errors"
-	"github.com/thoas/go-funk"
-	"github.com/fatih/structs"
-	"strings"
-	"fmt"
 	"database/sql"
+	"fmt"
+	ucore "github.com/WingGao/go-utils/ucore"
+	"github.com/fatih/structs"
+	"github.com/go-errors/errors"
+	"github.com/jinzhu/gorm"
+	"github.com/thoas/go-funk"
+	"reflect"
+	"strings"
+	"time"
 )
 
 var (
@@ -604,7 +605,7 @@ func (m *Model) AfterDelete(scope *gorm.Scope) error {
 
 //得到一个基础父类，可以被重写，值不复制
 func (m *Model) New() interface{} {
-	n := PtrOf(m.parent)
+	n := ucore.PtrOf(m.parent)
 	reflect.ValueOf(n).Elem().FieldByName("Model").Set(reflect.ValueOf(Model{parent: n, DB: m.GetDB()}))
 	return n
 }

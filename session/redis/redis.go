@@ -5,7 +5,7 @@ import (
 	sll "github.com/emirpasic/gods/lists/singlylinkedlist"
 	"github.com/kataras/golog"
 	"github.com/kataras/iris/sessions"
-	"github.com/kataras/iris/sessions/sessiondb/redis/service"
+	sredis "github.com/kataras/iris/sessions/sessiondb/redis"
 	"runtime"
 	"time"
 )
@@ -14,13 +14,13 @@ import (
 // github.com/kataras/iris/sessions/sessiondb/redis/database.go
 type Database struct {
 	redis  redis.RedisClient
-	config service.Config
+	config sredis.Config
 }
 
 var _ sessions.Database = (*Database)(nil)
 
 // New returns a new redis database.
-func New(rd redis.RedisClient, cfg ...service.Config) *Database {
+func New(rd redis.RedisClient, cfg ...sredis.Config) *Database {
 	db := &Database{redis: rd, config: cfg[0]}
 	pong, err := db.redis.Ping().Result()
 	if err != nil {
@@ -33,7 +33,7 @@ func New(rd redis.RedisClient, cfg ...service.Config) *Database {
 }
 
 // Config returns the configuration for the redis server bridge, you can change them.
-func (db *Database) Config() *service.Config {
+func (db *Database) Config() *sredis.Config {
 	return &db.config
 }
 func (db *Database) ttl(key string) (seconds int64, hasExpiration bool, found bool) {
