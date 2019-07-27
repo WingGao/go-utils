@@ -5,6 +5,7 @@ import (
 	ucore "github.com/WingGao/go-utils/ucore"
 	"github.com/WingGao/go-utils/wlog"
 	"github.com/emirpasic/gods/sets/hashset"
+	"github.com/go-errors/errors"
 	"github.com/go-playground/form"
 	"github.com/json-iterator/go"
 	"github.com/kataras/iris"
@@ -21,10 +22,6 @@ const (
 	HANDLER_CANCEL = "wing-handler-cancel"
 )
 
-type ErrJson struct {
-	Err string `json:"err_msg"`
-}
-
 func AddHandlerIgnoreErrors(errs ...interface{}) {
 	ignoreErros.Add(errs...)
 }
@@ -34,18 +31,28 @@ func CancelAfterHandler(ictx context.Context) {
 
 func AfterHandler(ictx context.Context, o interface{}, err error) {
 	FixSetCookie(ictx)
+
 	//跳过已经处理过的请求
 	if v := ictx.Values().Get(HANDLER_CANCEL); v != nil && v.(bool) {
 		return
 	}
 	if err != nil {
+		var returnErr interface{}
 		if !ignoreErros.Contains(err.Error()) {
 			err2 := ucore.NewWError(err)
 			err2.Fmt()
 			wlog.S().Error(err2.ErrorStack())
 		}
 		ictx.StatusCode(iris.StatusBadRequest)
-		ictx.JSON(ErrJson{Err: err.Error()})
+		if err3, ok := err.(*errors.Error); ok {
+			if err3, ok1 := err3.Err.(ucore.CommError); ok1 {
+				returnErr = err3
+			}
+		}
+		if returnErr == nil {
+			returnErr = ucore.CommError{ErrMsg: err.Error()}
+		}
+		ictx.JSON(returnErr)
 	} else {
 		var buf []byte
 		offj, isffj := o.(json.Marshaler)
@@ -57,7 +64,7 @@ func AfterHandler(ictx context.Context, o interface{}, err error) {
 
 		if err != nil {
 			ictx.StatusCode(iris.StatusBadRequest)
-			ictx.JSON(ErrJson{Err: err.Error()})
+			ictx.JSON(ucore.CommError{ErrMsg: err.Error()})
 		} else {
 			ictx.StatusCode(iris.StatusOK)
 			ictx.ContentType("application/json")
@@ -132,7 +139,7 @@ func ReplaceRoute(app *iris.Application, r *router.Route) {
 }
 
 // 合并同路由
-func RouteAddHandlers(app *iris.Application, method, subdomain, unparsedPath string, handlers ... context.Handler) {
+func RouteAddHandlers(app *iris.Application, method, subdomain, unparsedPath string, handlers ...context.Handler) {
 	old := app.GetRoute(method + subdomain + unparsedPath)
 	old.Handlers = append(old.Handlers, handlers...) // 添加最后1个
 }

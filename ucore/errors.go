@@ -139,7 +139,7 @@ func NewWError(e interface{}) *WError {
 //我们只需要知道最短路径
 func (e *WError) Fmt() {
 	for i, frame := range e.Frames {
-		if frame.Package == "main" || frame.Package == "github.com/kataras/iris/middleware/logger" {
+		if frame.Package == "wingao.net/webproj/mcmd/serv	" || frame.Package == "github.com/kataras/iris/middleware/logger" {
 			e.Frames = e.Frames[:i+1]
 			break
 		}
@@ -158,4 +158,13 @@ func (e *WError) Stack() []byte {
 
 func (e *WError) ErrorStack() string {
 	return e.Err.TypeName() + " " + e.Err.Error() + "\n" + string(e.Stack())
+}
+
+type CommError struct {
+	ErrMsg    string `json:"err_msg"`
+	ErrFormId string `json:"err_form_id,omitempty"`
+}
+
+func (m CommError) Error() string {
+	return m.ErrMsg
 }

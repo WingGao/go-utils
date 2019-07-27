@@ -30,7 +30,7 @@ func (v *ValueChecker) shouldSkip() bool {
 	return v.FirstError() != nil && v.SkipOnError
 }
 
-func (v *ValueChecker) check(val bool, errMsg string) bool {
+func (v *ValueChecker) check(val bool, errMsg interface{}) bool {
 	//TODO 求值是否可以滞后
 	if v.shouldSkip() {
 		return false
@@ -98,7 +98,7 @@ func (v *ValueChecker) LenLager(val interface{}, minLength int, name string) boo
 		return v.addErr(fmt.Sprintf("%s长度少于%d", name, minLength))
 	}
 }
-func (v *ValueChecker) MustTrue(val bool, errMsg string) bool {
+func (v *ValueChecker) MustTrue(val bool, errMsg interface{}) bool {
 	return v.check(val, errMsg)
 }
 
