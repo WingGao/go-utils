@@ -222,15 +222,32 @@ type WxConfig struct {
 	EnableTokenServer bool `yaml:"enable_tokenserver"`
 	EnableJsTicket    bool `yaml:"enable_jsticket"`
 	Token             string //缓存用
-	Miniapps          []ThirdPartConfig `yaml:"mini"`
+	Miniapps          []*ThirdPartConfig `yaml:"mini"`
+	miniappsMap       map[string]*ThirdPartConfig //通过Miniapps转换的
 	Corp              WxCorpConf
 }
+
+func (m *WxConfig) Update() error {
+	m.miniappsMap = make(map[string]*ThirdPartConfig, len(m.Miniapps))
+	for _, c := range m.Miniapps {
+		if _, exist := m.miniappsMap[c.Name]; exist {
+			return errors.Errorf("小程序%s[%s]已存在", c.Name, c.AppID)
+		}
+		m.miniappsMap[c.Name] = c
+	}
+	return nil
+}
+
+func (m *WxConfig) GetMiniApp(name string) (*ThirdPartConfig, bool) {
+	app, ok := m.miniappsMap[name]
+	return app, ok
+}
+
 type WxCorpConf struct {
 	CorpId        string
 	CorpSecret    string
 	OauthRedirect string `yaml:"oauth_redirect"`
 }
-
 
 type GraphQLConf struct {
 	Path string
@@ -246,8 +263,8 @@ type KafkaConfig struct {
 	Addresses string
 }
 type LogConfig struct {
-	NoStd bool
-	Kafka bool
+	NoStd   bool
+	Kafka   bool
 	Request bool
 }
 
@@ -257,7 +274,7 @@ func NewConfigFromFile(confPath string) (conf MConfig, err error) {
 	} else {
 		confPath, _ = filepath.Abs(confPath)
 		confd, _ := ioutil.ReadFile(confPath)
-		err := yaml.Unmarshal(confd, &conf)
+		err = yaml.Unmarshal(confd, &conf)
 		if err != nil {
 			return conf, err
 		} else {
@@ -282,6 +299,7 @@ func NewConfigFromFile(confPath string) (conf MConfig, err error) {
 				conf.GraphQL.Path = getFullPath(conf.AppPath, conf.GraphQL.Path)
 			}
 			conf.Mysql.Host = formatEnv(conf.Mysql.Host)
+			err = conf.WxConfig.Update()
 		}
 	}
 	return
