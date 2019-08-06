@@ -590,6 +590,7 @@ func (m *Model) FormatError(err error) error {
 func (m *Model) BeforeSave(scope *gorm.Scope) error {
 	return m.parent.(IModelParent).CheckUnique()
 }
+
 // 用来手动检查unique的情况，在软删除使用的情况下需要用到
 // 默认会在`BeforeSave`的时候调用
 func (m *Model) CheckUnique() error {
@@ -597,6 +598,20 @@ func (m *Model) CheckUnique() error {
 }
 
 func (m *Model) BeforeDelete(scope *gorm.Scope) error {
+	// 将isactive=NULL 是为了让unique_index生效
+	// 所有使用unique的索引应该都与isactive组合
+	_, hasActField := scope.FieldByName("IsActive")
+	if hasActField {
+		scope.Raw(fmt.Sprintf(
+			"UPDATE %v SET `isactive`=NULL%v",
+			scope.QuotedTableName(),
+			addExtraSpaceIfExist(scope.CombinedConditionSql()),
+		)).Exec()
+		//TODO 更好的方式
+		// 清空scope不然后续无法使用，
+		scope.SQL = ""
+		scope.SQLVars = []interface{}{}
+	}
 	return nil
 }
 func (m *Model) AfterDelete(scope *gorm.Scope) error {
@@ -807,4 +822,11 @@ func RowsLength(rows *sql.Rows) (l int) {
 		l++
 	}
 	return
+}
+
+func addExtraSpaceIfExist(str string) string {
+	if str != "" {
+		return " " + str
+	}
+	return ""
 }

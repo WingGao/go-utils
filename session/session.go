@@ -125,6 +125,7 @@ func NewSessionFromIris(ctx context.Context, key string) (*XSession, error) {
 	if !checkSession() {
 		return nil, _errNotSet
 	}
+	// TODO 没有用的session是否可以延迟创建
 	sess := _session.Start(ctx)
 	val := sess.Get(key)
 	if val == nil {

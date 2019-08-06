@@ -64,5 +64,5 @@ require (
 replace (
 	github.com/globalsign/mgo v0.0.0 => github.com/WingGao/mgo v0.0.0-20190502114913-db5d70d36ad5
 	github.com/go-errors/errors => ../../go-errors/errors
-	github.com/kataras/iris => ../../kataras/iris
+	github.com/jinzhu/gorm => ../../jinzhu/gorm
 )
