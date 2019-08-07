@@ -62,7 +62,12 @@ require (
 )
 
 replace (
-	github.com/globalsign/mgo v0.0.0 => github.com/WingGao/mgo v0.0.0-20190502114913-db5d70d36ad5
+	github.com/WingGao/gizwits => ../../WingGao/gizwits
+	github.com/chanxuehong/wechat => ../../chanxuehong/wechat
+	github.com/fatih/structs => ../../fatih/structs
+	github.com/globalsign/mgo => ../../globalsign/mgo
 	github.com/go-errors/errors => ../../go-errors/errors
+	github.com/jinzhu/copier => ../../jinzhu/copier
 	github.com/jinzhu/gorm => ../../jinzhu/gorm
+	github.com/kataras/iris => ../../kataras/iris
 )

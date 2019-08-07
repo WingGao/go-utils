@@ -33,7 +33,8 @@ func ArrayGetColumnSet(arr interface{}, key string) *hashset.Set {
 	return kset
 }
 
-//
+// 将arrR的值通过joinFunc来赋值给arrL
+// joinFunc ==> func(left typeA, right typeB) any
 func ArrJoin(arrL interface{}, arrR interface{}, keyL, keyR interface{}, joinFunc interface{}) interface{} {
 	rmap := ArrayToHashmap(arrR, keyR)
 	funcVal := reflect.ValueOf(joinFunc)

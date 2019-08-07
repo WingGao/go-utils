@@ -7,6 +7,6 @@ import (
 
 func RequireLoginX(sess *XSession) {
 	if sess.Uid <= 0 {
-		panic(ucore.ERR_REQUIRE_LOGIN)
+		panic(ucore.ErrRequireLogin)
 	}
 }

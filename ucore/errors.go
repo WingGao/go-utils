@@ -7,17 +7,17 @@ import (
 )
 
 var (
-	ERR_REQUIRE_LOGIN = errors.New("require login")
-	ERR_REQUIRE_ADMIN = errors.New("require admin")
-	ERR_NO_PERMISSION = errors.New("no permission")
-	ERR_CANNOT_MODIFY = errors.New("cannot modify")
-	ErrNoItem         = errors.New("no such item")
-	ErrExisted        = errors.New("existed")
-	ErrNotMatch       = errors.New("not match")
-	ErrFormat         = errors.New("format error")
+	ErrRequireLogin = errors.New("require login") // 这个错误不能改
+	ErrRequireAdmin = errors.New("require admin")
+	ErrNoPermission = errors.New("no permission")
+	ErrCannotModify = errors.New("cannot modify")
+	ErrNoItem       = errors.New("no such item")
+	ErrExisted      = errors.New("existed")
+	ErrNotMatch     = errors.New("not match")
+	ErrFormat       = errors.New("format error")
 
-	UtilsErrList = []*errors.Error{ERR_REQUIRE_LOGIN, ERR_REQUIRE_ADMIN,
-		ERR_NO_PERMISSION, ERR_CANNOT_MODIFY, ErrNoItem, ErrExisted, ErrNotMatch}
+	UtilsErrList = []*errors.Error{ErrRequireLogin, ErrRequireAdmin,
+		ErrNoPermission, ErrCannotModify, ErrNoItem, ErrExisted, ErrNotMatch}
 )
 
 func NewErrNotFound() *errors.Error {
@@ -30,6 +30,10 @@ func NewErrExisted() *errors.Error {
 
 func NewErrParams() *errors.Error {
 	return errors.Wrap("参数错误", 1)
+}
+
+func NewErrNeedLogin() *errors.Error {
+	return errors.Wrap(ErrRequireLogin, 1)
 }
 
 func NewErrPermission() *errors.Error {
