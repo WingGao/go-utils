@@ -3,7 +3,7 @@ package redis
 import (
 	"context"
 	"fmt"
-	gredis "github.com/go-redis/redis"
+	gredis "github.com/go-redis/redis/v7"
 	"strings"
 	"time"
 )
@@ -72,17 +72,16 @@ func (hk rhook) BeforeProcess(ctx context.Context, cmd gredis.Cmder) (context.Co
 	}
 	return ctx, nil
 }
-
-func (rhook) AfterProcess(ctx context.Context, cmd gredis.Cmder) (context.Context, error) {
-	return ctx, nil
+func (hk rhook) AfterProcess(ctx context.Context, cmd gredis.Cmder) error {
+	return nil
 }
 
 func (rhook) BeforeProcessPipeline(ctx context.Context, cmds []gredis.Cmder) (context.Context, error) {
 	return ctx, nil
 }
 
-func (rhook) AfterProcessPipeline(ctx context.Context, cmds []gredis.Cmder) (context.Context, error) {
-	return ctx, nil
+func (rhook) AfterProcessPipeline(ctx context.Context, cmds []gredis.Cmder) (error) {
+	return nil
 }
 
 //func (c *RedisClientCl) do(commandName string, args ...interface{}) (*gredis.Cmd) {

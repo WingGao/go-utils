@@ -65,6 +65,7 @@ type MConfig struct {
 	WebApps         string
 	MaxMediaSize    string `yaml:"max_media_size"`
 	CookieExpires   int64  `yaml:"cookie_expires"`
+	CaptchaDisable  bool   `yaml:"captcha_disable"`
 	SiteCreator     struct {
 		Mysql string
 		WpDir string
@@ -169,7 +170,7 @@ func (m MConfig) GetPostgresqlString(dbname string) string {
 func (m MConfig) GetMachineryConfig() *tconfig.Config {
 	scnf := &m.Task
 	if scnf.Broker == "" { //默认使用redis
-		scnf.Broker = fmt.Sprintf("redis://%s/%d", m.Redis.Addr, m.Redis.Database)
+		scnf.Broker = fmt.Sprintf("redis://%s", redis.MainClient.GetConfig().Addr)
 	}
 	return scnf
 }
