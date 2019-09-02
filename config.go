@@ -172,6 +172,9 @@ func (m MConfig) GetMachineryConfig() *tconfig.Config {
 	if scnf.Broker == "" { //默认使用redis
 		scnf.Broker = fmt.Sprintf("redis://%s", redis.MainClient.GetConfig().Addr)
 	}
+	if scnf.ResultBackend == "" { //默认使用redis
+		scnf.ResultBackend = scnf.Broker
+	}
 	return scnf
 }
 

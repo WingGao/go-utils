@@ -71,6 +71,7 @@ require (
 )
 
 replace (
+	github.com/RichardKnop/machinery => ../../RichardKnop/machinery
 	github.com/WingGao/gizwits => ../../WingGao/gizwits
 	github.com/chanxuehong/wechat => ../../chanxuehong/wechat
 	github.com/fatih/structs => ../../fatih/structs
