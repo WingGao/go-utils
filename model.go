@@ -218,6 +218,22 @@ func (m *Model) FormatColumns(keys ...string) []string {
 	return rkeys
 }
 
+// 创建索引
+// 约定 uix_xxx 是唯一索引 其他为普通索引
+func (m *Model) CreateIndexes(indexList map[string][]string) (err error) {
+	for name, columns := range indexList {
+		if strings.HasPrefix(name, "uix_") {
+			err = m.GModel().AddUniqueIndex(name, columns...).Error
+		} else {
+			err = m.GModel().AddIndex(name, columns...).Error
+		}
+		if err != nil {
+			return
+		}
+	}
+	return
+}
+
 func (m *Model) Limit(limit interface{}) *gorm.DB {
 	return m.GetDB().Limit(limit)
 }
@@ -369,7 +385,7 @@ func (m *Model) Upsert() (err error) {
 }
 
 func (m *Model) Updates(values interface{}, ignoreProtectedAttrs ...bool) (err error) {
-	d := m.GetDB().Model(m.parent).Omit("id").Updates(values, ignoreProtectedAttrs ...)
+	d := m.GetDB().Model(m.parent).Omit("id").Updates(values, ignoreProtectedAttrs...)
 	err = d.Error
 	return m.parent.(IModelParent).FormatError(err)
 }
