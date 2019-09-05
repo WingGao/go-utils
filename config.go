@@ -51,6 +51,7 @@ type MConfig struct {
 	Project         string //工程名字
 	Host            string
 	Port            string //服务地址
+	Https           bool
 	PublicHost      string //对外的部署地址 host:port
 	Grpc            GrpcConfig
 	MasterKey       string
@@ -183,7 +184,11 @@ func (m MConfig) BuildUrl(relpath string) string {
 	if !strings.HasPrefix(relpath, "/") {
 		relpath = "/" + relpath
 	}
-	return fmt.Sprintf("http://%s%s", m.PublicHost, relpath)
+	prototal := "http"
+	if m.Https {
+		prototal = "https"
+	}
+	return fmt.Sprintf("%s://%s%s", prototal, m.PublicHost, relpath)
 }
 
 //创建目录，并制定默认uid，gid
@@ -243,6 +248,9 @@ func (m *WxConfig) Update() error {
 }
 
 func (m *WxConfig) GetMiniApp(name string) (*ThirdPartConfig, bool) {
+	if name == "" {
+		name = "default"
+	}
 	app, ok := m.miniappsMap[name]
 	return app, ok
 }

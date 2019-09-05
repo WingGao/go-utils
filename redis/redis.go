@@ -1,11 +1,10 @@
 package redis
 
 import (
-	"bytes"
-	"encoding/gob"
 	"fmt"
 	"github.com/emirpasic/gods/lists/arraylist"
 	gredis "github.com/go-redis/redis/v7"
+	jsoniter "github.com/json-iterator/go"
 	"strings"
 	"time"
 )
@@ -277,19 +276,21 @@ func NewRedisClient(conf RedisConf) (c RedisClient, err error) {
 }
 
 //gob.Register
+//目前使用json代替
 func SetGlob(c RedisClient, key string, ptr interface{}, opt *Option) (error) {
 	//key = c.FullKey(key)
-	var buf bytes.Buffer
-	enc := gob.NewEncoder(&buf)
-	err := enc.Encode(ptr)
+	//var buf bytes.Buffer
+	buf, err := jsoniter.Marshal(ptr)
+	//enc := gob.NewEncoder(&buf)
+	//err := enc.Encode(ptr)
 	if err != nil {
 		return err
 	}
 	if opt != nil {
-		_, err = c.Set(key, buf.Bytes(), time.Duration(opt.ExpireSecond)*time.Second).Result()
+		_, err = c.Set(key, buf, time.Duration(opt.ExpireSecond)*time.Second).Result()
 	} else {
 
-		_, err = c.Set(key, buf.Bytes(), 0).Result()
+		_, err = c.Set(key, buf, 0).Result()
 	}
 	return err
 }
@@ -300,8 +301,9 @@ func GetGlob(c RedisClient, key string, out interface{}) (error) {
 	if err != nil {
 		return err
 	}
-	buf := bytes.NewBuffer(bs)
-	dec := gob.NewDecoder(buf)
-	err = dec.Decode(out)
+	err = jsoniter.Unmarshal(bs, out)
+	//buf := bytes.NewBuffer(bs)
+	//dec := gob.NewDecoder(buf)
+	//err = dec.Decode(out)
 	return err
 }
