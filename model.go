@@ -341,7 +341,7 @@ func (m *Model) FirstOrCreate(where ...interface{}) (err error) {
 	return m.parent.(IModelParent).FormatError(err)
 }
 
-// 更新局部
+// 更新局部，只逻辑判断主键持否为nil，并不会去查数据库
 func (m *Model) Save() (err error) {
 	if m.GetDB() == nil {
 		err = errors.New("Model.DB is null")
@@ -375,6 +375,7 @@ func (m *Model) Create() (err error) {
 	return m.parent.(IModelParent).FormatError(err)
 }
 
+// 主动更具pk去查询数据库来判断是创建还是更新
 func (m *Model) Upsert() (err error) {
 	if m.ExistPk() {
 		err = m.GetDB().Save(m.parent).Error

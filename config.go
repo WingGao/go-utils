@@ -285,7 +285,11 @@ func NewConfigFromFile(confPath string) (conf MConfig, err error) {
 		err = errors.New("need path")
 	} else {
 		confPath, _ = filepath.Abs(confPath)
-		confd, _ := ioutil.ReadFile(confPath)
+		confd, err1 := ioutil.ReadFile(confPath)
+		if err1 != nil {
+			err = err1
+			return
+		}
 		err = yaml.Unmarshal(confd, &conf)
 		if err != nil {
 			return conf, err
@@ -330,7 +334,7 @@ func getFullPath(apppath, p string) string {
 func LoadConfig(confPath string) (MConfig, error) {
 	conf, err := NewConfigFromFile(confPath)
 	if err == nil {
-		fmt.Println("MConfig loaded")
+		fmt.Printf("MConfig loaded %s\n", confPath)
 	}
 	fmt.Println("AppPath:", conf.AppPath)
 	fmt.Println("MediaPath:", conf.MediaPath)
