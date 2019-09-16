@@ -63,11 +63,17 @@ type MConfig struct {
 	Mongodb         string
 	DefaultPassword string `yaml:"default_password"` //默认密码
 	MediaPath       string
-	WebApps         string
-	MaxMediaSize    string `yaml:"max_media_size"`
-	CookieExpires   int64  `yaml:"cookie_expires"`
-	CaptchaDisable  bool   `yaml:"captcha_disable"`
-	SiteCreator     struct {
+	Media           struct {
+		Type   string
+		Bucket string
+		Region string
+		Host   string
+	}
+	WebApps        string
+	MaxMediaSize   string `yaml:"max_media_size"`
+	CookieExpires  int64  `yaml:"cookie_expires"`
+	CaptchaDisable bool   `yaml:"captcha_disable"`
+	SiteCreator    struct {
 		Mysql string
 		WpDir string
 	}
