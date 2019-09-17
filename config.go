@@ -80,8 +80,8 @@ type MConfig struct {
 	WxConfig WxConfig `yaml:"wechat"`
 	Redis    redis.RedisConf
 	Task     tconfig.Config
-
-	Cms struct {
+	Seo      bool
+	Cms      struct {
 	}
 
 	YunCourseTemplate string
