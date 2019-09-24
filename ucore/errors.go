@@ -32,6 +32,10 @@ func NewErrParams() *errors.Error {
 	return errors.Wrap("参数错误", 1)
 }
 
+func NewErrSystem() *errors.Error {
+	return errors.Wrap("系统错误", 1)
+}
+
 func NewErrNeedLogin() *errors.Error {
 	return errors.Wrap(ErrRequireLogin, 1)
 }

@@ -19,23 +19,27 @@ import (
 	//pxdb "px/db"
 	"time"
 )
+
 const (
 	XSESSION_KEY = "xsession"
 )
+
 type XSession struct {
-	ctx      context.Context
-	Iris     *sessions.Session `json:"-"`
-	key      string //保存在iris中的键
-	isClear  bool
-	parent   interface{}
-	Sid      string
-	Uid      uint32
-	Group    uint32
-	Username string
-	LastTime time.Time
-	WxOpenId string
-	WxToken  *oauth2.Token
-	Items    map[string]interface{}
+	ctx       context.Context
+	Iris      *sessions.Session `json:"-"`
+	key       string //保存在iris中的键
+	isClear   bool
+	parent    interface{}
+	Sid       string
+	Uid       uint32
+	Group     uint32
+	Username  string
+	LastTime  time.Time
+	// 微信相关
+	WxOpenId  string
+	WxUnionId string
+	WxToken   *oauth2.Token
+	Items     map[string]interface{}
 }
 type IXSession interface {
 	IsClear() bool
@@ -53,14 +57,14 @@ var (
 	_sessionKeyPrefix = "core:sid:"
 )
 
-func BuildIrisSession(rconf uredis.RedisConf,cookieExpire int64) {
+func BuildIrisSession(rconf uredis.RedisConf, cookieExpire int64) {
 	_rdb = redis.New(uredis.MainClient, sredis.Config{
-		Network:     sredis.DefaultRedisNetwork,
-		Addr:        rconf.Addr,
-		Password:    rconf.Password,
-		Database:    fmt.Sprintf("%d", rconf.Database),
-		MaxActive:   0,
-		Prefix:      _sessionKeyPrefix})
+		Network:   sredis.DefaultRedisNetwork,
+		Addr:      rconf.Addr,
+		Password:  rconf.Password,
+		Database:  fmt.Sprintf("%d", rconf.Database),
+		MaxActive: 0,
+		Prefix:    _sessionKeyPrefix})
 
 	iris.RegisterOnInterrupt(func() {
 		_rdb.Close()
