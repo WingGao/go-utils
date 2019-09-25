@@ -25,21 +25,22 @@ const (
 )
 
 type XSession struct {
-	ctx       context.Context
-	Iris      *sessions.Session `json:"-"`
-	key       string //保存在iris中的键
-	isClear   bool
-	parent    interface{}
-	Sid       string
-	Uid       uint32
-	Group     uint32
-	Username  string
-	LastTime  time.Time
+	ctx      context.Context
+	Iris     *sessions.Session `json:"-"`
+	key      string //保存在iris中的键
+	isClear  bool
+	parent   interface{}
+	Sid      string
+	Uid      uint32
+	Group    uint32
+	Username string
+	LastTime time.Time
 	// 微信相关
-	WxOpenId  string
-	WxUnionId string
-	WxToken   *oauth2.Token
-	Items     map[string]interface{}
+	WxOpenId     string
+	WxUnionId    string
+	WxSessionKey string //小程序
+	WxToken      *oauth2.Token
+	Items        map[string]interface{}
 }
 type IXSession interface {
 	IsClear() bool
