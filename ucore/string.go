@@ -1,4 +1,4 @@
-package utils
+package ucore
 
 import (
 	"math/rand"
@@ -78,4 +78,17 @@ func TrimSpaceArr(s []string) (out []string) {
 
 func StrHasLowerPrefix(s string) bool {
 	return strings.Contains("abcdefghijklmnopqrstuvwxyz", string(s[0]))
+}
+
+func DesensitizePhone(phone string) string {
+	if len(phone) >= 11 {
+		sb := &StringBuilder{}
+		sb.Write(phone[:3])
+		for i := 0; i < len(phone)-3-4; i++ {
+			sb.Write("*")
+		}
+		sb.Write(phone[len(phone)-4:])
+		return sb.String()
+	}
+	return phone
 }

@@ -209,7 +209,7 @@ func (m *Model) FormatColumns(keys ...string) []string {
 	scope, _ := m.NewScope()
 	rkeys := make([]string, len(keys))
 	for i, v := range keys {
-		if StrHasLowerPrefix(v) {
+		if ucore.StrHasLowerPrefix(v) {
 			rkeys[i] = v
 		} else if f, ok := scope.FieldByName(v); ok {
 			rkeys[i] = f.DBName
@@ -645,7 +645,7 @@ func (m *Model) New() interface{} {
 func (m *Model) GetFieldsSql(ignore []string, table string, asprefix string) string {
 	scope, _ := m.NewScope()
 	fields := scope.Fields()
-	sb := StringBuilder{}
+	sb := ucore.StringBuilder{}
 	for _, f := range fields {
 		if f.IsIgnored {
 			continue
