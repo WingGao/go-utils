@@ -5,6 +5,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/x/bsonx"
 )
 
 type MgCollection struct {
@@ -40,3 +41,18 @@ func (c *MgCollection) RemoveId(id interface{}, ) (*mongo.DeleteResult, error) {
 		{"_id", id},
 	})
 }
+
+// 创建索引
+func (c *MgCollection) CreateIndex(field, idxName string, asc, unique bool) (string, error) {
+	indexes := c.Indexes()
+	var mv int32 = 1
+	if !asc {
+		mv = -1
+	}
+	mod := mongo.IndexModel{
+		Keys:    bsonx.Doc{{field, bsonx.Int32(mv)}},
+		Options: options.Index().SetName(idxName).SetUnique(unique),
+	}
+	return indexes.CreateOne(context.Background(), mod)
+}
+

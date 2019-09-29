@@ -60,7 +60,7 @@ type MConfig struct {
 	AutoBackup      bool //自动备份
 	Postgresql      DbConfig
 	ElasticSearch   DbConfig `yaml:"elastic"`
-	Mongodb         string
+	Mongodb         DbConfig
 	DefaultPassword string `yaml:"default_password"` //默认密码
 	MediaPath       string
 	Media           struct {

@@ -58,7 +58,7 @@ require (
 	github.com/yudai/gojsondiff v1.0.0 // indirect
 	github.com/yudai/golcs v0.0.0-20170316035057-ecda9a501e82 // indirect
 	github.com/yudai/pp v2.0.1+incompatible // indirect
-	go.mongodb.org/mongo-driver v1.0.0
+	go.mongodb.org/mongo-driver v1.1.1
 	go.uber.org/atomic v1.4.0 // indirect
 	go.uber.org/multierr v1.1.0 // indirect
 	go.uber.org/zap v1.10.0
@@ -80,4 +80,5 @@ replace (
 	github.com/jinzhu/copier => ../../jinzhu/copier
 	github.com/jinzhu/gorm => ../../jinzhu/gorm
 	github.com/kataras/iris => ../../kataras/iris
+	github.com/micro/go-micro => ../../micro/go-micro
 )

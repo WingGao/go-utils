@@ -28,6 +28,7 @@ package wmongo
 
 import (
 	"context"
+	"github.com/WingGao/go-utils"
 	"github.com/go-errors/errors"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -104,6 +105,9 @@ func (m *MgModel) C() (c *MgCollection, s *mongo.Client) {
 	s = m.GetClient()
 	if s == nil {
 		return
+	}
+	if m.DbName == "" {
+		m.DbName = utils.DefaultConfig.Mongodb.DBName
 	}
 	c = NewMgCollection(s.Database(m.DbName).Collection(m.parent.(IMgParent).TableName()))
 	return
