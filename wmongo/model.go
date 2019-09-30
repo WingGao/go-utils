@@ -29,10 +29,12 @@ package wmongo
 import (
 	"context"
 	"github.com/WingGao/go-utils"
+	"github.com/WingGao/go-utils/ucore"
 	"github.com/go-errors/errors"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"reflect"
 	"strings"
 	"time"
 )
@@ -45,12 +47,14 @@ type MgModel struct {
 	Client *mongo.Client `bson:"-" json:"-"`
 	DbName string        `bson:"-" json:"-"`
 	// 指向父的指针
-	parent interface{} `bson:"-"`
+	parent     interface{} `bson:"-"`
+	softDelete bool        `bson:"-"`
 }
 
 type IMgModel interface {
 	GetModel() *MgModel
 	SetModel(n *MgModel)
+	New() interface{}
 	SetParent(p interface{})
 	GetParent() interface{}
 	C() (c *MgCollection, s *mongo.Client)
@@ -72,12 +76,24 @@ func (m *MgModel) GetModel() *MgModel {
 	return m
 }
 
+//得到一个基础父类，可以被重写，值不复制
+func (m *MgModel) New() interface{} {
+	n := ucore.PtrOf(m.parent)
+	reflect.ValueOf(n).Elem().FieldByName("MgModel").Set(reflect.ValueOf(MgModel{
+		Client: m.Client, DbName: m.DbName, softDelete: m.softDelete, parent: n,
+	}))
+	return n
+}
+
 func (m *MgModel) GetParent() interface{} {
 	return m.parent
 }
 
 //基本可以用作初始化
 func (m *MgModel) SetParent(p interface{}) {
+	if m.DbName == "" {
+		m.DbName = utils.DefaultConfig.Mongodb.DBName
+	}
 	m.parent = p
 }
 
@@ -101,13 +117,14 @@ func (m *MgModel) CloseAllSession() {
 	//}
 }
 
+func (m *MgModel) SetSoftDelete(sf bool) {
+	m.softDelete = sf
+}
+
 func (m *MgModel) C() (c *MgCollection, s *mongo.Client) {
 	s = m.GetClient()
 	if s == nil {
 		return
-	}
-	if m.DbName == "" {
-		m.DbName = utils.DefaultConfig.Mongodb.DBName
 	}
 	c = NewMgCollection(s.Database(m.DbName).Collection(m.parent.(IMgParent).TableName()))
 	return
@@ -200,12 +217,21 @@ func (m *MgModel) Exist(q bson.M) bool {
 func (m *MgModel) BeforeDelete() error {
 	return nil
 }
+
 func (m *MgModel) DeleteId() error {
 	if err := m.parent.(IMgParent).BeforeDelete(); err != nil {
 		return err
 	}
 	mc, _ := m.C()
-	//defer ms.Close()
+	if m.softDelete { //如果开启了软删除，则将文档移动至一个_del集合
+		old := m.New().(IMgModel)
+		old.GetModel().LoadById(m.Id)
+		dc := NewMgCollection(m.Client.Database(m.DbName).Collection(m.parent.(IMgParent).TableName() + "_del"))
+		res, err1 := dc.UpsertId(old.GetModel().Id, old)
+		if res.UpsertedCount != 1 || err1 != nil {
+			return err1
+		}
+	}
 	_, err := mc.RemoveId(m.Id)
 	return err
 }
@@ -250,6 +276,10 @@ type IMgTimeModel interface {
 func (m *MgTimeModel) AutoNow() {
 	now := time.Now()
 	m.UpdatedAt = &now
+}
+
+type MgSoftDelete struct {
+	DeletedAt *time.Time `gorm:"index:idx_deleted_at" json:",omitempty"` //deleted_at
 }
 
 //转换ObjectId, 支持 ObjectId, string
