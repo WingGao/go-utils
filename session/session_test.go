@@ -5,10 +5,10 @@ import (
 	"github.com/kataras/iris/context"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/httptest"
-	"mtest"
 	"os"
 	uredis "github.com/WingGao/go-utils/redis"
 	"github.com/stretchr/testify/assert"
+	"wingao.net/webproj/mtest"
 )
 
 func TestMain(m *testing.M) {
