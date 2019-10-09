@@ -7,6 +7,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/go-errors/errors"
 	"github.com/jinzhu/gorm"
+	jsoniter "github.com/json-iterator/go"
 	"github.com/thoas/go-funk"
 	"reflect"
 	"strings"
@@ -504,6 +505,11 @@ func (m *Model) GetParent() interface{} {
 //使用的时候需要注意标签的导出 `structs:",flatten"`
 func (m *Model) ToMap() map[string]interface{} {
 	return structs.Map(m.GetParent())
+}
+
+func (m *Model) ToJSON() string {
+	j, _ := jsoniter.MarshalToString(m)
+	return j
 }
 
 //最好ID必须设置，不然会查询全部;如果没有定义的时候没有ID，则无法生效
