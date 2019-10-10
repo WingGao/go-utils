@@ -14,7 +14,6 @@ func GetItemString(arr []string, index int) (out string, ok bool) {
 	}
 	return
 }
-
 // 数组转hashmap
 // `mapKeyField`可以是`string`或者是`func`
 func ArrayToHashmap(arr interface{}, mapKeyField interface{}) *hashmap.Map {

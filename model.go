@@ -307,6 +307,14 @@ func (m *Model) FindList(where ...interface{}) (interface{}, error) {
 	return list, err
 }
 
+//返回 []*ParentType
+func (m *Model) FindList2(where ...interface{}) (interface{}, error) {
+	list := m.MakePSlice()
+	err := m.RawFind(list, where...).Error
+	val := reflect.ValueOf(list)
+	return val.Elem().Interface(), err
+}
+
 //创建对应父Slice切片的地址,指针 *[]*ParentType
 func (m *Model) MakePSlice() interface{} {
 	t := reflect.TypeOf(m.parent)
@@ -705,12 +713,16 @@ type ModelSoftDelete struct {
 	IsActive  *bool      `gorm:"Column:isactive;index:idx_isactive;DEFAULT:1;COMMENT:'逻辑删除(1:保留,0:删除)'"`
 }
 
-func (m ModelSoftDelete) GetDeleteWhere() string {
+//func (m ModelSoftDelete) GetDeleteWhere() string {
+//	return "deleted_at IS NULL"
+//}
+
+func (m ModelSoftDelete) GetActiveWhere() string {
 	return "deleted_at IS NULL"
 }
 
 func (ModelSoftDelete) UnDelete(mi IModel) error {
-	err := mi.Table().Unscoped().Model(mi.GetParent()).Updates(map[string]interface{}{"deleted_at": nil}, false).Error
+	err := mi.Table().Unscoped().Model(mi.GetParent()).Updates(map[string]interface{}{"deleted_at": nil, "isactive": true}, false).Error
 	return mi.FormatError(err)
 }
 
