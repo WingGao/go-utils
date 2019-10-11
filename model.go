@@ -267,10 +267,10 @@ func (m *Model) Find(out interface{}, where ...interface{}) (err error) {
 	return m.parent.(IModelParent).FormatError(err)
 }
 
-//用了scan的方法, 没有limit
+//用了scan的方法, 没有limit, 会自动判断软删除
 func (m *Model) RawFind(out interface{}, where ...interface{}) (db *gorm.DB) {
 	if len(where) > 0 {
-		db = m.Table().Where(where[0], where[1:]...).Scan(out)
+		db = m.GModel().Where(where[0], where[1:]...).Scan(out)
 	} else {
 		db = m.GetDB().Find(out)
 	}

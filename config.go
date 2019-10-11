@@ -62,6 +62,8 @@ type MConfig struct {
 	ElasticSearch   DbConfig `yaml:"elastic"`
 	Mongodb         DbConfig
 	DefaultPassword string `yaml:"default_password"` //默认密码
+	CasbinModelPath string `yaml:"casbin_model"`
+	CasbinPolicy    string `yaml:"casbin_policy"`
 	MediaPath       string
 	Media           struct {
 		Type   string
@@ -304,6 +306,7 @@ func NewConfigFromFile(confPath string) (conf MConfig, err error) {
 			yaml.Unmarshal(confd, &m)
 			conf.allMap = m
 			conf.configPath = confPath
+			// 默认已配置文件所在目录为准
 			if conf.AppPath == "" {
 				conf.AppPath = filepath.Dir(confPath)
 			}
@@ -319,6 +322,9 @@ func NewConfigFromFile(confPath string) (conf MConfig, err error) {
 			}
 			if conf.GraphQL.Path != "" {
 				conf.GraphQL.Path = getFullPath(conf.AppPath, conf.GraphQL.Path)
+			}
+			if conf.CasbinModelPath != "" {
+				conf.CasbinModelPath = getFullPath(conf.AppPath, conf.CasbinModelPath)
 			}
 			conf.Mysql.Host = formatEnv(conf.Mysql.Host)
 			err = conf.WxConfig.Update()

@@ -33,6 +33,7 @@ type XSession struct {
 	Sid      string
 	Uid      uint32
 	Group    uint32
+	Roles    []string
 	Username string
 	LastTime time.Time
 	// 微信相关
