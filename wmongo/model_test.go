@@ -91,3 +91,4 @@ func TestGetMSetIgnore(t *testing.T) {
 	assert.Contains(t, upm["$set"], "fieldstr")
 	t.Log(MarshalJSONStr(upm))
 }
+

@@ -30,8 +30,8 @@ import (
 	"context"
 	"github.com/WingGao/go-utils"
 	"github.com/WingGao/go-utils/ucore"
+	"github.com/globalsign/mgo/bson"
 	"github.com/go-errors/errors"
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"reflect"
@@ -295,8 +295,13 @@ func ToObjectId(in interface{}) (oid primitive.ObjectID) {
 }
 
 func DecodeSingleRes(sr *mongo.SingleResult, out interface{}) (err error) {
+	//var bs []byte
 	err = sr.Err()
 	if err == nil {
+		//bs, err = sr.DecodeBytes()
+		//if err == nil {
+		//	err = bson.Unmarshal(bs, out)
+		//}
 		err = sr.Decode(out)
 	}
 	return

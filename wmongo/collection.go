@@ -55,4 +55,3 @@ func (c *MgCollection) CreateIndex(field, idxName string, asc, unique bool) (str
 	}
 	return indexes.CreateOne(context.Background(), mod)
 }
-
