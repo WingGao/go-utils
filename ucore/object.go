@@ -1,6 +1,7 @@
 package ucore
 
 import (
+	"fmt"
 	"github.com/thoas/go-funk"
 	"reflect"
 )
@@ -50,7 +51,12 @@ func MapGetColumnUint32(arr interface{}, key string) []uint32 {
 
 func MapGetColumnString(arr interface{}, key string) []string {
 	return funk.Map(arr, func(item interface{}) string {
-		return funk.Get(item, key).(string)
+		val := funk.Get(item, key)
+		if r, ok := val.(string); ok {
+			return r
+		} else {
+			return fmt.Sprintf("%v", val)
+		}
 	}).([]string)
 }
 

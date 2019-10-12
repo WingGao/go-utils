@@ -412,6 +412,16 @@ func (m *Model) Update(attrs ...interface{}) (err error) {
 	return m.parent.(IModelParent).FormatError(err)
 }
 
+// 增加一个数据库列，但是这个col一定不为null
+func (m *Model) Increase(col string, step int) (err error) {
+	if m.PrimaryKeyZero() {
+		return errors.New("pk is nil")
+	}
+	d := m.GetDB().Model(m.parent).Update(col, gorm.Expr(fmt.Sprintf("`%s` + ?", col), step))
+	err = d.Error
+	return m.parent.(IModelParent).FormatError(err)
+}
+
 //只能删除自己
 func (m *Model) Delete() error {
 	scope, _ := m.NewScope()

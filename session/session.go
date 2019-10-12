@@ -177,20 +177,20 @@ func (x *XSession) IsClear() bool {
 	return x.isClear
 }
 
+// 立即清空session
 func (x *XSession) Clear() {
+	// 删除之前的
+	_session.Destroy(x.ctx)
 	newSess := XSession{ctx: x.ctx, key: x.key}
 	copier.Copy(x, newSess)
-	x.isClear = true
+	x.Iris = _session.Start(x.ctx)
+	x.Sid = x.Iris.ID()
+	//x.isClear = true
 }
 
 func (x *XSession) SaveIris(ctx context.Context, key string) error {
 	if !checkSession() {
 		return _errNotSet
-	}
-	//被清空的不需要保存
-	if x.isClear {
-		_session.Destroy(ctx)
-		x.isClear = false
 	}
 
 	g, err := x.ToJSON()

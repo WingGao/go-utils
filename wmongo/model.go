@@ -62,6 +62,7 @@ type IMgModel interface {
 }
 type IMgParent interface {
 	TableName() string
+	GetModel() *MgModel
 	FormatError(err error) error
 	BeforeDelete() error
 	BeforeSave() error
