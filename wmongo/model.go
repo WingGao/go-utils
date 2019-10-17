@@ -158,6 +158,10 @@ func (m *MgModel) Save() error {
 	return nil
 }
 
+func (m *MgModel) SetId(id interface{}) {
+	m.Id = ToObjectId(id)
+}
+
 func (m *MgModel) LoadById(id interface{}) error {
 	mc, _ := m.C()
 	//err := m.One(mc.FindId(ToObjectId(id)), m.parent)

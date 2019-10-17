@@ -39,11 +39,11 @@ require (
 	github.com/moul/http2curl v1.0.0 // indirect
 	github.com/olivere/elastic v6.2.17+incompatible
 	github.com/parnurzeal/gorequest v0.2.15
+	github.com/pierrec/lz4 v2.0.5+incompatible // indirect
 	github.com/qiniu/api.v7 v7.2.5+incompatible
 	github.com/qiniu/x v7.0.8+incompatible // indirect
 	github.com/rs/xid v1.2.1
 	github.com/satori/go.uuid v1.2.0 // indirect
-	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
 	github.com/sirupsen/logrus v1.4.2
 	github.com/smartystreets/goconvey v0.0.0-20190330032615-68dc04aab96a // indirect
 	github.com/sony/sonyflake v0.0.0-20181109022403-6d5bd6181009
@@ -63,11 +63,10 @@ require (
 	go.uber.org/atomic v1.4.0 // indirect
 	go.uber.org/multierr v1.1.0 // indirect
 	go.uber.org/zap v1.10.0
-	golang.org/x/crypto v0.0.0-20190621222207-cc06ce4a13d4 // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gopkg.in/ini.v1 v1.42.0 // indirect
 	gopkg.in/jcmturner/goidentity.v3 v3.0.0 // indirect
-	gopkg.in/yaml.v2 v2.2.2
+	gopkg.in/yaml.v2 v2.2.4
 	qiniupkg.com/x v7.0.8+incompatible // indirect
 )
 
