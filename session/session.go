@@ -6,6 +6,7 @@ import (
 	"github.com/kataras/iris/context"
 	"github.com/kataras/iris/sessions"
 	sredis "github.com/kataras/iris/sessions/sessiondb/redis"
+	"github.com/thoas/go-funk"
 
 	//"fmt"
 	"errors"
@@ -248,6 +249,9 @@ func (x *XSession) GetString(key string) (val string, ok bool) {
 	} else {
 		return v1.(string), true
 	}
+}
+func (x *XSession) HasRole(role string) ( bool) {
+	return funk.InStrings(x.Roles, role)
 }
 
 //删除所有的用户登录session
