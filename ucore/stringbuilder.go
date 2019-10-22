@@ -17,6 +17,10 @@ func (self *StringBuilder) Write(strings ...string) *StringBuilder {
 	}
 	return self
 }
+func (self *StringBuilder) WriteF(format string, a ...interface{}) *StringBuilder {
+	self.buffer.WriteString(fmt.Sprintf(format, a...))
+	return self
+}
 
 func (self *StringBuilder) Printf(format string, args ...interface{}) *StringBuilder {
 	fmt.Fprintf(&self.buffer, format, args...)

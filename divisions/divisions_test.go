@@ -6,6 +6,7 @@ import (
 )
 
 func TestInit(t *testing.T) {
+	LoadFromGithub()
 	t.Logf("%#v", mainDivision)
 	assert.NotNil(t, mainDivision)
 	assert.Equal(t, uint32(1), mainDivision.Version)

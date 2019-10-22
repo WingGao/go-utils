@@ -250,7 +250,7 @@ func (x *XSession) GetString(key string) (val string, ok bool) {
 		return v1.(string), true
 	}
 }
-func (x *XSession) HasRole(role string) ( bool) {
+func (x *XSession) HasRole(role string) (bool) {
 	return funk.InStrings(x.Roles, role)
 }
 
