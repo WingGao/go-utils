@@ -123,7 +123,7 @@ func PrintError(err error) {
 
 func PanicIfErr(err error) {
 	if err != nil {
-		panic(errors.Wrap(err, 1))
+		panic(errors.New(err))
 	}
 }
 
@@ -146,12 +146,14 @@ func NewWError(e interface{}) *WError {
 
 //我们只需要知道最短路径
 func (e *WError) Fmt() {
+	simpleFrames := e.Frames
 	for i, frame := range e.Frames {
-		if frame.Package == "wingao.net/webproj/mcmd/serv	" || frame.Package == "github.com/kataras/iris/middleware/logger" {
-			e.Frames = e.Frames[:i+1]
+		if frame.Package == "wingao.net/webproj/mcmd/serv" || frame.Package == "github.com/kataras/iris/middleware/logger" {
+			simpleFrames = e.Frames[:i+1]
 			break
 		}
 	}
+	e.Frames = simpleFrames
 }
 
 func (e *WError) Stack() []byte {

@@ -23,11 +23,12 @@ require (
 	github.com/go-playground/form v3.1.4+incompatible
 	github.com/go-redis/redis/v7 v7.0.0-beta.4
 	github.com/go-sql-driver/mysql v1.4.1
+	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/iancoleman/strcase v0.0.0-20190422225806-e506e3ef7365
 	github.com/imdario/mergo v0.3.7
 	github.com/imkira/go-interpol v1.1.0 // indirect
 	github.com/jinzhu/copier v0.0.0-20180308034124-7e38e58719c3
-	github.com/jinzhu/gorm v1.9.5
+	github.com/jinzhu/gorm v1.9.11
 	github.com/json-iterator/go v1.1.6
 	github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88 // indirect
 	github.com/kataras/golog v0.0.0-20190624001437-99c81de45f40
@@ -48,6 +49,7 @@ require (
 	github.com/smartystreets/goconvey v0.0.0-20190330032615-68dc04aab96a // indirect
 	github.com/sony/sonyflake v0.0.0-20181109022403-6d5bd6181009
 	github.com/stretchr/testify v1.4.0
+	github.com/t-tiger/gorm-bulk-insert v0.0.0-00010101000000-000000000000
 	github.com/teris-io/shortid v0.0.0-20171029131806-771a37caa5cf
 	github.com/thoas/go-funk v0.4.0
 	github.com/ungerik/go-dry v0.0.0-20180411133923-654ae31114c8
@@ -72,7 +74,6 @@ require (
 
 replace (
 	github.com/RichardKnop/machinery => ../../RichardKnop/machinery
-	github.com/WingGao/gizwits => ../../WingGao/gizwits
 	github.com/chanxuehong/wechat => ../../chanxuehong/wechat
 	github.com/fatih/structs => ../../fatih/structs
 	github.com/globalsign/mgo => ../../globalsign/mgo
@@ -81,4 +82,5 @@ replace (
 	github.com/jinzhu/gorm => ../../jinzhu/gorm
 	github.com/kataras/iris => ../../kataras/iris
 	github.com/micro/go-micro => ../../micro/go-micro
+	github.com/t-tiger/gorm-bulk-insert => ../../t-tiger/gorm-bulk-insert
 )

@@ -3,11 +3,12 @@ package utils
 import (
 	"database/sql"
 	"fmt"
-	ucore "github.com/WingGao/go-utils/ucore"
+	"github.com/WingGao/go-utils/ucore"
 	"github.com/fatih/structs"
 	"github.com/go-errors/errors"
 	"github.com/jinzhu/gorm"
 	jsoniter "github.com/json-iterator/go"
+	"github.com/t-tiger/gorm-bulk-insert"
 	"github.com/thoas/go-funk"
 	"reflect"
 	"strings"
@@ -338,6 +339,11 @@ func (m *Model) BatchInsertBad(items []*Model) (err error) {
 	}
 	tx.Commit()
 	return
+}
+
+// 批量插入
+func (m *Model) BatchInsert(items interface{}, chunkSize int, excludeFields ...string) (err error) {
+	return gormbulk.BulkInsert(m.GetDB(), ucore.ToInterfaceArray(items), chunkSize, excludeFields...)
 }
 
 func (m *Model) First(out interface{}, where ...interface{}) (err error) {
