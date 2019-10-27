@@ -270,6 +270,15 @@ func (m *MgModel) FormatError(err error) error {
 	return err
 }
 
+// 获取创建时间
+func (m *MgModel) CreatedAt() *time.Time {
+	if !m.Id.IsZero() {
+		t := m.Id.Timestamp()
+		return &t
+	}
+	return nil
+}
+
 type MgTimeModel struct {
 	UpdatedAt *time.Time `bson:"UpdatedAt"`
 }

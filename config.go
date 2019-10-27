@@ -72,9 +72,10 @@ type MConfig struct {
 		Host   string
 	}
 	WebApps        string
-	MaxMediaSize   string `yaml:"max_media_size"`
-	CookieExpires  int64  `yaml:"cookie_expires"`
-	CaptchaDisable bool   `yaml:"captcha_disable"`
+	SsrMap         map[string]string `yaml:"ssr"`
+	MaxMediaSize   string            `yaml:"max_media_size"`
+	CookieExpires  int64             `yaml:"cookie_expires"`
+	CaptchaDisable bool              `yaml:"captcha_disable"`
 	SiteCreator    struct {
 		Mysql string
 		WpDir string
