@@ -94,7 +94,6 @@ func GetMSetIgnore(obj interface{}, bsonFields ...string) (bm bson.M) {
 	//	objt = objt.Elem()
 	//	objv = objv.Elem()
 	//}
-	//info, err1 := mbson.GetStructInfo(objt)
 	//if err1 != nil {
 	//	return
 	//}
