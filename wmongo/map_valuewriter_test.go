@@ -5,14 +5,15 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/bsoncodec"
 	"testing"
+	"time"
 )
 
 type ModelMap struct {
-	MgModel      `bson:",inline"`
-	MgTimeModel  `bson:",inline"`
-	FieldStr     string
-	FieldStructs []EmModel
-	FieldStrB    string `bson:"field_b"`
+	//MgModel      `bson:",inline"`
+	FieldStruct MgTimeModel
+	//FieldStr     string
+	FieldStructArr []EmModel
+	FieldStrB      string `bson:"field_b"`
 }
 
 func TestNewMapValueWriter(t *testing.T) {
@@ -21,8 +22,12 @@ func TestNewMapValueWriter(t *testing.T) {
 	enc := &bson.Encoder{}
 	enc.SetContext(ec)
 	enc.Reset(mvw)
-	mod := &ModelMap{FieldStr: "1", FieldStrB: "b",
-		FieldStructs: []EmModel{{FieldA: "c"}, {FieldA: "d"}}}
+	now := time.Now()
+	mod := &ModelMap{
+		//FieldStr: "1",
+		FieldStruct:    MgTimeModel{&now},
+		FieldStrB:      "b",
+		FieldStructArr: []EmModel{{FieldA: "c"}, {FieldA: "d"}}}
 	err := enc.Encode(mod)
 	assert.NoError(t, err)
 	t.Log(mvw.buf)

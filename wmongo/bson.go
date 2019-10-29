@@ -2,6 +2,8 @@ package wmongo
 
 import (
 	"github.com/WingGao/go-utils"
+	jsoniter "github.com/json-iterator/go"
+
 	//"github.com/globalsign/mgo/bson"
 	"github.com/iancoleman/strcase"
 	"go.mongodb.org/mongo-driver/bson"
@@ -85,43 +87,18 @@ func BElemMatch(v interface{}) (out bson.M) {
 	return bson.M{"$elemMatch": v}
 }
 
-//忽略某些
-func GetMSetIgnore(obj interface{}, bsonFields ...string) (bm bson.M) {
-	//setM := bson.M{}
-	//objt := reflect.TypeOf(obj)
-	//objv := reflect.ValueOf(obj)
-	//if objt.Kind() == reflect.Ptr {
-	//	objt = objt.Elem()
-	//	objv = objv.Elem()
-	//}
-	//if err1 != nil {
-	//	return
-	//}
-	//ignoreMap := make(map[string]bool, len(bsonFields))
-	//for _, f := range bsonFields {
-	//	ignoreMap[f] = true
-	//}
-	//
-	//for _, v := range info.FieldsList {
-	//	if v.Key == "_id" { //忽略_id
-	//		continue
-	//	}
-	//	if _, ok := ignoreMap[v.Key]; !ok {
-	//		setv := objv
-	//		if len(v.Inline) > 0 {
-	//			//inline
-	//			for _, inlineNum := range v.Inline {
-	//				setv = setv.Field(inlineNum)
-	//			}
-	//		} else {
-	//			setv = setv.Field(v.Num)
-	//		}
-	//		setM[v.Key] = setv.Interface()
-	//	}
-	//}
-	////panic("not implement")
-	//bm = BSet(setM)
 
+
+//忽略某些 bsonFields是数据库里的名字，不是struct属性
+func GetMSetIgnore(obj interface{}, bsonFields ...string) (bm bson.M, err error) {
+	bmap, err1 := structToBsonMap(obj)
+	if err1 != nil {
+		return nil, err1
+	}
+	for _, f := range bsonFields {
+		delete(bmap, f)
+	}
+	bm = BSet(bmap)
 	return
 }
 
@@ -130,6 +107,15 @@ func BMarshal(m interface{}) []byte {
 	return bs
 }
 
+// 从json中合并到原对象，作用是处理空值
+func mergeFromJson(obj interface{}, bs []byte) error {
+	err := jsoniter.Unmarshal(bs, obj)
+	return err
+}
+func mergeFromRequest(obj interface{}, bs []byte) error {
+	err := jsoniter.Unmarshal(bs, obj)
+	return err
+}
 // 默认是snake_case模式
 var SnakeStructTagParser bsoncodec.StructTagParserFunc = func(sf reflect.StructField) (bsoncodec.StructTags, error) {
 	key := strcase.ToSnake(sf.Name)

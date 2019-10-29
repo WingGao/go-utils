@@ -55,3 +55,19 @@ func (c *MgCollection) CreateIndex(field, idxName string, asc, unique bool) (str
 	}
 	return indexes.CreateOne(context.Background(), mod)
 }
+
+// 创建索引
+func (c *MgCollection) CreateIndexes(fields []string, idxName string, unique bool) (string, error) {
+	indexes := c.Indexes()
+	v := bsonx.Int32(1)
+	keys := make([]bsonx.Elem, len(fields))
+	for i, k := range fields {
+		keys[i] = bsonx.Elem{k, v}
+	}
+	mod := mongo.IndexModel{
+		Keys:    bsonx.Doc(keys),
+		Options: options.Index().SetName(idxName).SetUnique(unique),
+	}
+
+	return indexes.CreateOne(context.Background(), mod)
+}

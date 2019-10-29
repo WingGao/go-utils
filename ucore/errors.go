@@ -2,9 +2,15 @@ package ucore
 
 import (
 	"bytes"
+	"fmt"
 	sll "github.com/emirpasic/gods/lists/singlylinkedlist"
 	"github.com/go-errors/errors"
+	ge "github.com/pkg/errors"
 )
+
+type stackTracer interface {
+	StackTrace() ge.StackTrace
+}
 
 var (
 	ErrRequireLogin = errors.New("require login") // 这个错误不能改
@@ -40,8 +46,9 @@ func NewErrNeedLogin() *errors.Error {
 	return errors.Wrap(ErrRequireLogin, 1)
 }
 
-func NewErrPermission() *errors.Error {
+func NewErrPermission() error {
 	return errors.Wrap("没有权限", 1)
+	//return ge.New("没有权限")
 }
 
 func NewErrCode() *errors.Error {
@@ -137,6 +144,8 @@ func NewWError(e interface{}) *WError {
 	if e2, ok := e.(*errors.Error); ok {
 		out.Err = e2
 		out.Frames = e2.StackFrames()
+	} else if e3, ok3 := e.(stackTracer); ok3 {
+		fmt.Printf("%#v", e3.StackTrace())
 	} else {
 		out.Err = errors.Wrap(e, 1)
 		out.Frames = out.Err.StackFrames()
@@ -147,12 +156,14 @@ func NewWError(e interface{}) *WError {
 //我们只需要知道最短路径
 func (e *WError) Fmt() {
 	simpleFrames := e.Frames
+	fmt.Printf("%#v\n", simpleFrames)
 	for i, frame := range e.Frames {
 		if frame.Package == "wingao.net/webproj/mcmd/serv" || frame.Package == "github.com/kataras/iris/middleware/logger" {
 			simpleFrames = e.Frames[:i+1]
 			break
 		}
 	}
+	fmt.Printf("%#v\n", simpleFrames)
 	e.Frames = simpleFrames
 }
 

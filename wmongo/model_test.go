@@ -25,8 +25,8 @@ func TestMain(m *testing.M) {
 type ModelA struct {
 	MgModel      `bson:",inline"`
 	MgTimeModel  `bson:",inline"`
-	FieldStr     string
-	FieldStructs []EmModel
+	FieldStr     string    //field_str
+	FieldStructs []EmModel //field_structs
 	FieldStrB    string `bson:"field_b"`
 }
 type EmModel struct {
@@ -84,11 +84,15 @@ func TestToObjectId(t *testing.T) {
 func TestGetMSetIgnore(t *testing.T) {
 	mod := NewModelA()
 	mod.AutoNow()
-	upm := GetMSetIgnore(mod, "fieldstr")
-	assert.NotContains(t, upm["$set"], "fieldstr")
+	mod.FieldStr = "123"
+	mod.FieldStructs = []EmModel{{"1"}, {"2"}}
+	upm, err1 := GetMSetIgnore(mod, "field_str")
+	assert.NoError(t, err1)
+	assert.NotContains(t, upm["$set"], "field_str")
 	assert.Contains(t, upm["$set"], "UpdatedAt")
-	upm = GetMSetIgnore(mod, " ")
-	assert.Contains(t, upm["$set"], "fieldstr")
-	t.Log(MarshalJSONStr(upm))
-}
+	t.Log(upm)
+	upm, err1 = GetMSetIgnore(mod, " ")
+	assert.NoError(t, err1)
+	assert.Contains(t, upm["$set"], "field_str")
 
+}

@@ -32,8 +32,11 @@ import (
 	"github.com/WingGao/go-utils/ucore"
 	"github.com/globalsign/mgo/bson"
 	"github.com/go-errors/errors"
+	icontext "github.com/kataras/iris/context"
+	"github.com/thoas/go-funk"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"reflect"
 	"strings"
 	"time"
@@ -191,12 +194,16 @@ func (m *MgModel) FindOne(q interface{}, out interface{}) error {
 	return m.pFormatError(err)
 }
 
-//func (m *MgModel) FindAll(q interface{}, arr interface{}) error {
-//	mc, ms := m.C()
-//	defer ms.Close()
-//	err := mc.Find(q).All(arr)
-//	return m.pFormatError(err)
-//}
+func (m *MgModel) FindAll(q interface{}, out interface{}, opts ...*options.FindOptions) error {
+	mc, _ := m.C()
+	c, err := mc.Find(context.Background(), q, opts...)
+	if err != nil {
+		return err
+	} else {
+		err = c.All(context.Background(), out)
+	}
+	return m.pFormatError(err)
+}
 
 func (m *MgModel) Count(q interface{}) (int, error) {
 	//mc, _ := m.C()
@@ -279,6 +286,15 @@ func (m *MgModel) CreatedAt() *time.Time {
 	return nil
 }
 
+// 从iris的请求中合并对象
+func (m *MgModel) MergeFromIris(ctx icontext.Context) error {
+	if bs, err := ctx.GetBody(); err == nil {
+		return mergeFromJson(m.parent, bs)
+	} else {
+		return err
+	}
+}
+
 type MgTimeModel struct {
 	UpdatedAt *time.Time `bson:"UpdatedAt"`
 }
@@ -306,6 +322,13 @@ func ToObjectId(in interface{}) (oid primitive.ObjectID) {
 		return id
 	}
 	return primitive.NilObjectID
+}
+func ToObjectIds(arr interface{}) []primitive.ObjectID {
+	ids := []primitive.ObjectID{}
+	funk.ForEach(arr, func(v interface{}) {
+		ids = append(ids, ToObjectId(v))
+	})
+	return ids
 }
 
 func DecodeSingleRes(sr *mongo.SingleResult, out interface{}) (err error) {
