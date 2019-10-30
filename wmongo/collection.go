@@ -41,6 +41,9 @@ func (c *MgCollection) RemoveId(id interface{}, ) (*mongo.DeleteResult, error) {
 		{"_id", id},
 	})
 }
+func (c *MgCollection) RemoveOne(q interface{}) (*mongo.DeleteResult, error) {
+	return c.DeleteOne(context.Background(), q)
+}
 
 // 创建索引
 func (c *MgCollection) CreateIndex(field, idxName string, asc, unique bool) (string, error) {

@@ -247,6 +247,10 @@ func (m *MgModel) DeleteId() error {
 	_, err := mc.RemoveId(m.Id)
 	return err
 }
+func (m *MgModel) DeleteOne(q interface{}) (*mongo.DeleteResult, error) {
+	mc, _ := m.C()
+	return mc.RemoveOne(q)
+}
 
 //由于mgo的赋值会替换全部属性，所以需要重新赋值
 //func (m *MgModel) One(q *mgo.Query, out interface{}) error {

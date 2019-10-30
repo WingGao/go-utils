@@ -14,6 +14,7 @@ func GetItemString(arr []string, index int) (out string, ok bool) {
 	}
 	return
 }
+
 // 数组转hashmap
 // `mapKeyField`可以是`string`或者是`func`
 func ArrayToHashmap(arr interface{}, mapKeyField interface{}) *hashmap.Map {
@@ -45,3 +46,7 @@ func ArrJoin(arrL interface{}, arrR interface{}, keyL, keyR interface{}, joinFun
 	})
 	return arrL
 }
+//func ArrRemoveByIndex(arr interface{}, idx int) interface{}{
+//	arrVal := reflect.ValueOf(arr)
+//	reflect.SliceOf(arrVal.Slice())
+//}
