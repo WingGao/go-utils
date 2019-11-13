@@ -74,6 +74,7 @@ require (
 
 replace (
 	github.com/RichardKnop/machinery => ../../RichardKnop/machinery
+	github.com/WingGao/errors => ../../WingGao/errors
 	github.com/chanxuehong/wechat => ../../chanxuehong/wechat
 	github.com/fatih/structs => ../../fatih/structs
 	github.com/globalsign/mgo => ../../globalsign/mgo
