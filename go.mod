@@ -18,7 +18,6 @@ require (
 	github.com/fatih/structs v1.1.0
 	github.com/fortytw2/leaktest v1.3.0 // indirect
 	github.com/globalsign/mgo v0.0.0
-	github.com/go-check/check v1.0.0-20180628173108-788fd7840127 // indirect
 	github.com/go-errors/errors v1.0.1
 	github.com/go-playground/form v3.1.4+incompatible
 	github.com/go-redis/redis/v7 v7.0.0-beta.4
@@ -40,7 +39,6 @@ require (
 	github.com/moul/http2curl v1.0.0 // indirect
 	github.com/olivere/elastic v6.2.17+incompatible
 	github.com/parnurzeal/gorequest v0.2.15
-	github.com/pierrec/lz4 v2.0.5+incompatible // indirect
 	github.com/qiniu/api.v7 v7.2.5+incompatible
 	github.com/qiniu/x v7.0.8+incompatible // indirect
 	github.com/rs/xid v1.2.1
