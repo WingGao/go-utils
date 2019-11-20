@@ -28,10 +28,10 @@ package wmongo
 
 import (
 	"context"
+	"github.com/WingGao/errors"
 	"github.com/WingGao/go-utils"
 	"github.com/WingGao/go-utils/ucore"
 	"github.com/globalsign/mgo/bson"
-	"github.com/go-errors/errors"
 	icontext "github.com/kataras/iris/context"
 	"github.com/thoas/go-funk"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -337,7 +337,7 @@ func ToObjectIds(arr interface{}) []primitive.ObjectID {
 
 func DecodeSingleRes(sr *mongo.SingleResult, out interface{}) (err error) {
 	//var bs []byte
-	err = sr.Err()
+	err = errors.WithStack(sr.Err())
 	if err == nil {
 		//bs, err = sr.DecodeBytes()
 		//if err == nil {

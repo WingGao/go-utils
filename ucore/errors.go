@@ -29,28 +29,28 @@ var (
 		ErrNoPermission, ErrCannotModify, ErrNoItem, ErrExisted, ErrNotMatch}
 )
 
-func NewErrNotFound() *errors.Error {
-	return errors.Wrap("不存在", 1)
+func NewErrNotFound() error {
+	return ge.WrapSkip("不存在", 1)
 }
 
-func NewErrExisted() *errors.Error {
-	return errors.Wrap("已存在", 1)
+func NewErrExisted() error {
+	return ge.WrapSkip("已存在", 1)
 }
 
-func NewErrParams() *errors.Error {
-	return errors.Wrap("参数错误", 1)
+func NewErrParams() error {
+	return ge.WrapSkip("参数错误", 1)
 }
 
-func NewErrSystem() *errors.Error {
-	return errors.Wrap("系统错误", 1)
+func NewErrSystem() error {
+	return ge.WrapSkip("系统错误", 1)
 }
 
-func NewErrNeedLogin() *errors.Error {
-	return errors.Wrap(ErrRequireLogin, 1)
+func NewErrNeedLogin() error {
+	return ge.WrapSkip(ErrRequireLogin, 1)
 }
 
 func NewErrPermission() error {
-	return errors.Wrap("没有权限", 1)
+	return ge.WrapSkip("没有权限", 1)
 	//return ge.New("没有权限")
 }
 func NewErrPassword() error {
@@ -58,12 +58,12 @@ func NewErrPassword() error {
 	//return ge.New("没有权限")
 }
 
-func NewErrCode() *errors.Error {
-	return errors.Wrap("验证码错误", 1)
+func NewErrCode() error {
+	return ge.WrapSkip("验证码错误", 1)
 }
 
-func NewErrNoAccount() *errors.Error {
-	return errors.Wrap("账户不存在", 1)
+func NewErrNoAccount() error {
+	return ge.WrapSkip("账户不存在", 1)
 }
 
 func Nothing(...interface{}) {
@@ -94,7 +94,7 @@ func NewErrorList() *ErrorList {
 func (l *ErrorList) AppendE(errs ...error) {
 	for _, v := range errs {
 		if v != nil {
-			//l.List.Add(errors.Wrap(v, 1))
+			//l.List.Add(ge.WrapSkip(v, 1))
 			l.list.Add(v)
 		}
 	}
@@ -102,7 +102,7 @@ func (l *ErrorList) AppendE(errs ...error) {
 
 func (l *ErrorList) AppendEWrap(err error, skip int) {
 	if err != nil {
-		l.list.Add(errors.Wrap(err, skip))
+		l.list.Add(ge.WrapSkip(err, skip))
 	}
 }
 
@@ -131,7 +131,7 @@ func (l *ErrorList) Run(fo func() error) {
 }
 
 func PrintError(err error) {
-	//errN := errors.Wrap(err, 0)
+	//errN := ge.WrapSkip(err, 0)
 	//fmt.Println(errN.ErrorStack())
 }
 

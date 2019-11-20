@@ -9,10 +9,12 @@ import (
 )
 
 // 中国省市数据
+// 4个直辖市、23个省（包括台湾省）、5个自治区、2个特别行政区
 type Division struct {
 	Provinces  map[string]DivisionItem
 	Cities     map[string]DivisionItem
 	Areas      map[string]DivisionItem
+	Shenghui   map[string]string // key=province-code value=city-code 省会
 	isInited   bool
 	UpdateTime time.Time `json:",omitempty"`
 	Version    uint32    `json:",omitempty"`
@@ -57,6 +59,16 @@ func LoadFromGithub() (Division, error) {
 	mainDivision.isInited = true
 	mainDivision.Version = 1
 	wlog.S().Infof("LoadFromGithub 加载成功 Provinces=%d", len(mainDivision.Provinces))
+	// 省会
+	shArr := []string{
+		// 省
+		"1301", "1501", "2101", "2201", "2301", "3201", "3301", "3401", "3501", "3701", "3601", "4101", "4201", "4301", "4401", "4601", "5101", "5201", "5301", "6101", "6301", "6201",
+		"1401", "4501", "5401", "6401", "6501", //自治区
+	}
+	mainDivision.Shenghui = make(map[string]string, len(shArr))
+	for _, sh := range shArr {
+		mainDivision.Shenghui[sh[:2]] = sh
+	}
 	return mainDivision, nil
 }
 
