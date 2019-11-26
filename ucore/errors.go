@@ -46,7 +46,7 @@ func NewErrSystem() error {
 }
 
 func NewErrNeedLogin() error {
-	return ge.WrapSkip(ErrRequireLogin, 1)
+	return ge.WrapSkip("require login", 1)
 }
 
 func NewErrPermission() error {

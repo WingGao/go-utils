@@ -6,6 +6,7 @@ require (
 	github.com/CloudyKit/fastprinter v0.0.0-20170127035650-74b38d55f37a // indirect
 	github.com/RichardKnop/machinery v1.6.2
 	github.com/Shopify/sarama v1.23.0
+	github.com/WingGao/errors v0.0.0-00010101000000-000000000000
 	github.com/ajg/form v1.5.1 // indirect
 	github.com/aliyun/alibaba-cloud-sdk-go v0.0.0-20190808125512-07798873deee
 	github.com/chanxuehong/wechat v0.0.0-20190521093015-fafb751f9916

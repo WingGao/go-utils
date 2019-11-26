@@ -1,13 +1,13 @@
 package utils
 
 import (
-	"fmt"
-	"time"
-	"github.com/ungerik/go-dry"
 	"encoding/base64"
-	"path/filepath"
+	"fmt"
+	"github.com/ungerik/go-dry"
 	"os"
 	"os/exec"
+	"path/filepath"
+	"time"
 )
 
 func FileGetBase64(filenameOrURL string, timeout ...time.Duration) (out string, err error) {
@@ -26,15 +26,14 @@ func BinPath() string {
 }
 
 // 可执行文件是否存在
-func BinExist(binfile string, canPainc bool) bool {
-	cmd := exec.Command("where", binfile)
-	out, err := cmd.Output()
-	if err != nil || len(out) == 0 {
+func BinExist(binfile string, canPainc bool) string {
+	ep, err := exec.LookPath(binfile)
+	if err != nil || len(ep) == 0 {
 		if canPainc {
-			fmt.Println(err, out)
+			fmt.Println(err)
 			panic("no such bin file: " + binfile)
 		}
-		return false
+		return ""
 	}
-	return true
+	return ep
 }

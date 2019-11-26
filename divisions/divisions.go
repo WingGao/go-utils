@@ -15,6 +15,7 @@ type Division struct {
 	Cities     map[string]DivisionItem
 	Areas      map[string]DivisionItem
 	Shenghui   map[string]string // key=province-code value=city-code 省会
+	Zhixia     []string          // province-code 直辖市
 	isInited   bool
 	UpdateTime time.Time `json:",omitempty"`
 	Version    uint32    `json:",omitempty"`
@@ -69,6 +70,7 @@ func LoadFromGithub() (Division, error) {
 	for _, sh := range shArr {
 		mainDivision.Shenghui[sh[:2]] = sh
 	}
+	mainDivision.Zhixia = []string{"11", "12", "31", "50"}
 	return mainDivision, nil
 }
 

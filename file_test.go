@@ -7,5 +7,5 @@ import (
 
 func TestBinExist(t *testing.T) {
 	r := BinExist("vips", true)
-	assert.True(t, r)
+	assert.True(t, r != "")
 }
