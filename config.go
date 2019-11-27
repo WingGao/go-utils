@@ -70,6 +70,7 @@ type MConfig struct {
 		Bucket string
 		Region string
 		Host   string
+		Prefix string
 	}
 	WebApps        string
 	SsrMap         map[string]string `yaml:"ssr"`
