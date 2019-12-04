@@ -172,6 +172,11 @@ func (m *MgModel) LoadById(id interface{}) error {
 	return m.pFormatError(err)
 }
 
+// key=列名驼峰
+func (m *MgModel) LoadByKey(key string, val interface{}) error {
+	return m.FindOne(bson.M{key: val}, m.parent)
+}
+
 //注意，如果局部更新，请传$set
 func (m *MgModel) UpdateId(update interface{}) error {
 	mc, _ := m.C()

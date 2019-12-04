@@ -17,3 +17,8 @@ func JsonMarshalIndentString(obj interface{}, prefix, indent string) string {
 	}
 	return string(out)
 }
+
+//func JsonMarshalNoSkip(obj interface{}) ([]byte, error) {
+//	j := jsoniter.ConfigCompatibleWithStandardLibrary
+//	return j.Marshal(obj)
+//}

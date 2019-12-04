@@ -22,6 +22,11 @@ const (
 	HANDLER_CANCEL = "wing-handler-cancel"
 )
 
+// 自己处理json，不适用默认的处理
+type JsonRep struct {
+	Json []byte
+}
+
 func AddHandlerIgnoreErrors(errs ...interface{}) {
 	ignoreErros.Add(errs...)
 }
@@ -55,9 +60,11 @@ func AfterHandler(ictx context.Context, o interface{}, err error) {
 		ictx.JSON(returnErr)
 	} else {
 		var buf []byte
-		offj, isffj := o.(json.Marshaler)
-		if isffj {
+
+		if offj, isffj := o.(json.Marshaler); isffj {
 			buf, err = offj.MarshalJSON()
+		} else if jp, ok := o.(JsonRep); ok {
+			buf = jp.Json
 		} else {
 			buf, err = jsoniter.Marshal(o)
 		}

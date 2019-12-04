@@ -484,7 +484,7 @@ func (m *Model) LoadByPk(pk interface{}) error {
 	return m.parent.(IModelParent).FormatError(d.Error)
 }
 
-// key是struct里的Field，不是数据库的列名
+// key是struct里的Field或数据库的列名
 func (m *Model) LoadByKey(key string, val interface{}) error {
 	col := m.FormatColumns(key)[0]
 	m.ID = 0
