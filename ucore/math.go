@@ -9,6 +9,13 @@ func MinInt(a, b int) int {
 	return int(math.Min(float64(a), float64(b)))
 }
 
+func MinUint32(a, b uint32) uint32 {
+	return uint32(math.Min(float64(a), float64(b)))
+}
+func MaxUint32(a, b uint32) uint32 {
+	return uint32(math.Max(float64(a), float64(b)))
+}
+
 // 获取周岁
 func CalcAge(birthday time.Time) uint32 {
 	now := time.Now()
