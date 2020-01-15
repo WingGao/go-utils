@@ -4,14 +4,14 @@ import (
 	"github.com/WingGao/go-utils/redis"
 	sll "github.com/emirpasic/gods/lists/singlylinkedlist"
 	"github.com/kataras/golog"
-	"github.com/kataras/iris/sessions"
-	sredis "github.com/kataras/iris/sessions/sessiondb/redis"
+	"github.com/kataras/iris/v12/sessions"
+	sredis "github.com/kataras/iris/v12/sessions/sessiondb/redis"
 	"runtime"
 	"time"
 )
 
 // Database the redis back-end session database for the sessions.
-// github.com/kataras/iris/sessions/sessiondb/redis/database.go
+// github.com/kataras/iris/v12/sessions/sessiondb/redis/database.go
 type Database struct {
 	redis  redis.RedisClient
 	config sredis.Config

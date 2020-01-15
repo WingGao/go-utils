@@ -32,7 +32,7 @@ import (
 	"github.com/WingGao/go-utils"
 	"github.com/WingGao/go-utils/ucore"
 	"github.com/globalsign/mgo/bson"
-	icontext "github.com/kataras/iris/context"
+	icontext "github.com/kataras/iris/v12/context"
 	"github.com/thoas/go-funk"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"

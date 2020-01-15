@@ -179,7 +179,7 @@ func (e *WError) Fmt() {
 			simpleFrames = e.Frames[:i-2]
 			break
 		}
-		if frame.Package == "wingao.net/webproj/mcmd/serv" || frame.Package == "github.com/kataras/iris/middleware/logger" {
+		if frame.Package == "wingao.net/webproj/mcmd/serv" || frame.Package == "github.com/kataras/iris/v12/middleware/logger" {
 			simpleFrames = e.Frames[:i+1]
 			break
 		}

@@ -38,6 +38,11 @@ type ThirdPartConfig struct {
 	Key    string
 	Secret string
 }
+type WebAppConfig struct {
+	Host string
+	Subdomain string
+	Dir  string
+}
 
 //main config
 type MConfig struct {
@@ -72,7 +77,7 @@ type MConfig struct {
 		Host   string
 		Prefix string
 	}
-	WebApps        string
+	WebApps        []WebAppConfig
 	SsrMap         map[string]string `yaml:"ssr"`
 	MaxMediaSize   string            `yaml:"max_media_size"`
 	CookieExpires  int64             `yaml:"cookie_expires"`
@@ -316,11 +321,6 @@ func NewConfigFromFile(confPath string) (conf MConfig, err error) {
 				conf.MediaPath = filepath.Join(conf.AppPath, "uploads")
 			} else {
 				conf.MediaPath = getFullPath(conf.AppPath, conf.MediaPath)
-			}
-			if conf.WebApps == "" {
-				conf.WebApps = filepath.Join(conf.AppPath, "webapps")
-			} else {
-				conf.WebApps = getFullPath(conf.AppPath, conf.WebApps)
 			}
 			if conf.GraphQL.Path != "" {
 				conf.GraphQL.Path = getFullPath(conf.AppPath, conf.GraphQL.Path)

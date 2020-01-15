@@ -2,7 +2,7 @@ package wlog
 
 import (
 	"github.com/kataras/golog"
-	"github.com/kataras/iris"
+	"github.com/kataras/iris/v12"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
