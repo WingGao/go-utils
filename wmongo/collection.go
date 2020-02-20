@@ -54,7 +54,7 @@ func (c *MgCollection) CreateIndex(field, idxName string, asc, unique bool) (str
 	}
 	mod := mongo.IndexModel{
 		Keys:    bsonx.Doc{{field, bsonx.Int32(mv)}},
-		Options: options.Index().SetName(idxName).SetUnique(unique),
+		Options: options.Index().SetName(idxName).SetUnique(unique).SetBackground(true),
 	}
 	return indexes.CreateOne(context.Background(), mod)
 }
@@ -69,7 +69,7 @@ func (c *MgCollection) CreateIndexes(fields []string, idxName string, unique boo
 	}
 	mod := mongo.IndexModel{
 		Keys:    bsonx.Doc(keys),
-		Options: options.Index().SetName(idxName).SetUnique(unique),
+		Options: options.Index().SetName(idxName).SetUnique(unique).SetBackground(true),
 	}
 
 	return indexes.CreateOne(context.Background(), mod)

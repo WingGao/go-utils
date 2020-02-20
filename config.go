@@ -41,6 +41,7 @@ type ThirdPartConfig struct {
 type WebAppConfig struct {
 	Host string
 	Subdomain string
+	Subpath string
 	Dir  string
 }
 
