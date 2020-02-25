@@ -144,7 +144,14 @@ func (c *RedisUniversalClient) GetGlob(key string, out interface{}) (error) {
 func (c *RedisUniversalClient) DelAll(keyPatter string) (count uint64, err error) {
 	return c.Batch(keyPatter, 300, func(keys []string) error {
 		// keys已经
-		return c.Del(keys...).Err()
+		// CROSSSLOT Keys in request don't hash to the same slot
+		for _,k := range keys{
+			err = c.Del(k).Err()
+			if err != nil{
+				return err
+			}
+		}
+		return nil
 	})
 }
 
