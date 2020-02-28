@@ -31,7 +31,7 @@ require (
 	github.com/json-iterator/go v1.1.9
 	github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88 // indirect
 	github.com/kataras/golog v0.0.10
-	github.com/kataras/iris v11.1.1+incompatible
+	github.com/kataras/iris/v12 v12.1.4
 	github.com/klauspost/cpuid v1.2.1 // indirect
 	github.com/mailru/easyjson v0.0.0-20190403194419-1ea4449da983 // indirect
 	github.com/micro/go-micro v1.7.0
@@ -70,7 +70,7 @@ replace (
 	github.com/go-errors/errors => ../../go-errors/errors
 	github.com/jinzhu/copier => ../../jinzhu/copier
 	github.com/jinzhu/gorm => ../../jinzhu/gorm
-	github.com/kataras/iris => ../../kataras/iris
+	github.com/kataras/iris/v12 => ../../kataras/iris
 	github.com/micro/go-micro => ../../micro/go-micro
 	github.com/t-tiger/gorm-bulk-insert => ../../t-tiger/gorm-bulk-insert
 )

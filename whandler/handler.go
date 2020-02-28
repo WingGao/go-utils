@@ -5,7 +5,6 @@ import (
 	ucore "github.com/WingGao/go-utils/ucore"
 	"github.com/WingGao/go-utils/wlog"
 	"github.com/emirpasic/gods/sets/hashset"
-	"github.com/go-errors/errors"
 	"github.com/go-playground/form"
 	"github.com/json-iterator/go"
 	"github.com/kataras/iris/v12"
@@ -49,10 +48,13 @@ func AfterHandler(ictx context.Context, o interface{}, err error) {
 			wlog.S().Error(err2.ErrorStack())
 		}
 		ictx.StatusCode(iris.StatusBadRequest)
-		if err3, ok := err.(*errors.Error); ok {
-			if err3, ok1 := err3.Err.(ucore.CommError); ok1 {
-				returnErr = err3
-			}
+		//if err3, ok := err.(*errors.Error); ok {
+		//	if err3, ok1 := err3.Err.(ucore.CommError); ok1 {
+		//		returnErr = err3
+		//	}
+		//}
+		if err3, ok1 := err.(ucore.CommError); ok1 {
+			returnErr = err3
 		}
 		if returnErr == nil {
 			returnErr = ucore.CommError{ErrMsg: err.Error()}

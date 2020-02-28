@@ -16,7 +16,6 @@ type stackTracer interface {
 }
 
 var (
-	ErrRequireLogin = errors.New("require login") // 这个错误不能改
 	ErrRequireAdmin = errors.New("require admin")
 	ErrNoPermission = errors.New("no permission")
 	ErrCannotModify = errors.New("cannot modify")
@@ -25,7 +24,7 @@ var (
 	ErrNotMatch     = errors.New("not match")
 	ErrFormat       = errors.New("format error")
 
-	UtilsErrList = []*errors.Error{ErrRequireLogin, ErrRequireAdmin,
+	UtilsErrList = []*errors.Error{ ErrRequireAdmin,
 		ErrNoPermission, ErrCannotModify, ErrNoItem, ErrExisted, ErrNotMatch}
 )
 
