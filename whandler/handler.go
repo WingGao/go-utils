@@ -45,7 +45,7 @@ func AfterHandler(ictx context.Context, o interface{}, err error) {
 		if !ignoreErros.Contains(err.Error()) {
 			err2 := ucore.NewWError(err)
 			err2.Fmt()
-			wlog.S().Error(err2.ErrorStack())
+			wlog.S().Error(err2.Err.Error(), "\n", err2.ErrorStack())
 		}
 		ictx.StatusCode(iris.StatusBadRequest)
 		//if err3, ok := err.(*errors.Error); ok {

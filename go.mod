@@ -3,7 +3,6 @@ module github.com/WingGao/go-utils
 go 1.12
 
 require (
-	github.com/CloudyKit/fastprinter v0.0.0-20170127035650-74b38d55f37a // indirect
 	github.com/RichardKnop/machinery v1.6.2
 	github.com/Shopify/sarama v1.23.0
 	github.com/WingGao/errors v0.0.0-00010101000000-000000000000
@@ -38,6 +37,7 @@ require (
 	github.com/moul/http2curl v1.0.0 // indirect
 	github.com/olivere/elastic v6.2.17+incompatible
 	github.com/parnurzeal/gorequest v0.2.15
+	github.com/pierrec/lz4 v2.0.5+incompatible // indirect
 	github.com/qiniu/api.v7 v7.2.5+incompatible
 	github.com/qiniu/x v7.0.8+incompatible // indirect
 	github.com/rs/xid v1.2.1

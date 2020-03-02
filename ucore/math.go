@@ -8,6 +8,9 @@ import (
 func MinInt(a, b int) int {
 	return int(math.Min(float64(a), float64(b)))
 }
+func MinInt32(a, b int32) int32 {
+	return int32(math.Min(float64(a), float64(b)))
+}
 
 func MinUint32(a, b uint32) uint32 {
 	return uint32(math.Min(float64(a), float64(b)))

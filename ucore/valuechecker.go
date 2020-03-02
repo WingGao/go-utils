@@ -2,7 +2,7 @@ package ucore
 
 import (
 	"fmt"
-	"github.com/go-errors/errors"
+	"github.com/WingGao/errors"
 	"github.com/thoas/go-funk"
 	"reflect"
 	"regexp"
@@ -57,9 +57,9 @@ func (v *ValueChecker) NotError(val error, errMsg string) bool {
 
 	if val != nil {
 		if errMsg == "" {
-			v.errs.AppendE(errors.Wrap(val, 1))
+			v.errs.AppendE(errors.WrapSkip(val, 1))
 		} else {
-			v.errs.AppendE(errors.Wrap(errMsg, 1))
+			v.errs.AppendE(errors.WrapSkip(errMsg, 1))
 		}
 		return false
 	}
@@ -98,6 +98,25 @@ func (v *ValueChecker) LenLager(val interface{}, minLength int, name string) boo
 		return v.addErr(fmt.Sprintf("%s长度少于%d", name, minLength))
 	}
 }
+
+func (v *ValueChecker) LenLittleEq(val interface{}, maxLength int, name string) bool {
+	if v.shouldSkip() {
+		return false
+	}
+	exLen := 0
+	vType := reflect.TypeOf(val)
+	switch vType.Kind() {
+	case reflect.String:
+		exLen = len(val.(string))
+	case reflect.Array, reflect.Slice, reflect.Map:
+		exLen = vType.Len()
+	}
+	if exLen <= maxLength {
+		return true
+	} else {
+		return v.addErr(fmt.Sprintf("%s长度大于%d", name, maxLength))
+	}
+}
 func (v *ValueChecker) MustTrue(val bool, errMsg interface{}) bool {
 	return v.check(val, errMsg)
 }
@@ -115,10 +134,15 @@ func (v *ValueChecker) PhoneCn(val string, errMsg string) bool {
 }
 
 func (v *ValueChecker) addErr(errMsg interface{}) bool {
-	v.errs.AppendE(errors.Wrap(errMsg, 2))
+	v.errs.AppendE(errors.WrapSkip(errMsg, 2))
 	return false
 }
 
 func (v *ValueChecker) FirstError() error {
 	return v.errs.FirstError()
+}
+func (v *ValueChecker) PanicIfError() {
+	if err := v.FirstError(); err != nil {
+		panic(err)
+	}
 }

@@ -24,7 +24,7 @@ var (
 	ErrNotMatch     = errors.New("not match")
 	ErrFormat       = errors.New("format error")
 
-	UtilsErrList = []*errors.Error{ ErrRequireAdmin,
+	UtilsErrList = []*errors.Error{ErrRequireAdmin,
 		ErrNoPermission, ErrCannotModify, ErrNoItem, ErrExisted, ErrNotMatch}
 )
 
@@ -141,7 +141,7 @@ func PanicIfErr(err error) {
 }
 
 type WError struct {
-	Err        *errors.Error
+	Err        error
 	Frames     []errors.StackFrame
 	StackLines string
 }
@@ -151,13 +151,15 @@ func NewWError(e interface{}) *WError {
 	if e2, ok := e.(*errors.Error); ok {
 		out.Err = e2
 		out.Frames = e2.StackFrames()
-	} else if e3, ok3 := e.(stackTracer); ok3 {
+	} else if _, ok3 := e.(stackTracer); ok3 {
+		out.Err = e.(error)
+	} else {
+		out.Err = ge.WrapSkip(e, 0)
+	}
+	if e3, ok3 := e.(stackTracer); ok3 {
 		stacks := e3.StackTrace()
 		out.StackLines = fmt.Sprintf("%+v", stacks)
 		out.Frames = parseBlocks(out.StackLines)
-	} else {
-		out.Err = errors.Wrap(e, 1)
-		out.Frames = out.Err.StackFrames()
 	}
 	return out
 }
@@ -211,14 +213,14 @@ func (e *WError) Stack() []byte {
 func (e *WError) ErrorStack() string {
 	bs := ""
 	if e.Err != nil {
-		bs = e.Err.TypeName() + " " + e.Err.Error() + "\n"
+		//bs = e.Err.TypeName() + " " + e.Err.Error() + "\n"
 	}
 	return bs + string(e.Stack())
 }
 
 var stackLineR = regexp.MustCompile(`\t`) // 文件行
 
-func parseBlocks(input string) ([]errors.StackFrame) {
+func parseBlocks(input string) []errors.StackFrame {
 	var blocks []errors.StackFrame
 
 	frame := errors.StackFrame{}
