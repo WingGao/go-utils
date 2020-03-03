@@ -26,10 +26,10 @@ type DbConfig struct {
 	Password    string
 	DBName      string
 	Option      string
-	CreateDB    bool                  //创建对应数据库
-	NotCheck    bool                  //是否检查
+	CreateDB    bool   //创建对应数据库
+	NotCheck    bool   //是否检查
 	StartCmd    string `yaml:"start"` //启动命令
-	AutoMigrate bool                  //自动建表
+	AutoMigrate bool   //自动建表
 }
 
 type ThirdPartConfig struct {
@@ -39,10 +39,10 @@ type ThirdPartConfig struct {
 	Secret string
 }
 type WebAppConfig struct {
-	Host string
+	Host      string
 	Subdomain string
-	Subpath string
-	Dir  string
+	Subpath   string
+	Dir       string
 }
 
 //main config
@@ -59,6 +59,7 @@ type MConfig struct {
 	Port            string //服务地址
 	Https           bool
 	PublicHost      string //对外的部署地址 host:port
+	ShortUrlHost    string //短地址host
 	Grpc            GrpcConfig
 	MasterKey       string
 	Mysql           DbConfig
@@ -142,7 +143,7 @@ func (m MConfig) Get(key string) interface{} {
 		if v, ok := last[k]; ok {
 			if i+1 == len(keys) { //最后一个
 				return v
-			} else { //下一级
+			} else {                                                 //下一级
 				if last, ok = v.(map[interface{}]interface{}); !ok { //转换失败，没有子元素
 					return nil
 				}
@@ -244,10 +245,10 @@ type WxConfig struct {
 	MchId             string
 	MchApiKey         string
 	NotifyUrl         string
-	EnableTokenServer bool `yaml:"enable_tokenserver"`
-	EnableJsTicket    bool `yaml:"enable_jsticket"`
-	Token             string //缓存用
-	Miniapps          []*ThirdPartConfig `yaml:"mini"`
+	EnableTokenServer bool                        `yaml:"enable_tokenserver"`
+	EnableJsTicket    bool                        `yaml:"enable_jsticket"`
+	Token             string                      //缓存用
+	Miniapps          []*ThirdPartConfig          `yaml:"mini"`
 	miniappsMap       map[string]*ThirdPartConfig //通过Miniapps转换的
 	Corp              WxCorpConf
 }

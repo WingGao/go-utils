@@ -9,11 +9,13 @@ import (
 )
 
 var (
+	// v=key在命令总的位置
 	CMD_WITH_KEY = map[string]int{
 		"decr":     1,
 		"decrby":   1,
 		"expire":   1,
 		"expireat": 1,
+		"exists":   -1, //自定义
 		"incr":     1,
 		"incrby":   1,
 		"del":      1,
@@ -64,6 +66,10 @@ func (hk rhook) BeforeProcess(ctx context.Context, cmd gredis.Cmder) (context.Co
 				if len(args) > 2 && args[2] == "match" {
 					args[3] = hk.client.FullKey(args[3].(string))
 				}
+			case "exists":
+				for i := 1; i < len(args); i++ {
+					args[i] = hk.client.FullKey(args[i].(string))
+				}
 			}
 		}
 		//wlog.S().Debugf("%#v", cmd)
@@ -80,7 +86,7 @@ func (rhook) BeforeProcessPipeline(ctx context.Context, cmds []gredis.Cmder) (co
 	return ctx, nil
 }
 
-func (rhook) AfterProcessPipeline(ctx context.Context, cmds []gredis.Cmder) (error) {
+func (rhook) AfterProcessPipeline(ctx context.Context, cmds []gredis.Cmder) error {
 	return nil
 }
 
@@ -133,11 +139,11 @@ func (rhook) AfterProcessPipeline(ctx context.Context, cmds []gredis.Cmder) (err
 //	_, err = c.Do("PING")
 //	return
 //}
-func (c *RedisUniversalClient) SetGlob(key string, ptr interface{}, opt *Option) (error) {
+func (c *RedisUniversalClient) SetGlob(key string, ptr interface{}, opt *Option) error {
 	return SetGlob(c, key, ptr, opt)
 }
 
-func (c *RedisUniversalClient) GetGlob(key string, out interface{}) (error) {
+func (c *RedisUniversalClient) GetGlob(key string, out interface{}) error {
 	return GetGlob(c, key, out)
 }
 
@@ -145,9 +151,9 @@ func (c *RedisUniversalClient) DelAll(keyPatter string) (count uint64, err error
 	return c.Batch(keyPatter, 300, func(keys []string) error {
 		// keys已经
 		// CROSSSLOT Keys in request don't hash to the same slot
-		for _,k := range keys{
+		for _, k := range keys {
 			err = c.Del(k).Err()
-			if err != nil{
+			if err != nil {
 				return err
 			}
 		}
