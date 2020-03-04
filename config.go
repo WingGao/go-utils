@@ -130,6 +130,7 @@ type MConfig struct {
 	GraphQL GraphQLConf
 	Kafka   KafkaConfig
 	Log     LogConfig
+	Apollo  DbConfig
 }
 
 func (m MConfig) GetConfigPath() string {
