@@ -2,9 +2,9 @@ package wcluster
 
 import (
 	"fmt"
+	"github.com/WingGao/errors"
 	"github.com/WingGao/go-utils/redis"
 	"github.com/WingGao/go-utils/wlog"
-	"github.com/go-errors/errors"
 	"github.com/ungerik/go-dry"
 	"time"
 )

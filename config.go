@@ -5,7 +5,7 @@ import (
 	"fmt"
 	tconfig "github.com/RichardKnop/machinery/v1/config"
 	"github.com/WingGao/go-utils/redis"
-	"github.com/go-errors/errors"
+	"github.com/WingGao/errors"
 	"github.com/micro/go-micro/registry"
 	"github.com/ungerik/go-dry"
 	"gopkg.in/yaml.v2"

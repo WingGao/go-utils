@@ -1,9 +1,9 @@
 package utils
 
 import (
-	"github.com/go-errors/errors"
-	"path/filepath"
+	"github.com/WingGao/errors"
 	"github.com/thoas/go-funk"
+	"path/filepath"
 	"strings"
 )
 

@@ -3,16 +3,16 @@ package ucore
 import (
 	"bytes"
 	"fmt"
-	ge "github.com/WingGao/errors"
+	"github.com/WingGao/errors"
 	sll "github.com/emirpasic/gods/lists/singlylinkedlist"
-	"github.com/go-errors/errors"
+	goerror "github.com/go-errors/errors"
 	"regexp"
 	"strconv"
 	"strings"
 )
 
 type stackTracer interface {
-	StackTrace() ge.StackTrace
+	StackTrace() errors.StackTrace
 }
 
 var (
@@ -24,45 +24,45 @@ var (
 	ErrNotMatch     = errors.New("not match")
 	ErrFormat       = errors.New("format error")
 
-	UtilsErrList = []*errors.Error{ErrRequireAdmin,
+	UtilsErrList = []error{ErrRequireAdmin,
 		ErrNoPermission, ErrCannotModify, ErrNoItem, ErrExisted, ErrNotMatch}
 )
 
 func NewErrNotFound() error {
-	return ge.WrapSkip("不存在", 1)
+	return errors.WrapSkip("不存在", 1)
 }
 
 func NewErrExisted() error {
-	return ge.WrapSkip("已存在", 1)
+	return errors.WrapSkip("已存在", 1)
 }
 
 func NewErrParams() error {
-	return ge.WrapSkip("参数错误", 1)
+	return errors.WrapSkip("参数错误", 1)
 }
 
 func NewErrSystem() error {
-	return ge.WrapSkip("系统错误", 1)
+	return errors.WrapSkip("系统错误", 1)
 }
 
 func NewErrNeedLogin() error {
-	return ge.WrapSkip("require login", 1)
+	return errors.WrapSkip("require login", 1)
 }
 
 func NewErrPermission() error {
-	return ge.WrapSkip("没有权限", 1)
+	return errors.WrapSkip("没有权限", 1)
 	//return ge.New("没有权限")
 }
 func NewErrPassword() error {
-	return ge.WrapSkip("密码错误", 1)
+	return errors.WrapSkip("密码错误", 1)
 	//return ge.New("没有权限")
 }
 
 func NewErrCode() error {
-	return ge.WrapSkip("验证码错误", 1)
+	return errors.WrapSkip("验证码错误", 1)
 }
 
 func NewErrNoAccount() error {
-	return ge.WrapSkip("账户不存在", 1)
+	return errors.WrapSkip("账户不存在", 1)
 }
 
 func Nothing(...interface{}) {
@@ -101,7 +101,7 @@ func (l *ErrorList) AppendE(errs ...error) {
 
 func (l *ErrorList) AppendEWrap(err error, skip int) {
 	if err != nil {
-		l.list.Add(ge.WrapSkip(err, skip))
+		l.list.Add(errors.WrapSkip(err, skip))
 	}
 }
 
@@ -130,33 +130,36 @@ func (l *ErrorList) Run(fo func() error) {
 }
 
 func PrintError(err error) {
-	//errN := ge.WrapSkip(err, 0)
-	//fmt.Println(errN.ErrorStack())
+	errN := errors.WrapSkip(err, 0)
+	fmt.Println(errN.(stackTracer).StackTrace())
 }
 
 func PanicIfErr(err error) {
 	if err != nil {
-		panic(errors.New(err))
+		panic(errors.WrapSkip(err, 0))
 	}
 }
 
 type WError struct {
 	Err        error
-	Frames     []errors.StackFrame
+	Frames     []goerror.StackFrame
 	StackLines string
 }
 
 func NewWError(e interface{}) *WError {
 	out := &WError{}
-	if e2, ok := e.(*errors.Error); ok {
+	if e2, ok := e.(*goerror.Error); ok {
 		out.Err = e2
 		out.Frames = e2.StackFrames()
 	} else if _, ok3 := e.(stackTracer); ok3 {
 		out.Err = e.(error)
+		//fmt.Println("s2", out.Err.(stackTracer).StackTrace())
 	} else {
-		out.Err = ge.WrapSkip(e, 0)
+		out.Err = errors.WrapSkip(e, 0)
+		//fmt.Println("s3", out.Err.(stackTracer).StackTrace())
+		//debug.PrintStack()
 	}
-	if e3, ok3 := e.(stackTracer); ok3 {
+	if e3, ok3 := out.Err.(stackTracer); ok3 {
 		stacks := e3.StackTrace()
 		out.StackLines = fmt.Sprintf("%+v", stacks)
 		out.Frames = parseBlocks(out.StackLines)
@@ -220,10 +223,10 @@ func (e *WError) ErrorStack() string {
 
 var stackLineR = regexp.MustCompile(`\t`) // 文件行
 
-func parseBlocks(input string) []errors.StackFrame {
-	var blocks []errors.StackFrame
+func parseBlocks(input string) []goerror.StackFrame {
+	var blocks []goerror.StackFrame
 
-	frame := errors.StackFrame{}
+	frame := goerror.StackFrame{}
 	for _, l := range strings.Split(input, "\n") {
 		isStackLine := stackLineR.MatchString(l)
 		l = strings.TrimSpace(l)
@@ -241,7 +244,7 @@ func parseBlocks(input string) []errors.StackFrame {
 				frame.LineNumber, _ = strconv.Atoi(fs[1])
 			}
 			blocks = append(blocks, frame)
-			frame = errors.StackFrame{}
+			frame = goerror.StackFrame{}
 		} else {
 			fns := strings.Split(l, "/")
 			frame.Name = fns[len(fns)-1]

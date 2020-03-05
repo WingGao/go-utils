@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/WingGao/go-utils/ucore"
 	"github.com/fatih/structs"
-	"github.com/go-errors/errors"
+	"github.com/WingGao/errors"
 	"github.com/jinzhu/gorm"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/t-tiger/gorm-bulk-insert"
@@ -625,10 +625,10 @@ func (m *Model) FormatError(err error) error {
 	if err != nil {
 		errStr := err.Error()
 		if errStr == "record not found" {
-			err = errors.Wrap("不存在", 1)
+			err = errors.WrapSkip("不存在", 1)
 		} else if strings.HasPrefix(errStr, "Error 1062: Duplicate entry") {
 			if nl := m.parent.(IModelParent).FormatFields(errStr); nl != "" {
-				err = errors.Wrap(fmt.Errorf("%s已存在", nl), 1)
+				err = errors.WrapSkip(fmt.Errorf("%s已存在", nl), 1)
 			}
 		}
 	}

@@ -1,13 +1,16 @@
 package ucore
 
 import (
+	"errors"
+	"fmt"
+
+	//ge "github.com/WingGao/errors"
 	"testing"
-	"github.com/go-errors/errors"
 )
 
 var errT = errors.New("test error")
 
-func errorRecov() {
+func errorRecov(e error) {
 	defer func() {
 		if err := recover(); err != nil {
 			//e2 := errors.Wrap(err, 1)
@@ -15,10 +18,33 @@ func errorRecov() {
 			PrintError(e2)
 		}
 	}()
-	panic(errT)
+	errDep2(e)
 }
+
+func errDep2(e error){
+	panic(e)
+}
+
 func TestPrintError(t *testing.T) {
 	PrintError(errT)
 
-	errorRecov()
+	errorRecov(errors.New("hello"))
+}
+
+
+func errorRecovWe(e error) {
+	defer func() {
+		if err := recover(); err != nil {
+			//e2 := errors.Wrap(err, 1)
+			we := NewWError(err)
+			we.Fmt()
+			fmt.Println(we.ErrorStack())
+		}
+	}()
+	errDep2(e)
+}
+
+func TestNewWError(t *testing.T) {
+	err := errors.New("test-error")
+	errorRecovWe(err)
 }
