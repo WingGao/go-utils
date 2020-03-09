@@ -22,6 +22,9 @@ func MaxUint32(a, b uint32) uint32 {
 // 获取周岁
 func CalcAge(birthday time.Time) uint32 {
 	now := time.Now()
+	if birthday.After(now) { //溢出
+		return 0
+	}
 	// 周岁＝今年-出生年（已过生日）（未过生日还要-1）
 	year := now.Year() - birthday.Year()
 	if now.Month() >= birthday.Month() && now.Day() >= birthday.Day() {
