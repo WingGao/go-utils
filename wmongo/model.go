@@ -184,6 +184,12 @@ func (m *MgModel) UpdateId(update interface{}) error {
 	return m.pFormatError(err)
 }
 
+func (m *MgModel) UpsertId(update interface{}) error {
+	mc, _ := m.C()
+	_, err := mc.UpsertId(m.Id, update)
+	return m.pFormatError(err)
+}
+
 func (m *MgModel) UpdateIdSet(update interface{}) error {
 	mc, _ := m.C()
 	//defer ms.Close()

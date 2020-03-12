@@ -25,3 +25,14 @@ func TestBSet(t *testing.T) {
 	t.Logf("%s", bt)
 }
 
+func TestIgnore(t *testing.T) {
+	modA := NewModelA()
+	modA.FieldStr = "123"
+	modA.FieldStrB = "234"
+	v, err := GetMSetIgnore(modA, "field_b")
+	assert.NoError(t, err)
+	t.Logf("%v", v)
+	v, err = GetBsonM(modA, "field_b")
+	assert.NoError(t, err)
+	t.Logf("%v", v)
+}

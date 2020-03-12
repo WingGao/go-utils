@@ -199,7 +199,7 @@ func NewMapValueWriter() *MapValueWriter {
 	return mvw
 }
 
-func structToBsonMap(s interface{}) (map[string]interface{}, error) {
+func StructToBsonMap(s interface{}) (map[string]interface{}, error) {
 	mvw := NewMapValueWriter()
 	ec := bsoncodec.EncodeContext{Registry: bson.DefaultRegistry}
 	enc := &bson.Encoder{}

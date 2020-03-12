@@ -36,10 +36,10 @@ func BNe(v interface{}) (out bson.M) {
 }
 
 //query logical
-func BOr(items ...bson.M) (bson.M) {
+func BOr(items ...bson.M) bson.M {
 	return bson.M{"$or": items}
 }
-func BAnd(items ...bson.M) (bson.M) {
+func BAnd(items ...bson.M) bson.M {
 	return bson.M{"$and": items}
 }
 
@@ -55,7 +55,7 @@ func BCount(v interface{}) (out bson.M) {
 func BSum(v interface{}) (out bson.M) {
 	return bson.M{"$sum": v}
 }
-func BAvg(v interface{}) (bson.M) {
+func BAvg(v interface{}) bson.M {
 	return bson.M{"$avg": v}
 }
 
@@ -63,10 +63,10 @@ func BAddFields(field string, v interface{}) (out bson.M) {
 	return bson.M{"$addFields": bson.M{field: v}}
 }
 
-func BMatch(v interface{}) (bson.M) {
+func BMatch(v interface{}) bson.M {
 	return bson.M{"$match": v}
 }
-func BGroup(v interface{}) (bson.M) {
+func BGroup(v interface{}) bson.M {
 	return bson.M{"$group": v}
 }
 
@@ -78,7 +78,7 @@ func BInField(field string, v interface{}) (out bson.M) {
 	return bson.M{field: bson.M{"$in": v}}
 }
 
-func BExists(v interface{}) (bson.M) {
+func BExists(v interface{}) bson.M {
 	return bson.M{"$exists": v}
 }
 
@@ -87,19 +87,35 @@ func BElemMatch(v interface{}) (out bson.M) {
 	return bson.M{"$elemMatch": v}
 }
 
-
-
 //忽略某些 bsonFields是数据库里的名字，不是struct属性
-func GetMSetIgnore(obj interface{}, bsonFields ...string) (bm bson.M, err error) {
-	bmap, err1 := structToBsonMap(obj)
+func GetMSetIgnore(obj interface{}, ignoreBsonFields ...string) (bm bson.M, err error) {
+	bmap, err1 := StructToBsonMap(obj)
 	if err1 != nil {
 		return nil, err1
 	}
-	for _, f := range bsonFields {
+	for _, f := range ignoreBsonFields {
 		delete(bmap, f)
 	}
 	bm = BSet(bmap)
 	return
+}
+
+//忽略某些 filterBsonFields 是数据库里的名字，不是struct属性, 不传不过滤
+func GetBsonM(obj interface{}, filterBsonFields ...string) (bm bson.M, err error) {
+	bmap, err1 := StructToBsonMap(obj)
+	if err1 != nil {
+		return nil, err1
+	}
+	fields := bson.M{}
+	if len(filterBsonFields) > 0 {
+		for _, f := range filterBsonFields {
+			fields[f] = bmap[f]
+		}
+	} else {
+		fields = bmap
+	}
+
+	return fields, err
 }
 
 func BMarshal(m interface{}) []byte {
@@ -116,6 +132,7 @@ func mergeFromRequest(obj interface{}, bs []byte) error {
 	err := jsoniter.Unmarshal(bs, obj)
 	return err
 }
+
 // 默认是snake_case模式
 var SnakeStructTagParser bsoncodec.StructTagParserFunc = func(sf reflect.StructField) (bsoncodec.StructTags, error) {
 	key := strcase.ToSnake(sf.Name)
