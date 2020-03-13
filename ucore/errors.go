@@ -180,7 +180,11 @@ func (e *WError) Fmt() {
 			//	C:/Go/src/reflect/value.go:308
 			//wingao.net/webproj/core/handlers.IrisWrapper.func1
 			//	D:/Projs/go-web/wingao.net/webproj/core/handlers/h.go:172
-			simpleFrames = e.Frames[:i-2]
+			if i < 2 {
+				simpleFrames = e.Frames
+			} else {
+				simpleFrames = e.Frames[:i-2]
+			}
 			break
 		}
 		if frame.Package == "wingao.net/webproj/mcmd/serv" || frame.Package == "github.com/kataras/iris/v12/middleware/logger" {

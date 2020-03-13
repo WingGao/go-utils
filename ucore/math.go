@@ -15,6 +15,9 @@ func MinInt32(a, b int32) int32 {
 func MinUint32(a, b uint32) uint32 {
 	return uint32(math.Min(float64(a), float64(b)))
 }
+func MinUint64(a, b uint64) uint64 {
+	return uint64(math.Min(float64(a), float64(b)))
+}
 func MaxUint32(a, b uint32) uint32 {
 	return uint32(math.Max(float64(a), float64(b)))
 }
