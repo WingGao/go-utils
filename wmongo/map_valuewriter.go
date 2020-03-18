@@ -85,10 +85,9 @@ func (m *MapValueWriter) WriteArrayEnd() error {
 	top := m.pop()
 	vmap := top.val.(map[string]interface{})
 	arr := make([]interface{}, len(vmap))
-	i := 0
-	for _, v := range vmap {
-		arr[i] = v
-		i++
+	for i := 0; i < len(vmap); i++ {
+		ai := strconv.Itoa(i)
+		arr[i] = vmap[ai]
 	}
 	top.parent[top.name] = arr
 	return nil

@@ -160,9 +160,13 @@ func (m *MgModel) Save() error {
 	}
 	return nil
 }
-
+// 设置id，id=true时，自动生成
 func (m *MgModel) SetId(id interface{}) {
-	m.Id = ToObjectId(id)
+	if id == true {
+		m.Id = primitive.NewObjectID()
+	}else {
+		m.Id = ToObjectId(id)
+	}
 }
 
 func (m *MgModel) LoadById(id interface{}) error {

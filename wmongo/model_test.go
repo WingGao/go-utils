@@ -25,9 +25,10 @@ func TestMain(m *testing.M) {
 type ModelA struct {
 	MgModel      `bson:",inline"`
 	MgTimeModel  `bson:",inline"`
-	FieldStr     string    //field_str
+	FieldStr     string //field_str
 	FieldStructs []EmModel //field_structs
 	FieldStrB    string `bson:"field_b"`
+	FieldStrList []string
 }
 type EmModel struct {
 	FieldA string
