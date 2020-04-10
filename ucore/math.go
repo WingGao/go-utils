@@ -11,7 +11,9 @@ func MinInt(a, b int) int {
 func MinInt32(a, b int32) int32 {
 	return int32(math.Min(float64(a), float64(b)))
 }
-
+func MinInt64(a, b int64) int64 {
+	return int64(math.Min(float64(a), float64(b)))
+}
 func MinUint32(a, b uint32) uint32 {
 	return uint32(math.Min(float64(a), float64(b)))
 }
@@ -20,6 +22,9 @@ func MinUint64(a, b uint64) uint64 {
 }
 func MaxUint32(a, b uint32) uint32 {
 	return uint32(math.Max(float64(a), float64(b)))
+}
+func MaxInt64(a, b int64) int64 {
+	return int64(math.Max(float64(a), float64(b)))
 }
 
 // 获取周岁

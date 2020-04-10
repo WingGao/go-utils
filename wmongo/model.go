@@ -160,11 +160,12 @@ func (m *MgModel) Save() error {
 	}
 	return nil
 }
+
 // 设置id，id=true时，自动生成
 func (m *MgModel) SetId(id interface{}) {
 	if id == true {
 		m.Id = primitive.NewObjectID()
-	}else {
+	} else {
 		m.Id = ToObjectId(id)
 	}
 }
@@ -201,10 +202,10 @@ func (m *MgModel) UpdateIdSet(update interface{}) error {
 	return m.pFormatError(err)
 }
 
-func (m *MgModel) FindOne(q interface{}, out interface{}) error {
+func (m *MgModel) FindOne(q interface{}, out interface{}, opts ...*options.FindOneOptions) error {
 	mc, _ := m.C()
 	//err := m.One(mc.Find(q), out)
-	res := mc.FindOne(context.Background(), q)
+	res := mc.FindOne(context.Background(), q, opts...)
 	err := DecodeSingleRes(res, out)
 	return m.pFormatError(err)
 }
