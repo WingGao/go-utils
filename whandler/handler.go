@@ -11,6 +11,7 @@ import (
 	"github.com/kataras/iris/v12/context"
 	"github.com/kataras/iris/v12/core/router"
 	"net/http"
+	httptest2 "net/http/httptest"
 	"net/url"
 	"strings"
 )
@@ -169,4 +170,11 @@ func GetHandlerIp(c context.Context) string {
 		}
 	}
 	return ""
+}
+
+func FakeCtxIris(app *iris.Application) context.Context{
+		ctx := context.NewContext(app)
+		req := httptest2.NewRequest("", "/", nil)
+		ctx.BeginRequest(httptest2.NewRecorder(), req)
+		return ctx
 }

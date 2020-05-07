@@ -125,6 +125,13 @@ func (m *MgModel) SetSoftDelete(sf bool) {
 	m.softDelete = sf
 }
 
+// 补全modle完整性
+func (m *MgModel) FixModel(p interface{}, md MgModel) {
+	m.Client = md.Client
+	m.SetParent(p)
+	m.SetSoftDelete(md.softDelete)
+}
+
 func (m *MgModel) C() (c *MgCollection, s *mongo.Client) {
 	s = m.GetClient()
 	if s == nil {
