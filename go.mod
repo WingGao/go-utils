@@ -5,7 +5,7 @@ go 1.12
 require (
 	github.com/ReneKroon/ttlcache v1.6.0 // indirect
 	github.com/RichardKnop/machinery v1.6.2
-	github.com/Shopify/sarama v1.23.0
+	github.com/Shopify/sarama v1.26.4
 	github.com/WingGao/errors v0.0.0-00010101000000-000000000000
 	github.com/ajg/form v1.5.1 // indirect
 	github.com/aliyun/alibaba-cloud-sdk-go v0.0.0-20190808125512-07798873deee
@@ -60,8 +60,6 @@ require (
 	github.com/olivere/elastic v6.2.17+incompatible
 	github.com/parnurzeal/gorequest v0.2.15
 	github.com/pkg/errors v0.9.1 // indirect
-	github.com/qiniu/api.v7 v7.2.5+incompatible
-	github.com/qiniu/x v7.0.8+incompatible // indirect
 	github.com/rs/xid v1.2.1
 	github.com/sirupsen/logrus v1.4.2
 	github.com/soheilhy/cmux v0.1.4 // indirect
@@ -90,7 +88,6 @@ require (
 	gopkg.in/go-playground/validator.v9 v9.31.0 // indirect
 	gopkg.in/jcmturner/goidentity.v3 v3.0.0 // indirect
 	gopkg.in/yaml.v2 v2.2.4
-	qiniupkg.com/x v7.0.8+incompatible // indirect
 	sigs.k8s.io/yaml v1.1.0 // indirect
 )
 
