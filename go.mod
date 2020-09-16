@@ -6,18 +6,12 @@ require (
 	github.com/ReneKroon/ttlcache v1.6.0 // indirect
 	github.com/RichardKnop/machinery v1.6.2
 	github.com/Shopify/sarama v1.26.4
-	github.com/WingGao/errors v0.0.0-00010101000000-000000000000
+	github.com/WingGao/errors v0.0.0
 	github.com/ajg/form v1.5.1 // indirect
 	github.com/aliyun/alibaba-cloud-sdk-go v0.0.0-20190808125512-07798873deee
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
 	github.com/bwmarrin/discordgo v0.20.2 // indirect
 	github.com/chanxuehong/wechat v0.0.0-20190521093015-fafb751f9916
-	github.com/coreos/bbolt v1.3.3 // indirect
-	github.com/coreos/etcd v3.3.18+incompatible // indirect
-	github.com/coreos/go-semver v0.3.0 // indirect
-	github.com/coreos/go-systemd v0.0.0-20190719114852-fd7a80b32e1f // indirect
-	github.com/coreos/pkg v0.0.0-20180928190104-399ea9e2e55f // indirect
-	github.com/deckarep/golang-set v1.7.1 // indirect
 	github.com/docker/docker v1.13.1
 	github.com/elazarl/goproxy v0.0.0-20190421051319-9d40249d3c2f // indirect
 	github.com/elazarl/goproxy/ext v0.0.0-20190421051319-9d40249d3c2f // indirect
@@ -25,7 +19,6 @@ require (
 	github.com/fasthttp-contrib/websocket v0.0.0-20160511215533-1f3b11f56072 // indirect
 	github.com/fatih/structs v1.1.0
 	github.com/fortytw2/leaktest v1.3.0 // indirect
-	github.com/globalsign/mgo v0.0.0
 	github.com/go-errors/errors v1.0.1
 	github.com/go-playground/form v3.1.4+incompatible
 	github.com/go-playground/universal-translator v0.17.0 // indirect
@@ -51,8 +44,6 @@ require (
 	github.com/lucas-clemente/quic-go v0.14.1 // indirect
 	github.com/mailru/easyjson v0.0.0-20190403194419-1ea4449da983 // indirect
 	github.com/mholt/certmagic v0.9.3 // indirect
-	github.com/micro/cli/v2 v2.1.2 // indirect
-	github.com/micro/go-micro v1.16.0
 	github.com/miekg/dns v1.1.27 // indirect
 	github.com/moul/http2curl v1.0.0 // indirect
 	github.com/nats-io/nats-server/v2 v2.1.4 // indirect
@@ -65,7 +56,6 @@ require (
 	github.com/soheilhy/cmux v0.1.4 // indirect
 	github.com/sony/sonyflake v0.0.0-20181109022403-6d5bd6181009
 	github.com/stretchr/testify v1.4.0
-	github.com/t-tiger/gorm-bulk-insert v0.0.0-00010101000000-000000000000
 	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
 	github.com/teris-io/shortid v0.0.0-20171029131806-771a37caa5cf
 	github.com/thoas/go-funk v0.4.0
@@ -78,7 +68,6 @@ require (
 	github.com/yudai/gojsondiff v1.0.0 // indirect
 	github.com/yudai/golcs v0.0.0-20170316035057-ecda9a501e82 // indirect
 	github.com/yudai/pp v2.0.1+incompatible // indirect
-	go.etcd.io/bbolt v1.3.3 // indirect
 	go.mongodb.org/mongo-driver v1.1.2
 	go.uber.org/zap v1.13.0
 	golang.org/x/crypto v0.0.0-20200221231518-2aa609cf4a9d // indirect
@@ -87,7 +76,7 @@ require (
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gopkg.in/go-playground/validator.v9 v9.31.0 // indirect
 	gopkg.in/jcmturner/goidentity.v3 v3.0.0 // indirect
-	gopkg.in/yaml.v2 v2.2.4
+	gopkg.in/yaml.v2 v2.2.8
 	sigs.k8s.io/yaml v1.1.0 // indirect
 )
 

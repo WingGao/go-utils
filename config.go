@@ -6,7 +6,6 @@ import (
 	tconfig "github.com/RichardKnop/machinery/v1/config"
 	"github.com/WingGao/go-utils/redis"
 	"github.com/WingGao/errors"
-	"github.com/micro/go-micro/registry"
 	"github.com/ungerik/go-dry"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
@@ -285,7 +284,7 @@ type GraphQLConf struct {
 
 type GrpcConfig struct {
 	Port        int
-	ServicesMap map[string][]registry.Node `yaml:"services"`
+	//ServicesMap map[string][]registry.Node `yaml:"services"`
 }
 
 type KafkaConfig struct {
