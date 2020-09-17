@@ -12,7 +12,9 @@ require (
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
 	github.com/bwmarrin/discordgo v0.20.2 // indirect
 	github.com/chanxuehong/wechat v0.0.0-20190521093015-fafb751f9916
+	github.com/deckarep/golang-set v1.7.1 // indirect
 	github.com/docker/docker v1.13.1
+	github.com/elastic/go-elasticsearch/v7 v7.8.0
 	github.com/elazarl/goproxy v0.0.0-20190421051319-9d40249d3c2f // indirect
 	github.com/elazarl/goproxy/ext v0.0.0-20190421051319-9d40249d3c2f // indirect
 	github.com/emirpasic/gods v1.12.0
@@ -33,7 +35,7 @@ require (
 	github.com/imkira/go-interpol v1.1.0 // indirect
 	github.com/jinzhu/copier v0.0.0-20180308034124-7e38e58719c3
 	github.com/jinzhu/gorm v1.9.11
-	github.com/jinzhu/now v1.0.1
+	github.com/jinzhu/now v1.0.1 // indirect
 	github.com/jonboulle/clockwork v0.1.0 // indirect
 	github.com/json-iterator/go v1.1.9
 	github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88 // indirect
@@ -43,19 +45,21 @@ require (
 	github.com/lib/pq v1.3.0 // indirect
 	github.com/lucas-clemente/quic-go v0.14.1 // indirect
 	github.com/mailru/easyjson v0.0.0-20190403194419-1ea4449da983 // indirect
+	github.com/mattn/go-colorable v0.1.7 // indirect
 	github.com/mholt/certmagic v0.9.3 // indirect
 	github.com/miekg/dns v1.1.27 // indirect
 	github.com/moul/http2curl v1.0.0 // indirect
 	github.com/nats-io/nats-server/v2 v2.1.4 // indirect
 	github.com/nlopes/slack v0.6.1-0.20191106133607-d06c2a2b3249 // indirect
-	github.com/olivere/elastic v6.2.17+incompatible
 	github.com/parnurzeal/gorequest v0.2.15
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/rs/xid v1.2.1
+	github.com/sergi/go-diff v1.1.0 // indirect
 	github.com/sirupsen/logrus v1.4.2
 	github.com/soheilhy/cmux v0.1.4 // indirect
 	github.com/sony/sonyflake v0.0.0-20181109022403-6d5bd6181009
 	github.com/stretchr/testify v1.4.0
+	github.com/t-tiger/gorm-bulk-insert/v2 v2.0.1
 	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
 	github.com/teris-io/shortid v0.0.0-20171029131806-771a37caa5cf
 	github.com/thoas/go-funk v0.4.0
@@ -89,5 +93,5 @@ replace (
 	github.com/jinzhu/copier => ../../jinzhu/copier
 	github.com/jinzhu/gorm => ../../jinzhu/gorm
 	github.com/kataras/iris/v12 => ../../kataras/iris
-	github.com/t-tiger/gorm-bulk-insert => ../../t-tiger/gorm-bulk-insert
+	github.com/t-tiger/gorm-bulk-insert/v2 => ../../t-tiger/gorm-bulk-insert
 )
