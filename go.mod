@@ -85,11 +85,9 @@ replace (
 	github.com/WingGao/errors => ../../WingGao/errors
 	github.com/chanxuehong/wechat => ../../chanxuehong/wechat
 	github.com/fatih/structs => ../../fatih/structs
-	github.com/globalsign/mgo => ../../globalsign/mgo
 	github.com/go-errors/errors => ../../go-errors/errors
 	github.com/jinzhu/copier => ../../jinzhu/copier
 	github.com/jinzhu/gorm => ../../jinzhu/gorm
 	github.com/kataras/iris/v12 => ../../kataras/iris
-	github.com/micro/go-micro => ../../micro/go-micro
 	github.com/t-tiger/gorm-bulk-insert => ../../t-tiger/gorm-bulk-insert
 )
