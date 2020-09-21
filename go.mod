@@ -25,7 +25,7 @@ require (
 	github.com/go-playground/form v3.1.4+incompatible
 	github.com/go-playground/universal-translator v0.17.0 // indirect
 	github.com/go-redis/redis/v7 v7.0.0-beta.4
-	github.com/go-sql-driver/mysql v1.4.1
+	github.com/go-sql-driver/mysql v1.5.0
 	github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible // indirect
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.1.0 // indirect
@@ -34,8 +34,7 @@ require (
 	github.com/imdario/mergo v0.3.8
 	github.com/imkira/go-interpol v1.1.0 // indirect
 	github.com/jinzhu/copier v0.0.0-20180308034124-7e38e58719c3
-	github.com/jinzhu/gorm v1.9.11
-	github.com/jinzhu/now v1.0.1 // indirect
+	github.com/jinzhu/gorm v1.9.12
 	github.com/jonboulle/clockwork v0.1.0 // indirect
 	github.com/json-iterator/go v1.1.9
 	github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88 // indirect
@@ -44,13 +43,13 @@ require (
 	github.com/klauspost/cpuid v1.2.1 // indirect
 	github.com/lib/pq v1.3.0 // indirect
 	github.com/lucas-clemente/quic-go v0.14.1 // indirect
-	github.com/mailru/easyjson v0.0.0-20190403194419-1ea4449da983 // indirect
 	github.com/mattn/go-colorable v0.1.7 // indirect
 	github.com/mholt/certmagic v0.9.3 // indirect
 	github.com/miekg/dns v1.1.27 // indirect
 	github.com/moul/http2curl v1.0.0 // indirect
 	github.com/nats-io/nats-server/v2 v2.1.4 // indirect
 	github.com/nlopes/slack v0.6.1-0.20191106133607-d06c2a2b3249 // indirect
+	github.com/olivere/elastic/v7 v7.0.20
 	github.com/parnurzeal/gorequest v0.2.15
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/rs/xid v1.2.1
@@ -58,7 +57,7 @@ require (
 	github.com/sirupsen/logrus v1.4.2
 	github.com/soheilhy/cmux v0.1.4 // indirect
 	github.com/sony/sonyflake v0.0.0-20181109022403-6d5bd6181009
-	github.com/stretchr/testify v1.4.0
+	github.com/stretchr/testify v1.5.1
 	github.com/t-tiger/gorm-bulk-insert/v2 v2.0.1
 	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
 	github.com/teris-io/shortid v0.0.0-20171029131806-771a37caa5cf
@@ -74,7 +73,6 @@ require (
 	github.com/yudai/pp v2.0.1+incompatible // indirect
 	go.mongodb.org/mongo-driver v1.1.2
 	go.uber.org/zap v1.13.0
-	golang.org/x/crypto v0.0.0-20200221231518-2aa609cf4a9d // indirect
 	golang.org/x/net v0.0.0-20200222125558-5a598a2470a0 // indirect
 	google.golang.org/grpc v1.26.0 // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect

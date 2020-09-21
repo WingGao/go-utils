@@ -181,3 +181,12 @@ func RedirectValue(value reflect.Value) reflect.Value {
 		value = res
 	}
 }
+
+//创建对应父Slice切片的地址,指针 *[]*ParentType
+func MakeSlice(p interface{}, cap int) interface{} {
+	t := reflect.TypeOf(p)
+	slice := reflect.MakeSlice(reflect.SliceOf(t), 0, cap)
+	arr := reflect.New(slice.Type())
+	arr.Elem().Set(slice)
+	return arr.Interface()
+}
