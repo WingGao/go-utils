@@ -48,6 +48,21 @@ func (m *EsModel) SetParent(p interface{}) {
 	m.parent = p
 }
 
+func (m *EsModel) FindOne(out interface{}, body interface{}, q ...func(*esapi.SearchRequest)) (err error) {
+	q = append(q, m.Client.Search.WithSize(1))
+	rep, err := m.FindAll(nil, body, q...)
+	if err != nil {
+		return
+	}
+	if rep.Hits.TotalHits.Value != 1 {
+		err = errors.New("not found")
+	} else {
+		h := rep.Hits.Hits[0]
+		err = jsoniter.Unmarshal(h.Source, out)
+	}
+	return
+}
+
 // out *[]*Parent{}
 func (m *EsModel) FindAll(out interface{}, body interface{}, q ...func(*esapi.SearchRequest)) (rep *SearchResult, err error) {
 	var buf bytes.Buffer
@@ -66,7 +81,7 @@ func (m *EsModel) FindAll(out interface{}, body interface{}, q ...func(*esapi.Se
 		rep = &SearchResult{}
 		err = jsoniter.NewDecoder(res.Body).Decode(rep)
 		ouL := m.SearchResultToList(rep)
-		if ouL != nil {
+		if ouL != nil && out != nil {
 			reflect.ValueOf(out).Elem().Set(reflect.ValueOf(ouL))
 		}
 	}
