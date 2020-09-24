@@ -95,7 +95,7 @@ func FromPrtZeroUint32(ptr *uint32) uint32 {
 	return *ptr
 }
 
-func ToPrtZeroString(val string) *string {
+func ToPtrZeroString(val string) *string {
 	if val == "" {
 		return nil
 	}
@@ -103,6 +103,9 @@ func ToPrtZeroString(val string) *string {
 	return &n
 }
 
+func ToPtrBool(b bool) *bool {
+	return &b
+}
 func FromPrtZeroString(ptr *string) string {
 	if ptr == nil {
 		return ""
@@ -129,6 +132,10 @@ func PtrOf(ob interface{}) (out interface{}) {
 	//}
 	return
 }
+
+//func PtrOfValue(v interface{}) {
+//	return &v
+//}
 
 func ObjectGet(v, f interface{}) interface{} {
 	if k, ok := f.(string); ok {

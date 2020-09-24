@@ -137,6 +137,7 @@ func PrintError(err error) {
 func PanicIfErr(err error) {
 	if err != nil {
 		panic(errors.WrapSkip(err, 0))
+		//panic(err)
 	}
 }
 

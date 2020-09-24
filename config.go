@@ -44,6 +44,11 @@ type WebAppConfig struct {
 	Dir       string
 }
 
+type TaskConfig struct {
+	tconfig.Config
+	Worker bool
+	Schedule bool
+}
 //main config
 type MConfig struct {
 	configPath      string                      //配置文件路径
@@ -89,7 +94,7 @@ type MConfig struct {
 	}
 	WxConfig WxConfig `yaml:"wechat"`
 	Redis    redis.RedisConf
-	Task     tconfig.Config
+	Task     TaskConfig
 	Seo      bool
 	Cms      struct {
 	}
@@ -186,14 +191,14 @@ func (m MConfig) GetPostgresqlString(dbname string) string {
 }
 
 func (m MConfig) GetMachineryConfig() *tconfig.Config {
-	scnf := &m.Task
+	scnf := m.Task.Config
 	if scnf.Broker == "" { //默认使用redis
 		scnf.Broker = fmt.Sprintf("redis://%s", redis.MainClient.GetConfig().Addr)
 	}
 	if scnf.ResultBackend == "" { //默认使用redis
 		scnf.ResultBackend = scnf.Broker
 	}
-	return scnf
+	return &scnf
 }
 
 // 拼接处完整的对外地址，http协议
