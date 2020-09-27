@@ -10,6 +10,7 @@ import (
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/context"
 	"github.com/kataras/iris/v12/core/router"
+	"html/template"
 	"net/http"
 	httptest2 "net/http/httptest"
 	"net/url"
@@ -37,10 +38,6 @@ func CancelAfterHandler(ictx context.Context) {
 func AfterHandler(ictx context.Context, o interface{}, err error) {
 	FixSetCookie(ictx)
 
-	//跳过已经处理过的请求
-	if v := ictx.Values().Get(HANDLER_CANCEL); v != nil && v.(bool) {
-		return
-	}
 	if err != nil {
 		var returnErr interface{}
 		if !ignoreErros.Contains(err.Error()) {
@@ -61,27 +58,35 @@ func AfterHandler(ictx context.Context, o interface{}, err error) {
 			returnErr = ucore.CommError{ErrMsg: err.Error()}
 		}
 		ictx.JSON(returnErr)
-	} else {
-		var buf []byte
-
-		if offj, isffj := o.(json.Marshaler); isffj {
-			buf, err = offj.MarshalJSON()
-		} else if jp, ok := o.(JsonRep); ok {
-			buf = jp.Json
-		} else {
-			buf, err = jsoniter.Marshal(o)
-		}
-
-		if err != nil {
-			ictx.StatusCode(iris.StatusBadRequest)
-			ictx.JSON(ucore.CommError{ErrMsg: err.Error()})
-		} else {
-			ictx.StatusCode(iris.StatusOK)
-			ictx.ContentType("application/json")
-			ictx.Write(buf)
-		}
+		return
 	}
-	//ictx.Next()
+
+	//跳过已经处理过的请求
+	if v := ictx.Values().Get(HANDLER_CANCEL); v != nil && v.(bool) {
+		return
+	}
+
+	var buf []byte
+
+	if offj, isffj := o.(json.Marshaler); isffj {
+		buf, err = offj.MarshalJSON()
+	} else if b, ok := o.(*string); ok {
+		ictx.StatusCode(iris.StatusOK)
+		ictx.Text(*b)
+		return
+	} else {
+		buf, err = jsoniter.Marshal(o)
+	}
+
+	if err != nil {
+		ictx.StatusCode(iris.StatusBadRequest)
+		ictx.JSON(ucore.CommError{ErrMsg: err.Error()})
+	} else {
+		ictx.StatusCode(iris.StatusOK)
+		ictx.ContentType("application/json")
+		ictx.Write(buf)
+	}
+
 }
 
 //params必须是ptr
@@ -172,9 +177,16 @@ func GetHandlerIp(c context.Context) string {
 	return ""
 }
 
-func FakeCtxIris(app *iris.Application) context.Context{
-		ctx := context.NewContext(app)
-		req := httptest2.NewRequest("", "/", nil)
-		ctx.BeginRequest(httptest2.NewRecorder(), req)
-		return ctx
+func FakeCtxIris(app *iris.Application) context.Context {
+	ctx := context.NewContext(app)
+	req := httptest2.NewRequest("", "/", nil)
+	ctx.BeginRequest(httptest2.NewRecorder(), req)
+	return ctx
+}
+
+func IrisRenderTemplateFile(ictx context.Context, templateFile string, data interface{}) error {
+	temp, _ := template.ParseFiles(templateFile)
+	err := temp.Execute(ictx.ResponseWriter(), data)
+	CancelAfterHandler(ictx)
+	return err
 }
