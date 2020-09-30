@@ -106,6 +106,9 @@ func ToPtrZeroString(val string) *string {
 func ToPtrBool(b bool) *bool {
 	return &b
 }
+func ToPtrStr(b string) *string {
+	return &b
+}
 func FromPrtZeroString(ptr *string) string {
 	if ptr == nil {
 		return ""

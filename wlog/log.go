@@ -5,19 +5,34 @@ import (
 )
 
 var (
-	_logger *zap.Logger
+	_logger  *zap.Logger
+	_loggerS *SugaredLogger
 )
 
 func init() {
-	_logger, _ = zap.NewDevelopment()
+	g, _ := zap.NewDevelopment()
+	SetLogger(g)
 }
 func SetLogger(logger *zap.Logger) {
 	_logger = logger
+	_loggerS = &SugaredLogger{SugaredLogger: *logger.Sugar()}
 }
 
 func L() *zap.Logger {
 	return _logger
 }
-func S() *zap.SugaredLogger {
-	return _logger.Sugar()
+func S() *SugaredLogger {
+	return _loggerS
+}
+
+type SugaredLogger struct {
+	zap.SugaredLogger
+}
+
+func (s *SugaredLogger) IfError(e interface{}) bool {
+	if e != nil {
+		s.Error(e)
+		return true
+	}
+	return false
 }
