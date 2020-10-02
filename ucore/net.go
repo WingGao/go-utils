@@ -2,6 +2,7 @@ package ucore
 
 import (
 	"fmt"
+	"github.com/WingGao/errors"
 	"github.com/parnurzeal/gorequest"
 	"golang.org/x/net/proxy"
 	"net"
@@ -17,6 +18,9 @@ func GetRealIP() (net.IP, error) {
 	}
 	r, _ := regexp.Compile(`>([\d+\.]+)<`)
 	ips := r.FindStringSubmatch(body)
+	if len(ips) < 1 {
+		return nil, errors.New("找不到ip")
+	}
 	return net.ParseIP(ips[1]), nil
 }
 

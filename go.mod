@@ -73,7 +73,7 @@ require (
 	github.com/yudai/pp v2.0.1+incompatible // indirect
 	go.mongodb.org/mongo-driver v1.1.2
 	go.uber.org/zap v1.13.0
-	golang.org/x/net v0.0.0-20200222125558-5a598a2470a0 // indirect
+	golang.org/x/net v0.0.0-20200222125558-5a598a2470a0
 	google.golang.org/grpc v1.26.0 // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gopkg.in/go-playground/validator.v9 v9.31.0 // indirect
