@@ -1,8 +1,12 @@
 package ucore
 
-import "testing"
+import (
+	"github.com/stretchr/testify/assert"
+	"testing"
+)
 
 func TestGetRealIP(t *testing.T) {
-	ip := GetRealIP()
+	ip, err := GetRealIP()
+	assert.NoError(t, err)
 	t.Log(ip)
 }
