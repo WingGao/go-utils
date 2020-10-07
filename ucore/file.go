@@ -21,6 +21,10 @@ func FileGetBase64(filenameOrURL string, timeout ...time.Duration) (out string, 
 }
 
 func BinPath() string {
+	envp:=os.Getenv("WING_BIN_PATH")
+	if envp != "" {
+		return envp
+	}
 	p, _ := filepath.Abs(filepath.Dir(os.Args[0]))
 	return p
 }
