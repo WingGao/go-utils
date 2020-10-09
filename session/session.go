@@ -89,7 +89,6 @@ func BuildIrisSession(rconf uredis.RedisConf, cookieExpire int64) {
 		Expires:      exp,
 		AllowReclaim: true,
 	})
-	//TODO redis超时
 	mySessions.UseDatabase(_rdb)
 
 	SetIrisSessionFactory(mySessions)

@@ -21,6 +21,8 @@ var (
 		"del":      -1,
 		"get":      1,
 		"mget":     -1,
+		"hget":     1,
+		"hset":     1,
 		"set":      1,
 		"sadd":     1,
 		"spop":     1,
@@ -38,7 +40,7 @@ type RedisUniversalClient struct {
 }
 
 func (c *RedisUniversalClient) CtxSMembers(key string) *gredis.StringSliceCmd {
-	return c.SMembers(c.Ctx(),key)
+	return c.SMembers(c.Ctx(), key)
 }
 
 func (c *RedisUniversalClient) Ctx() context.Context {
@@ -47,7 +49,7 @@ func (c *RedisUniversalClient) Ctx() context.Context {
 func (c *RedisUniversalClient) CtxSetNX(key string, value interface{}, expiration time.Duration) *gredis.BoolCmd {
 	return c.SetNX(c.Ctx(), key, value, expiration)
 }
-func (c *RedisUniversalClient)CtxExists(keys ...string) *gredis.IntCmd {
+func (c *RedisUniversalClient) CtxExists(keys ...string) *gredis.IntCmd {
 	return c.Exists(c.Ctx(), keys...)
 }
 func (c *RedisUniversalClient) CtxMGet(keys ...string) *gredis.SliceCmd {
