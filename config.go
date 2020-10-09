@@ -46,9 +46,10 @@ type WebAppConfig struct {
 
 type TaskConfig struct {
 	tconfig.Config
-	Worker bool
+	Worker   bool
 	Schedule bool
 }
+
 //main config
 type MConfig struct {
 	configPath      string                      //配置文件路径
@@ -130,11 +131,12 @@ type MConfig struct {
 		SmsSign             string `yaml:"sms_sign"`
 		SmsTemplateRegister string `yaml:"sms_template_register"`
 	}
-	Vips    string //vips路径， '-'表示不需要
-	GraphQL GraphQLConf
-	Kafka   KafkaConfig
-	Log     LogConfig
-	Apollo  DbConfig
+	Vips       string //vips路径， '-'表示不需要
+	GraphQL    GraphQLConf
+	Kafka      KafkaConfig
+	Log        LogConfig
+	Apollo     DbConfig
+	RapolloKey string `yaml:"rapollo_key"`
 }
 
 func (m MConfig) GetConfigPath() string {
@@ -288,7 +290,7 @@ type GraphQLConf struct {
 }
 
 type GrpcConfig struct {
-	Port        int
+	Port int
 	//ServicesMap map[string][]registry.Node `yaml:"services"`
 }
 

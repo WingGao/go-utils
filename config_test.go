@@ -42,10 +42,4 @@ func TestLoadForTest(t *testing.T) {
 	_, filename, _, _ := runtime.Caller(0)
 	fmt.Println(filename)
 }
-func TestMConfig_EncryptToBase64(t *testing.T) {
-	conf := MConfig{MasterKey: "5jFOHO2j000000006G9J2233"}
-	b64 := conf.EncryptToBase64("hello")
-	t.Log(b64)
-	plain := conf.DecryptFromBase64(b64)
-	assert.Equal(t, "hello", plain)
-}
+

@@ -23,8 +23,9 @@ var (
 		"set":      1,
 		"sadd":     1,
 		"ttl":      1,
-		"scan":     0,
+		"scan":     -1,
 		"ping":     -1,
+		"publish":  0, //不操作，因为sub并没有hook
 	}
 )
 
@@ -55,7 +56,9 @@ func (hk rhook) BeforeProcess(ctx context.Context, cmd gredis.Cmder) (context.Co
 	cmdName := cmd.Name()
 	if v, ok := CMD_WITH_KEY[cmdName]; ok {
 		args := cmd.Args()
-		if v > 0 {
+		if v == 0 {
+			//pass
+		} else if v > 0 {
 			key := args[v].(string)
 			if !strings.HasPrefix(key, hk.client.Config.Prefix) {
 				args[v] = hk.client.FullKey(key)
