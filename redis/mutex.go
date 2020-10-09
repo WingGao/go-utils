@@ -14,7 +14,7 @@ func NewRedisMutex(name string, timeout int) *RedisMutex {
 }
 
 func (m *RedisMutex) Lock() bool {
-	if r, _ := MainClient.Incr(m.name).Result(); r > 1 {
+	if r, _ := MainClient.CtxIncr(m.name).Result(); r > 1 {
 		return false
 	}
 	b, _ := MainClient.ExpireSecond(m.name, m.timeout)
@@ -22,5 +22,5 @@ func (m *RedisMutex) Lock() bool {
 }
 
 func (m *RedisMutex) Unlock() {
-	MainClient.Del(m.name)
+	MainClient.CtxDel(m.name)
 }

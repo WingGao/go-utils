@@ -1,8 +1,8 @@
 package session
 
 import (
-	"github.com/WingGao/go-utils/session/redis"
-	"github.com/kataras/iris/v12"
+	"github.com/WingGao/go-utils/redis"
+	wredis "github.com/WingGao/go-utils/session/redis"
 	"github.com/kataras/iris/v12/context"
 	"github.com/kataras/iris/v12/sessions"
 	sredis "github.com/kataras/iris/v12/sessions/sessiondb/redis"
@@ -26,9 +26,9 @@ const (
 )
 
 type XSession struct {
-	ctx      context.Context
+	ctx      *context.Context
 	Iris     *sessions.Session `json:"-"`
-	key      string //保存在iris中的键
+	key      string            //保存在iris中的键
 	isClear  bool
 	parent   interface{}
 	Sid      string
@@ -56,22 +56,29 @@ type IXSession interface {
 var (
 	_session          *sessions.Sessions
 	_errNotSet        = errors.New("utils.session not set")
-	_rdb              *redis.Database
+	_rdb              *sredis.Database
 	_sessionKeyPrefix = "core:sid:"
 )
 
 func BuildIrisSession(rconf uredis.RedisConf, cookieExpire int64) {
-	_rdb = redis.New(uredis.MainClient, sredis.Config{
-		Network:   sredis.DefaultRedisNetwork,
-		Addr:      rconf.Addr,
-		Password:  rconf.Password,
-		Database:  fmt.Sprintf("%d", rconf.Database),
+	//新版redis
+	rDriver := &wredis.GoRedisDriver{Client: redis.MainClient}
+	rConf := sredis.Config{
+		Driver: rDriver,
 		MaxActive: 0,
-		Prefix:    _sessionKeyPrefix})
-
-	iris.RegisterOnInterrupt(func() {
-		_rdb.Close()
-	})
+		Prefix:    _sessionKeyPrefix}
+	_rdb = sredis.New(rConf)
+	//_rdb = redis.New(uredis.MainClient, sredis.Config{
+	//	Network:   sredis.DefaultRedisNetwork,
+	//	Addr:      rconf.Addr,
+	//	Password:  rconf.Password,
+	//	Database:  fmt.Sprintf("%d", rconf.Database),
+	//	MaxActive: 0,
+	//	Prefix:    _sessionKeyPrefix})
+	//
+	//iris.RegisterOnInterrupt(func() {
+	//	_rdb.Close()
+	//})
 
 	exp := time.Duration(cookieExpire)
 	if exp > 0 {
@@ -100,11 +107,11 @@ func checkSession() bool {
 	return _session != nil
 }
 
-func GetIrisSession(ctx context.Context) *sessions.Session {
+func GetIrisSession(ctx *context.Context) *sessions.Session {
 	sess := _session.Start(ctx)
 	return sess
 }
-func GetSessionCtx(key string) context.Context {
+func GetSessionCtx(key string) *context.Context {
 	ctx := context.NewContext(nil)
 	req := httptest.NewRequest("GET", "http://localhost", nil)
 	req.AddCookie(&http.Cookie{Name: "smsid", Value: key})
@@ -129,7 +136,7 @@ func NewSessionByKey(key string) (*XSession, error) {
 	return NewSessionFromIris(ctx, XSESSION_KEY)
 }
 
-func NewSessionFromIris(ctx context.Context, key string) (*XSession, error) {
+func NewSessionFromIris(ctx *context.Context, key string) (*XSession, error) {
 	if !checkSession() {
 		return nil, _errNotSet
 	}
@@ -189,7 +196,7 @@ func (x *XSession) Clear() {
 	//x.isClear = true
 }
 
-func (x *XSession) SaveIris(ctx context.Context, key string) error {
+func (x *XSession) SaveIris(ctx *context.Context, key string) error {
 	if !checkSession() {
 		return _errNotSet
 	}
@@ -250,14 +257,14 @@ func (x *XSession) GetString(key string) (val string, ok bool) {
 		return v1.(string), true
 	}
 }
-func (x *XSession) HasRole(role string) (bool) {
+func (x *XSession) HasRole(role string) bool {
 	return funk.InStrings(x.Roles, role)
 }
 
 //删除所有的用户登录session
 func ClearUserAllSessions(uid uint32) (err error) {
 	userKey := fmt.Sprintf("core:user:sids:%d", uid)
-	sids, err2 := uredis.MainClient.SMembers(userKey).Result()
+	sids, err2 := uredis.MainClient.CtxSMembers(userKey).Result()
 	if err2 != nil {
 		return err2
 	}
@@ -267,13 +274,13 @@ func ClearUserAllSessions(uid uint32) (err error) {
 		_rdb.Release(v)
 	}
 	//删除自己
-	uredis.MainClient.Del(userKey)
+	uredis.MainClient.CtxDel(userKey)
 	return
 }
 
 //记录到登录列表,目前我们把登录列表放在redis中
 func AddUserLoginSession(uid uint32, sid string) error {
 	userKey := fmt.Sprintf("core:user:sids:%d", uid)
-	_, err := uredis.MainClient.SAdd(userKey, sid).Result()
+	_, err := uredis.MainClient.CtxSAdd(userKey, sid).Result()
 	return err
 }

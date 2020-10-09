@@ -43,7 +43,7 @@ func Init(cnf Config) {
 	client = sonyflake.NewSonyflake(sonyflake.Settings{
 		//StartTime: time.Now(),
 		CheckMachineID: func(u uint16) bool {
-			if v, _ := redis.MainClient.Incr(getMachineKey(cnf.ProjectName, u)).Result(); v > 1 {
+			if v, _ := redis.MainClient.CtxIncr(getMachineKey(cnf.ProjectName, u)).Result(); v > 1 {
 				if cnf.IgnoreExist {
 					//忽律已存在
 				} else {
@@ -69,7 +69,7 @@ func Init(cnf Config) {
 
 // 销毁
 func Destroy() {
-	redis.MainClient.Del(getMachineKey(_config.ProjectName, machineId))
+	redis.MainClient.CtxDel(getMachineKey(_config.ProjectName, machineId))
 	machineId = 0
 	client = nil
 }

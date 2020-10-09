@@ -3,7 +3,7 @@ package redis
 import (
 	"context"
 	"fmt"
-	gredis "github.com/go-redis/redis/v7"
+	gredis "github.com/go-redis/redis/v8"
 	"strings"
 	"time"
 )
@@ -18,10 +18,12 @@ var (
 		"exists":   -1, //自定义
 		"incr":     1,
 		"incrby":   1,
-		"del":      1,
+		"del":      -1,
 		"get":      1,
+		"mget":     -1,
 		"set":      1,
 		"sadd":     1,
+		"spop":     1,
 		"ttl":      1,
 		"scan":     -1,
 		"ping":     -1,
@@ -32,10 +34,60 @@ var (
 type RedisUniversalClient struct {
 	gredis.UniversalClient
 	Config RedisConf
+	ctx    context.Context
+}
+
+func (c *RedisUniversalClient) CtxSMembers(key string) *gredis.StringSliceCmd {
+	return c.SMembers(c.Ctx(),key)
+}
+
+func (c *RedisUniversalClient) Ctx() context.Context {
+	return c.ctx
+}
+func (c *RedisUniversalClient) CtxSetNX(key string, value interface{}, expiration time.Duration) *gredis.BoolCmd {
+	return c.SetNX(c.Ctx(), key, value, expiration)
+}
+func (c *RedisUniversalClient)CtxExists(keys ...string) *gredis.IntCmd {
+	return c.Exists(c.Ctx(), keys...)
+}
+func (c *RedisUniversalClient) CtxMGet(keys ...string) *gredis.SliceCmd {
+	return c.MGet(c.Ctx(), keys...)
+}
+
+func (c *RedisUniversalClient) CtxSAdd(key string, members ...interface{}) *gredis.IntCmd {
+	return c.SAdd(c.Ctx(), key, members...)
+}
+
+func (c *RedisUniversalClient) CtxSPopN(key string, count int64) *gredis.StringSliceCmd {
+	return c.SPopN(c.Ctx(), key, count)
+}
+
+func (c *RedisUniversalClient) CtxIncr(key string) *gredis.IntCmd {
+	return c.Incr(c.Ctx(), key)
+}
+
+func (c *RedisUniversalClient) CtxGet(key string) *gredis.StringCmd {
+	return c.Get(c.Ctx(), key)
+}
+
+func (c *RedisUniversalClient) CtxSet(key string, value interface{}, expiration time.Duration) *gredis.StatusCmd {
+	return c.Set(c.Ctx(), key, value, expiration)
+}
+
+func (c *RedisUniversalClient) CtxDel(keys ...string) *gredis.IntCmd {
+	return c.Del(c.Ctx(), keys...)
+}
+
+func (c *RedisUniversalClient) CtxExpire(key string, expiration time.Duration) *gredis.BoolCmd {
+	return c.Expire(c.Ctx(), key, expiration)
+}
+
+func (c *RedisUniversalClient) CtxScan(cursor uint64, match string, count int64) *gredis.ScanCmd {
+	return c.Scan(c.Ctx(), cursor, match, count)
 }
 
 func (c *RedisUniversalClient) ExpireSecond(key string, second int) (bool, error) {
-	return c.Expire(key, time.Duration(second)*time.Second).Result()
+	return c.CtxExpire(key, time.Duration(second)*time.Second).Result()
 }
 
 func (c *RedisUniversalClient) GetConfig() RedisConf {
@@ -69,7 +121,7 @@ func (hk rhook) BeforeProcess(ctx context.Context, cmd gredis.Cmder) (context.Co
 				if len(args) > 2 && args[2] == "match" {
 					args[3] = hk.client.FullKey(args[3].(string))
 				}
-			case "exists":
+			case "exists", "mget", "del":
 				for i := 1; i < len(args); i++ {
 					args[i] = hk.client.FullKey(args[i].(string))
 				}
@@ -155,7 +207,7 @@ func (c *RedisUniversalClient) DelAll(keyPatter string) (count uint64, err error
 		// keys已经
 		// CROSSSLOT Keys in request don't hash to the same slot
 		for _, k := range keys {
-			err = c.Del(k).Err()
+			err = c.CtxDel(k).Err()
 			if err != nil {
 				return err
 			}
@@ -170,7 +222,7 @@ func (c *RedisUniversalClient) Batch(keyPatter string, batchSize int, act func(k
 	var cursor uint64 = 0
 	var keys []string
 	for {
-		keys, cursor = c.Scan(cursor, keyPatter, int64(batchSize)).Val()
+		keys, cursor = c.CtxScan(cursor, keyPatter, int64(batchSize)).Val()
 		lenKey := uint64(len(keys))
 		if lenKey > 0 {
 			if err = act(keys); err != nil {

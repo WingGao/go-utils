@@ -31,11 +31,11 @@ type JsonRep struct {
 func AddHandlerIgnoreErrors(errs ...interface{}) {
 	ignoreErros.Add(errs...)
 }
-func CancelAfterHandler(ictx context.Context) {
+func CancelAfterHandler(ictx *context.Context) {
 	ictx.Values().Set(HANDLER_CANCEL, true)
 }
 
-func AfterHandler(ictx context.Context, o interface{}, err error) {
+func AfterHandler(ictx *context.Context, o interface{}, err error) {
 	FixSetCookie(ictx)
 
 	if err != nil {
@@ -108,7 +108,7 @@ func ParseForm(v url.Values, outPtr interface{}) (err error) {
 }
 
 // 只保留最新的Set-Cookie
-func FixSetCookie(ctx context.Context) {
+func FixSetCookie(ctx *context.Context) {
 	respHeader := ctx.ResponseWriter().Header()
 	hresp := http.Response{Header: respHeader}
 	cookies := hresp.Cookies()
@@ -177,14 +177,14 @@ func GetHandlerIp(c context.Context) string {
 	return ""
 }
 
-func FakeCtxIris(app *iris.Application) context.Context {
+func FakeCtxIris(app *iris.Application) *context.Context {
 	ctx := context.NewContext(app)
 	req := httptest2.NewRequest("", "/", nil)
 	ctx.BeginRequest(httptest2.NewRecorder(), req)
 	return ctx
 }
 
-func IrisRenderTemplateFile(ictx context.Context, templateFile string, data interface{}) error {
+func IrisRenderTemplateFile(ictx *context.Context, templateFile string, data interface{}) error {
 	temp, _ := template.ParseFiles(templateFile)
 	err := temp.Execute(ictx.ResponseWriter(), data)
 	CancelAfterHandler(ictx)

@@ -1,9 +1,10 @@
 package redis
 
 import (
+	"context"
 	"fmt"
 	"github.com/emirpasic/gods/lists/arraylist"
-	gredis "github.com/go-redis/redis/v7"
+	gredis "github.com/go-redis/redis/v8"
 	jsoniter "github.com/json-iterator/go"
 	"strings"
 	"time"
@@ -15,13 +16,32 @@ const (
 
 type RedisClient interface {
 	gredis.UniversalClient
+	ISingleRedis
 	FullKey(key string) string
 	GetConfig() RedisConf
 	ExpireSecond(key string, second int) (bool, error)
-	SetGlob(key string, ptr interface{}, opt *Option) (error)
-	GetGlob(key string, out interface{}) (error)
+	SetGlob(key string, ptr interface{}, opt *Option) error
+	GetGlob(key string, out interface{}) error
 	DelAll(keyPatter string) (count uint64, err error)
 	Batch(keyPatter string, batchSize int, act func(keys []string) error) (count uint64, err error)
+}
+
+type ISingleRedis interface {
+	CtxIncr(key string) *gredis.IntCmd
+	CtxGet(key string) *gredis.StringCmd
+	CtxSet(key string, value interface{}, expiration time.Duration) *gredis.StatusCmd
+	CtxDel(keys ...string) *gredis.IntCmd
+	CtxExists(keys ...string) *gredis.IntCmd
+	CtxExpire( key string, expiration time.Duration) *gredis.BoolCmd
+	CtxSetNX(key string, value interface{}, expiration time.Duration) *gredis.BoolCmd
+	CtxMGet(keys ...string) *gredis.SliceCmd
+
+
+	CtxScan( cursor uint64, match string, count int64) *gredis.ScanCmd
+
+	CtxSAdd(key string, members ...interface{}) *gredis.IntCmd
+	CtxSMembers( key string) *gredis.StringSliceCmd
+	CtxSPopN( key string, count int64) *gredis.StringSliceCmd
 }
 
 type Option struct {
@@ -37,6 +57,7 @@ func (m Option) ToInterface() []interface{} {
 }
 
 var MainClient RedisClient
+
 //
 //// 一般我们在一个系统里面使用redis
 //// 所以该Client下的基本命令都会自动追加Prefix
@@ -267,7 +288,7 @@ func NewRedisClient(conf RedisConf) (c RedisClient, err error) {
 		uoption.Addrs = []string{conf.Addr}
 	}
 	uc := gredis.NewUniversalClient(uoption)
-	c = &RedisUniversalClient{UniversalClient: uc, Config: conf}
+	c = &RedisUniversalClient{UniversalClient: uc, Config: conf,ctx: context.Background()}
 	uc.AddHook(&rhook{client: c.(*RedisUniversalClient)})
 
 	//TODO ping
@@ -277,7 +298,7 @@ func NewRedisClient(conf RedisConf) (c RedisClient, err error) {
 
 //gob.Register
 //目前使用json代替
-func SetGlob(c RedisClient, key string, ptr interface{}, opt *Option) (error) {
+func SetGlob(c RedisClient, key string, ptr interface{}, opt *Option) error {
 	//key = c.FullKey(key)
 	//var buf bytes.Buffer
 	buf, err := jsoniter.Marshal(ptr)
@@ -287,17 +308,17 @@ func SetGlob(c RedisClient, key string, ptr interface{}, opt *Option) (error) {
 		return err
 	}
 	if opt != nil {
-		_, err = c.Set(key, buf, time.Duration(opt.ExpireSecond)*time.Second).Result()
+		_, err = c.CtxSet(key, buf, time.Duration(opt.ExpireSecond)*time.Second).Result()
 	} else {
 
-		_, err = c.Set(key, buf, 0).Result()
+		_, err = c.CtxSet(key, buf, 0).Result()
 	}
 	return err
 }
 
-func GetGlob(c RedisClient, key string, out interface{}) (error) {
+func GetGlob(c RedisClient, key string, out interface{}) error {
 	//key = c.FullKey(key)
-	bs, err := c.Get(key).Bytes()
+	bs, err := c.CtxGet(key).Bytes()
 	if err != nil {
 		return err
 	}

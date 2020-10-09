@@ -63,7 +63,7 @@ func (w *WCluster) keepAlive() {
 			//wlog.S().Debugf("keep alive %#v", w)
 			if w.isMaster {
 				// 保活
-				redis.MainClient.Expire(fmt.Sprintf("util:cluster:%s_master", w.GroupName), 30*time.Second)
+				redis.MainClient.CtxExpire(fmt.Sprintf("util:cluster:%s_master", w.GroupName), 30*time.Second)
 			} else {
 				w.register()
 			}
@@ -72,7 +72,7 @@ func (w *WCluster) keepAlive() {
 }
 
 func (w *WCluster) register() error {
-	isMaster, err := redis.MainClient.SetNX(fmt.Sprintf("util:cluster:%s_master", w.GroupName), w.IP, 30*time.Second).Result()
+	isMaster, err := redis.MainClient.CtxSetNX(fmt.Sprintf("util:cluster:%s_master", w.GroupName), w.IP, 30*time.Second).Result()
 	if err != nil {
 		return err
 	}

@@ -1,9 +1,10 @@
 package rapollo
 
 import (
+	"context"
 	"github.com/WingGao/go-utils/wlog"
 	sll "github.com/emirpasic/gods/lists/singlylinkedlist"
-	gredis "github.com/go-redis/redis/v7"
+	gredis "github.com/go-redis/redis/v8"
 )
 
 /**
@@ -14,6 +15,7 @@ type Rapollo struct {
 	KeyPrefix   string
 	RedisClient gredis.UniversalClient
 	listenerMap map[string]*sll.List
+	ctx context.Context
 }
 type UpdateHandler func(payload string)
 
@@ -36,7 +38,7 @@ func (c *Rapollo) RegisterKey(key string, onUpdate UpdateHandler) {
 	}
 	hs.Append(onUpdate)
 	// 首次调用
-	res := c.RedisClient.Get(c.FullValueKey(key))
+	res := c.RedisClient.Get(c.ctx,c.FullValueKey(key))
 	if res.Err() == nil {
 		onUpdate(res.Val())
 	}
@@ -55,19 +57,19 @@ func (c *Rapollo) UnregisterKey(key string, onUpdate UpdateHandler) {
 func (c *Rapollo) Pub(key string, value string) {
 	fk := c.FullChannelKey(key)
 	vk := c.FullValueKey(key)
-	c.RedisClient.Publish(fk, value)
-	c.RedisClient.Set(vk, value, 0)
+	c.RedisClient.Publish(c.ctx,fk, value)
+	c.RedisClient.Set(c.ctx,vk, value, 0)
 }
 
 // 完整的key
 func New(keyPrefix string, redisc gredis.UniversalClient) *Rapollo {
 	p := &Rapollo{KeyPrefix: keyPrefix, listenerMap: make(map[string]*sll.List),
-		RedisClient: redisc}
+		RedisClient: redisc,ctx: context.Background()}
 	// 开始监听
-	ps := p.RedisClient.PSubscribe(keyPrefix + ":*")
+	ps := p.RedisClient.PSubscribe(p.ctx,keyPrefix + ":*")
 	go func() {
 		for {
-			if msgi, err := ps.ReceiveMessage(); err == nil {
+			if msgi, err := ps.ReceiveMessage(p.ctx); err == nil {
 				wlog.S().Debugf("receive %#v", msgi)
 				hs := p.listenerMap[msgi.Channel]
 				if hs != nil {
