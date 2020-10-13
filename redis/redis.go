@@ -27,6 +27,7 @@ type RedisClient interface {
 }
 
 type ISingleRedis interface {
+	Ctx() context.Context
 	CtxIncr(key string) *gredis.IntCmd
 	CtxGet(key string) *gredis.StringCmd
 	CtxSet(key string, value interface{}, expiration time.Duration) *gredis.StatusCmd

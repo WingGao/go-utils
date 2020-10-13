@@ -4,7 +4,6 @@ import (
 	"testing"
 	"github.com/WingGao/go-utils"
 	"time"
-	"suamo/mtest"
 	"github.com/sirupsen/logrus"
 	"os"
 	"github.com/stretchr/testify/assert"
@@ -29,7 +28,6 @@ func TestNewElasticModel(t *testing.T) {
 	post := &TestPost{}
 	post.SetParent(post)
 	esMod := NewElasticModel(post)
-	mtest.LogJson(t, "", esMod)
 	assert.Equal(t, esMod.Doc.Properties["PublishTime"].Type, "date")
 	assert.Equal(t, esMod.Doc.Properties["IntPtr"].Type, "integer")
 	assert.Equal(t, esMod.Doc.Properties["LongA"].Type, "long")

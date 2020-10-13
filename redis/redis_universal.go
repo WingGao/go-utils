@@ -30,6 +30,8 @@ var (
 		"scan":     -1,
 		"ping":     -1,
 		"publish":  0, //不操作，因为sub并没有hook
+		//list
+		"rpush": 1,
 	}
 )
 

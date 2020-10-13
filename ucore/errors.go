@@ -65,6 +65,10 @@ func NewErrNoAccount() error {
 	return errors.WrapSkip("账户不存在", 1)
 }
 
+func NewErrLimit() error {
+	return errors.WrapSkip("到达限制", 1)
+}
+
 func Nothing(...interface{}) {
 
 }

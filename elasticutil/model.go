@@ -48,6 +48,17 @@ func (m *EsModel) SetParent(p interface{}) {
 	m.parent = p
 }
 
+func (m *EsModel) LoadAndSetId(id string) error {
+	rep, err := m.Client.Get(m.parent.(IEsParent).TableName(), id)
+	if err != nil {
+		return err
+	}
+	defer rep.Body.Close()
+	res := &GetResult{}
+	jsoniter.NewDecoder(rep.Body).Decode(res)
+	return jsoniter.Unmarshal(res.Source, &m.parent)
+}
+
 func (m *EsModel) FindOne(out interface{}, body interface{}, q ...func(*esapi.SearchRequest)) (err error) {
 	q = append(q, m.Client.Search.WithSize(1))
 	rep, err := m.FindAll(nil, body, q...)
@@ -112,3 +123,4 @@ type EsError struct {
 }
 
 type SearchResult elastic.SearchResult
+type GetResult elastic.GetResult
