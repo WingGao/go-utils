@@ -8,7 +8,7 @@ require (
 	github.com/Shopify/sarama v1.26.4
 	github.com/WingGao/errors v0.0.0
 	github.com/ajg/form v1.5.1 // indirect
-	github.com/aliyun/alibaba-cloud-sdk-go v0.0.0-20190808125512-07798873deee
+	github.com/aliyun/alibaba-cloud-sdk-go v1.61.566
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
 	github.com/bwmarrin/discordgo v0.20.2 // indirect
 	github.com/chanxuehong/wechat v0.0.0-20190521093015-fafb751f9916
