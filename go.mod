@@ -22,7 +22,7 @@ require (
 	github.com/fatih/structs v1.1.0
 	github.com/fortytw2/leaktest v1.3.0 // indirect
 	github.com/go-errors/errors v1.0.1
-	github.com/go-playground/form v3.1.4+incompatible
+	github.com/go-playground/form/v4 v4.1.1
 	github.com/go-playground/universal-translator v0.17.0 // indirect
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible // indirect

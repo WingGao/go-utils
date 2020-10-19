@@ -74,6 +74,7 @@ type MConfig struct {
 	ElasticSearch   DbConfig `yaml:"elastic"`
 	Mongodb         DbConfig
 	DefaultPassword string `yaml:"default_password"` //默认密码
+	CasbinEnable bool `yaml:"casbin_enable"`
 	CasbinModelPath string `yaml:"casbin_model"`
 	CasbinPolicy    string `yaml:"casbin_policy"`
 	MediaPath       string

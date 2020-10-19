@@ -5,7 +5,7 @@ import (
 	ucore "github.com/WingGao/go-utils/ucore"
 	"github.com/WingGao/go-utils/wlog"
 	"github.com/emirpasic/gods/sets/hashset"
-	"github.com/go-playground/form"
+	"github.com/go-playground/form/v4"
 	"github.com/json-iterator/go"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/context"
