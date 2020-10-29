@@ -13,20 +13,23 @@ import (
 
 type IrisHelper struct {
 	SessionType reflect.Type
-	formDec *form.Decoder
+	formDec     *form.Decoder
 }
 
 // 将友好请求转换为iris
 // 支持函数：
 // 	func(*ctx,*any)(out,err)
 // 	func(*ctx,*any,sess)(out,err)
-func (h *IrisHelper) WrapH(handler interface{})iris.Handler {
+func (h *IrisHelper) WrapH(handler interface{}) iris.Handler {
 	if h.formDec == nil {
 		h.formDec = form.NewDecoder()
 	}
 	handlerVal := reflect.ValueOf(handler)
 	handlerType := handlerVal.Type()
 	typeReq := handlerType.In(1) // *pb.xxxReq
+	if handlerType.NumOut() != 2 {
+		panic("handler需要2个返回值")
+	}
 
 	return func(ictx *context.Context) {
 		var output interface{}
@@ -54,20 +57,22 @@ func (h *IrisHelper) WrapH(handler interface{})iris.Handler {
 		if ictx.Method() != "GET" && strings.Contains(ictx.GetContentTypeRequested(), context.ContentJSONHeaderValue) && len(body) > 0 {
 			err = jsoniter.Unmarshal(body, reqPtr)
 		} else {
-			err = h.formDec.Decode(reqPtr,ictx.FormValues())
+			err = h.formDec.Decode(reqPtr, ictx.FormValues())
 		}
 		if err != nil {
 			wlog.S().Error("Error when reading form: ", err.Error())
 			err = errors.New("解析错误")
 			return
 		}
-
-		if handlerType.NumIn() == 3 {
+		switch handlerType.NumIn() {
+		case 3:
 			//TODO 带session
 			//sess, err = usess.NewSessionFromIris(ictx, utils.XSESSION_KEY)
 			out = handlerVal.Call([]reflect.Value{reflect.ValueOf(ictx), reqVal, reflect.ValueOf(sess)})
-		} else { //不带session
+		case 2:
 			out = handlerVal.Call([]reflect.Value{reflect.ValueOf(ictx), reqVal})
+		case 1:
+			out = handlerVal.Call([]reflect.Value{reflect.ValueOf(ictx)})
 		}
 		output = out[0].Interface()
 		errVal := out[1]
