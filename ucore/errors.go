@@ -134,6 +134,9 @@ func (l *ErrorList) Run(fo func() error) {
 }
 
 func PrintError(err error) {
+	if err == nil {
+		return
+	}
 	errN := errors.WrapSkip(err, 0)
 	fmt.Println(errN.(stackTracer).StackTrace())
 }

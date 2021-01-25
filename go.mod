@@ -49,7 +49,7 @@ require (
 	github.com/nats-io/nats-server/v2 v2.1.4 // indirect
 	github.com/nlopes/slack v0.6.1-0.20191106133607-d06c2a2b3249 // indirect
 	github.com/olivere/elastic/v7 v7.0.20
-	github.com/parnurzeal/gorequest v0.2.15
+	github.com/parnurzeal/gorequest v0.2.16
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/rs/xid v1.2.1
 	github.com/sergi/go-diff v1.1.0 // indirect
