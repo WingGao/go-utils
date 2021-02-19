@@ -16,6 +16,9 @@ type IrisHelper struct {
 	formDec     *form.Decoder
 }
 
+type EmptyReq struct {
+}
+
 // 将友好请求转换为iris
 // 支持函数：
 // 	func(*ctx,*any)(out,err)
