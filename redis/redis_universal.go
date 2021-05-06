@@ -2,6 +2,7 @@ package redis
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	gredis "github.com/go-redis/redis/v8"
 	"strings"
@@ -21,8 +22,6 @@ var (
 		"del":      -1,
 		"get":      1,
 		"mget":     -1,
-		"hget":     1,
-		"hset":     1,
 		"set":      1,
 		"sadd":     1,
 		"spop":     1,
@@ -32,6 +31,11 @@ var (
 		"publish":  0, //不操作，因为sub并没有hook
 		//list
 		"rpush": 1,
+		//hash
+		"hexists": 1,
+		"hget":    1,
+		"hset":    1,
+		"hgetall":    1,
 	}
 )
 
@@ -90,6 +94,20 @@ func (c *RedisUniversalClient) CtxScan(cursor uint64, match string, count int64)
 	return c.Scan(c.Ctx(), cursor, match, count)
 }
 
+//hash
+func (c *RedisUniversalClient) CtxHExists(key, field string) *gredis.BoolCmd {
+	return c.HExists(c.Ctx(), key, field)
+}
+func (c *RedisUniversalClient) CtxHGet(key, field string) *gredis.StringCmd {
+	return c.HGet(c.Ctx(), key, field)
+}
+func (c *RedisUniversalClient) CtxHSet(key string, values ...interface{}) *gredis.IntCmd {
+	return c.HSet(c.Ctx(), key, values...)
+}
+func (c *RedisUniversalClient) CtxHGetAll(key string) *gredis.StringStringMapCmd {
+	return c.HGetAll(c.Ctx(), key)
+}
+
 func (c *RedisUniversalClient) ExpireSecond(key string, second int) (bool, error) {
 	return c.CtxExpire(key, time.Duration(second)*time.Second).Result()
 }
@@ -116,6 +134,7 @@ func (hk rhook) BeforeProcess(ctx context.Context, cmd gredis.Cmder) (context.Co
 			//pass
 		} else if v > 0 {
 			key := args[v].(string)
+			// 如果没有前缀，则补全
 			if !strings.HasPrefix(key, hk.client.Config.Prefix) {
 				args[v] = hk.client.FullKey(key)
 			}
@@ -133,7 +152,7 @@ func (hk rhook) BeforeProcess(ctx context.Context, cmd gredis.Cmder) (context.Co
 		}
 		//wlog.S().Debugf("%#v", cmd)
 	} else {
-		panic(fmt.Sprintf("redis command [%s] not checked", cmdName))
+		panic(errors.New(fmt.Sprintf("redis command [%s] not checked", cmdName)))
 	}
 	return ctx, nil
 }
