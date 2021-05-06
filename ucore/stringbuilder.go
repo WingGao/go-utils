@@ -76,3 +76,7 @@ func (self *StringBuilder) String() string {
 func (self *StringBuilder) Len() int {
 	return self.buffer.Len()
 }
+
+func (self *StringBuilder) Clear()  {
+	self.buffer.Reset()
+}

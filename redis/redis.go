@@ -39,10 +39,15 @@ type ISingleRedis interface {
 
 
 	CtxScan( cursor uint64, match string, count int64) *gredis.ScanCmd
-
+	//set
 	CtxSAdd(key string, members ...interface{}) *gredis.IntCmd
 	CtxSMembers( key string) *gredis.StringSliceCmd
 	CtxSPopN( key string, count int64) *gredis.StringSliceCmd
+	//hash
+	CtxHExists(key, field string) *gredis.BoolCmd
+	CtxHGet(key, field string) *gredis.StringCmd
+	CtxHSet( key string, values ...interface{}) *gredis.IntCmd
+	CtxHGetAll(key string) *gredis.StringStringMapCmd
 }
 
 type Option struct {
