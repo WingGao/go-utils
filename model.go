@@ -45,7 +45,7 @@ type IModel interface {
 	//创建对应父Slice切片的地址,指针 *[]*ParentType
 	MakePSlice() interface{}
 	BatchInsertBad(items []*Model) (err error)
-	Save() error
+	UpsertLight() error
 	FirstOrCreate(where ...interface{}) (err error)
 	Update(attrs ...interface{}) error
 	Updates(values interface{}, ignoreProtectedAttrs ...bool) (err error)
@@ -331,7 +331,7 @@ func (m *Model) BatchInsertBad(items []*Model) (err error) {
 	tx := m.DB.Begin()
 	for _, v := range items {
 		v.DB = tx
-		err = v.Save()
+		err = v.UpsertLight()
 		if err != nil {
 			tx.Rollback()
 			return
@@ -357,7 +357,7 @@ func (m *Model) FirstOrCreate(where ...interface{}) (err error) {
 }
 
 // 更新局部，只逻辑判断主键持否为nil，并不会去查数据库
-func (m *Model) Save() (err error) {
+func (m *Model) UpsertLight() (err error) {
 	if m.GetDB() == nil {
 		err = errors.New("Model.DB is null")
 	} else if err == nil {

@@ -39,10 +39,10 @@ func TestModel_IsValid(t *testing.T) {
 	mod := newMod()
 	mod2 := newMod2()
 
-	if mod.Save() == nil {
+	if mod.UpsertLight() == nil {
 		t.Fatal("check mod.IsValid failed")
 	}
-	err := mod2.Save()
+	err := mod2.UpsertLight()
 	if err != nil {
 		t.Fatal("check mod2.IsValid failed")
 	}

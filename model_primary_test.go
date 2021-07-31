@@ -49,11 +49,11 @@ func TestAutoMerge(t *testing.T) {
 func TestModel_Save(t *testing.T) {
 	mod := NewModPrimaryKey1()
 	mod.IntField = 12
-	err := mod.Save()
+	err := mod.UpsertLight()
 	assert.NoError(t, err)
 	//根系
 	mod.IntField = 13
-	err = mod.Save()
+	err = mod.UpsertLight()
 	assert.NoError(t, err)
 }
 
@@ -66,7 +66,7 @@ func TestModel_LoadByPk(t *testing.T) {
 
 func TestModel_Delete(t *testing.T) {
 	mod := NewModPrimaryKey1()
-	mod.Save()
+	mod.UpsertLight()
 	pk := mod.Serial
 	mod2 := NewModPrimaryKey1()
 	mod2.Serial = pk
