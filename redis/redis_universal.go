@@ -35,7 +35,7 @@ var (
 		"hexists": 1,
 		"hget":    1,
 		"hset":    1,
-		"hgetall":    1,
+		"hgetall": 1,
 	}
 )
 
@@ -258,6 +258,9 @@ func (c *RedisUniversalClient) Batch(keyPatter string, batchSize int, act func(k
 		}
 	}
 	return
+}
+func (c *RedisUniversalClient) GetClusterClient() *gredis.ClusterClient {
+	return c.UniversalClient.(*gredis.ClusterClient)
 }
 
 //

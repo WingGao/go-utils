@@ -1,10 +1,10 @@
 package ucore
 
 import (
-	"github.com/thoas/go-funk"
-	"reflect"
 	"github.com/emirpasic/gods/maps/hashmap"
 	"github.com/emirpasic/gods/sets/hashset"
+	"github.com/thoas/go-funk"
+	"reflect"
 )
 
 func GetItemString(arr []string, index int) (out string, ok bool) {
@@ -50,3 +50,17 @@ func ArrJoin(arrL interface{}, arrR interface{}, keyL, keyR interface{}, joinFun
 //	arrVal := reflect.ValueOf(arr)
 //	reflect.SliceOf(arrVal.Slice())
 //}
+
+func InsertStr(s []string, k int, vs ...string) []string {
+	if n := len(s) + len(vs); n <= cap(s) {
+		s2 := s[:n]
+		copy(s2[k+len(vs):], s[k:])
+		copy(s2[k:], vs)
+		return s2
+	}
+	s2 := make([]string, len(s) + len(vs))
+	copy(s2, s[:k])
+	copy(s2[k:], vs)
+	copy(s2[k+len(vs):], s[k:])
+	return s2
+}

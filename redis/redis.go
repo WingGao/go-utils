@@ -24,6 +24,7 @@ type RedisClient interface {
 	GetGlob(key string, out interface{}) error
 	DelAll(keyPatter string) (count uint64, err error)
 	Batch(keyPatter string, batchSize int, act func(keys []string) error) (count uint64, err error)
+	GetClusterClient() *gredis.ClusterClient
 }
 
 type ISingleRedis interface {
