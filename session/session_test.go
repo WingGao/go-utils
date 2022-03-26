@@ -1,21 +1,14 @@
 package session
 
 import (
-	"testing"
-	"github.com/kataras/iris/v12/context"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/httptest"
-	"os"
-	uredis "github.com/WingGao/go-utils/redis"
 	"github.com/stretchr/testify/assert"
-	"wingao.net/webproj/mtest"
+	"os"
+	"testing"
 )
 
 func TestMain(m *testing.M) {
-	mtest.PreEnv()
-	testConf := mtest.GetConfig()
-	uredis.LoadClient(testConf.Redis)
-	BuildIrisSession(testConf)
 	os.Exit(m.Run())
 }
 func TestXSession_ToGob(t *testing.T) {
@@ -31,27 +24,27 @@ func TestSessionFromIris(t *testing.T) {
 		Username: "testname",
 	}
 	app := iris.New()
-	app.Post("/set", func(ctx context.Context) {
-		sess, _ := NewSessionFromIris(ctx, "sess")
-		sess.Uid = val.Uid
-		if err := sess.SaveIrisD(); err != nil {
-			t.Error(err)
-			ctx.StatusCode(403)
-		}
-	})
-	app.Get("/get", func(ctx context.Context) {
-		sess, err := NewSessionFromIris(ctx, "sess")
-		if err != nil {
-			t.Error(err)
-			ctx.StatusCode(403)
-			return
-		}
-		if sess.Uid == val.Uid {
-			ctx.JSON(val)
-		} else {
-			ctx.JSON(sess)
-		}
-	})
+	//app.Post("/set", func(ctx context.Context) {
+	//	sess, _ := NewSessionFromIris(ctx, "sess")
+	//	sess.Uid = val.Uid
+	//	if err := sess.SaveIrisD(); err != nil {
+	//		t.Error(err)
+	//		ctx.StatusCode(403)
+	//	}
+	//})
+	//app.Get("/get", func(ctx context.Context) {
+	//	sess, err := NewSessionFromIris(ctx, "sess")
+	//	if err != nil {
+	//		t.Error(err)
+	//		ctx.StatusCode(403)
+	//		return
+	//	}
+	//	if sess.Uid == val.Uid {
+	//		ctx.JSON(val)
+	//	} else {
+	//		ctx.JSON(sess)
+	//	}
+	////})
 
 	e := httptest.New(t, app, httptest.URL("http://example.com"))
 	e.POST("/set").Expect().Status(iris.StatusOK).Cookies().NotEmpty()

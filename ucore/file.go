@@ -20,12 +20,19 @@ func FileGetBase64(filenameOrURL string, timeout ...time.Duration) (out string, 
 	return
 }
 
+// 当前程序的完整路径
 func BinPath() string {
-	envp:=os.Getenv("WING_BIN_PATH")
+	envp := os.Getenv("WING_BIN_PATH")
 	if envp != "" {
 		return envp
 	}
-	p, _ := filepath.Abs(filepath.Dir(os.Args[0]))
+	p, _ := filepath.Abs(os.Args[0])
+	return p
+}
+
+// 当前程序所在目录的完整路径
+func BinDirPath() string {
+	p, _ := filepath.Abs(filepath.Dir(BinPath()))
 	return p
 }
 
