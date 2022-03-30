@@ -34,20 +34,19 @@ type ISingleRedis interface {
 	CtxSet(key string, value interface{}, expiration time.Duration) *gredis.StatusCmd
 	CtxDel(keys ...string) *gredis.IntCmd
 	CtxExists(keys ...string) *gredis.IntCmd
-	CtxExpire( key string, expiration time.Duration) *gredis.BoolCmd
+	CtxExpire(key string, expiration time.Duration) *gredis.BoolCmd
 	CtxSetNX(key string, value interface{}, expiration time.Duration) *gredis.BoolCmd
 	CtxMGet(keys ...string) *gredis.SliceCmd
 
-
-	CtxScan( cursor uint64, match string, count int64) *gredis.ScanCmd
+	CtxScan(cursor uint64, match string, count int64) *gredis.ScanCmd
 	//set
 	CtxSAdd(key string, members ...interface{}) *gredis.IntCmd
-	CtxSMembers( key string) *gredis.StringSliceCmd
-	CtxSPopN( key string, count int64) *gredis.StringSliceCmd
+	CtxSMembers(key string) *gredis.StringSliceCmd
+	CtxSPopN(key string, count int64) *gredis.StringSliceCmd
 	//hash
 	CtxHExists(key, field string) *gredis.BoolCmd
 	CtxHGet(key, field string) *gredis.StringCmd
-	CtxHSet( key string, values ...interface{}) *gredis.IntCmd
+	CtxHSet(key string, values ...interface{}) *gredis.IntCmd
 	CtxHGetAll(key string) *gredis.StringStringMapCmd
 }
 
@@ -295,7 +294,7 @@ func NewRedisClient(conf RedisConf) (c RedisClient, err error) {
 		uoption.Addrs = []string{conf.Addr}
 	}
 	uc := gredis.NewUniversalClient(uoption)
-	c = &RedisUniversalClient{UniversalClient: uc, Config: conf,ctx: context.Background()}
+	c = &RedisUniversalClient{UniversalClient: uc, Config: conf, ctx: context.Background()}
 	uc.AddHook(&rhook{client: c.(*RedisUniversalClient)})
 
 	//TODO ping

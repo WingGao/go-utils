@@ -4,8 +4,8 @@ import (
 	"encoding/hex"
 	"fmt"
 	tconfig "github.com/RichardKnop/machinery/v1/config"
-	"github.com/WingGao/go-utils/redis"
 	"github.com/WingGao/errors"
+	"github.com/WingGao/go-utils/redis"
 	"github.com/ungerik/go-dry"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
@@ -45,9 +45,9 @@ type WebAppConfig struct {
 }
 
 type TaskConfig struct {
-	tconfig.Config
-	Worker   bool
-	Schedule bool
+	tconfig.Config `yaml:",inline"`
+	Worker         bool
+	Schedule       bool
 }
 
 //main config
@@ -74,7 +74,7 @@ type MConfig struct {
 	ElasticSearch   DbConfig `yaml:"elastic"`
 	Mongodb         DbConfig
 	DefaultPassword string `yaml:"default_password"` //默认密码
-	CasbinEnable bool `yaml:"casbin_enable"`
+	CasbinEnable    bool   `yaml:"casbin_enable"`
 	CasbinModelPath string `yaml:"casbin_model"`
 	CasbinPolicy    string `yaml:"casbin_policy"`
 	MediaPath       string
@@ -151,7 +151,7 @@ func (m MConfig) Get(key string) interface{} {
 		if v, ok := last[k]; ok {
 			if i+1 == len(keys) { //最后一个
 				return v
-			} else {                                                 //下一级
+			} else { //下一级
 				if last, ok = v.(map[interface{}]interface{}); !ok { //转换失败，没有子元素
 					return nil
 				}

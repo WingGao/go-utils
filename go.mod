@@ -44,7 +44,7 @@ require (
 	github.com/ungerik/go-dry v0.0.0-20180411133923-654ae31114c8
 	github.com/xeipuuv/gojsonpointer v0.0.0-20190809123943-df4f5c81cb3b // indirect
 	go.mongodb.org/mongo-driver v1.1.2
-	go.uber.org/zap v1.13.0
+	go.uber.org/zap v1.21.0
 	golang.org/x/net v0.0.0-20210913180222-943fd674d43e
 	golang.org/x/sys v0.0.0-20220111092808-5a964db01320
 	google.golang.org/grpc v1.26.0 // indirect
