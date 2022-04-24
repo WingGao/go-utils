@@ -200,3 +200,7 @@ func MakeSlice(p interface{}, cap int) interface{} {
 	arr.Elem().Set(slice)
 	return arr.Interface()
 }
+
+func PointOf[T any](v T) *T {
+	return &v
+}

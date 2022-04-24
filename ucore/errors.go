@@ -52,8 +52,8 @@ func NewErrPermission() error {
 	return errors.WrapSkip("没有权限", 1)
 	//return ge.New("没有权限")
 }
-func NewErrPassword() error {
-	return errors.WrapSkip("密码错误", 1)
+func NewErrPasswordOrAccount() error {
+	return errors.WrapSkip("账户或密码错误", 1)
 	//return ge.New("没有权限")
 }
 
