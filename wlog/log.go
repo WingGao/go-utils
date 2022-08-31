@@ -29,6 +29,7 @@ type SugaredLogger struct {
 	zap.SugaredLogger
 }
 
+// 打印错误，true=有错误
 func (s *SugaredLogger) IfError(e interface{}) bool {
 	if e != nil {
 		s.Error(e)
