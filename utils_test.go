@@ -10,13 +10,15 @@ import (
 	"path/filepath"
 	"runtime"
 	"testing"
+	"wingao.net/webproj/core"
 )
 
 var (
-	testConfig MConfig
+	testConfig core.MConfig
 	_db        *gorm.DB
 )
-func loadFromFile(){
+
+func loadFromFile() {
 	_, filename, _, _ := runtime.Caller(0)
 	host, _ := os.Hostname()
 	testEnvFile, _ := filepath.Abs(filepath.Join(filename, fmt.Sprintf("../_tests/config_test.yaml")))
@@ -24,7 +26,7 @@ func loadFromFile(){
 	cm := make(map[interface{}]interface{})
 	yaml.Unmarshal(tf, &cm)
 	envFilePath := cm[host]
-	testConfig, _ = LoadConfig(envFilePath.(string))
+	testConfig, _ = core.LoadConfig(envFilePath.(string))
 }
 func TestMain(m *testing.M) {
 	loadFromFile()

@@ -2,17 +2,17 @@ package wmongo
 
 import (
 	"context"
-	"github.com/WingGao/go-utils"
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"os"
 	"testing"
+	"wingao.net/webproj/core"
 )
 
 var (
-	testConfig utils.MConfig
+	testConfig core.MConfig
 	msess      *mongo.Client
 	lastId     primitive.ObjectID
 )
@@ -25,9 +25,9 @@ func TestMain(m *testing.M) {
 type ModelA struct {
 	MgModel      `bson:",inline"`
 	MgTimeModel  `bson:",inline"`
-	FieldStr     string //field_str
+	FieldStr     string    //field_str
 	FieldStructs []EmModel //field_structs
-	FieldStrB    string `bson:"field_b"`
+	FieldStrB    string    `bson:"field_b"`
 	FieldStrList []string
 }
 type EmModel struct {
@@ -52,7 +52,7 @@ func TestMgModel_Save(t *testing.T) {
 	mod := NewModelA()
 	testP(mod)
 	mod.FieldStr = "1"
-	mod.FieldStructs = []EmModel{EmModel{FieldA: "11"}, EmModel{FieldA: "22"},}
+	mod.FieldStructs = []EmModel{EmModel{FieldA: "11"}, EmModel{FieldA: "22"}}
 	mod.FieldStrB = "alias"
 	err := mod.Save()
 	assert.NoError(t, err)

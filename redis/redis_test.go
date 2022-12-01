@@ -8,6 +8,7 @@ import (
 	"os"
 	"testing"
 	"time"
+	"wingao.net/webproj/core"
 )
 
 var (
@@ -15,12 +16,12 @@ var (
 )
 
 func TestMain(m *testing.M) {
-	utils.DefaultConfig.Redis = utils.RedisConf{
+	core.DefaultConfig.Redis = utils.RedisConf{
 		Shards: []string{"10.114.31.202:6423", "10.114.31.210:6434", "10.114.31.210:6435", "10.114.31.211:6456", "10.114.31.211:6457", "10.114.31.202:6424"},
 		Prefix: "test:",
 	}
-	LoadClient(utils.DefaultConfig.Redis)
-	clientCl, _ = NewRedisClient(utils.DefaultConfig.Redis)
+	LoadClient(core.DefaultConfig.Redis)
+	clientCl, _ = NewRedisClient(core.DefaultConfig.Redis)
 	os.Exit(m.Run())
 }
 

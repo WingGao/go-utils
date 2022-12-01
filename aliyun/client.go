@@ -1,16 +1,15 @@
 package aliyun
 
 import (
-
 	"github.com/aliyun/alibaba-cloud-sdk-go/sdk"
-	"github.com/WingGao/go-utils"
+	"wingao.net/webproj/core"
 )
 
 var (
 	DefaultClient *sdk.Client
 )
 
-func Init(cnf utils.MConfig) error {
+func Init(cnf core.MConfig) error {
 	client, err := sdk.NewClientWithAccessKey(cnf.Aliyun.RegionId, cnf.Aliyun.Key, cnf.Aliyun.Secret)
 	if err != nil {
 		return err

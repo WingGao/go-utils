@@ -1,15 +1,15 @@
 package uuid
 
 import (
-	"github.com/WingGao/go-utils"
+	"github.com/WingGao/go-utils/redis"
 	"os"
 	"testing"
-	"github.com/WingGao/go-utils/redis"
 	"time"
+	"wingao.net/webproj/core"
 )
 
 func TestMain(m *testing.M) {
-	testConf, _ := utils.LoadConfig(os.Getenv("NXPT_GO_CONF"))
+	testConf, _ := core.LoadConfig(os.Getenv("NXPT_GO_CONF"))
 	redis.LoadClient(testConf.Redis)
 	Init()
 	os.Exit(m.Run())

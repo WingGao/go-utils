@@ -29,7 +29,6 @@ package wmongo
 import (
 	"context"
 	"github.com/WingGao/errors"
-	"github.com/WingGao/go-utils"
 	"github.com/WingGao/go-utils/ucore"
 	icontext "github.com/kataras/iris/v12/context"
 	"github.com/thoas/go-funk"
@@ -42,13 +41,19 @@ import (
 	"time"
 )
 
+// 单数据库专用client
+type MgClient struct {
+	Client *mongo.Client
+	DbName string
+}
+
 // MongoDB结构的通用
 // 如果新增加域，需要在one()里也添加对应复制
 type MgModel struct {
 	Id primitive.ObjectID `bson:"_id"`
 	//IdHex   string        `bson:"-"`
-	Client *mongo.Client `bson:"-" json:"-"`
-	DbName string        `bson:"-" json:"-"`
+	Client *MgClient `bson:"-" json:"-"`
+	DbName string    `bson:"-" json:"-"`
 	// 指向父的指针
 	parent     interface{} `bson:"-"`
 	softDelete bool        `bson:"-"`
@@ -96,7 +101,7 @@ func (m *MgModel) GetParent() interface{} {
 //基本可以用作初始化
 func (m *MgModel) SetParent(p interface{}) {
 	if m.DbName == "" {
-		m.DbName = utils.DefaultConfig.Mongodb.DBName
+		m.DbName = m.Client.DbName
 	}
 	m.parent = p
 }
@@ -106,7 +111,7 @@ func (m *MgModel) GetClient() *mongo.Client {
 	if m.Client == nil {
 		return nil
 	}
-	return m.Client
+	return m.Client.Client
 }
 
 //关闭所有获取到的session
@@ -261,7 +266,7 @@ func (m *MgModel) DeleteId() error {
 	if m.softDelete { //如果开启了软删除，则将文档移动至一个_del集合
 		old := m.New().(IMgModel)
 		old.GetModel().LoadById(m.Id)
-		dc := NewMgCollection(m.Client.Database(m.DbName).Collection(m.parent.(IMgParent).TableName() + "_del"))
+		dc := NewMgCollection(m.Client.Client.Database(m.DbName).Collection(m.parent.(IMgParent).TableName() + "_del"))
 		res, err1 := dc.UpsertId(old.GetModel().Id, old)
 		if res.UpsertedCount != 1 || err1 != nil {
 			return err1

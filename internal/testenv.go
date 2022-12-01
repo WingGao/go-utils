@@ -2,7 +2,6 @@ package internal
 
 import (
 	"fmt"
-	"github.com/WingGao/go-utils"
 	"github.com/WingGao/go-utils/redis"
 	_ "github.com/WingGao/go-utils/wlog"
 	"github.com/jinzhu/gorm"
@@ -11,10 +10,11 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"wingao.net/webproj/core"
 )
 
 var (
-	TestConfig utils.MConfig
+	TestConfig core.MConfig
 	TestDb     *gorm.DB
 )
 
@@ -26,9 +26,9 @@ func LoadFromFile() {
 	cm := make(map[interface{}]interface{})
 	yaml.Unmarshal(tf, &cm)
 	envFilePath := cm[host]
-	TestConfig, _ = utils.LoadConfig(envFilePath.(string))
+	TestConfig, _ = core.LoadConfig(envFilePath.(string))
 }
 
-func LoadRedis(){
+func LoadRedis() {
 	redis.LoadClient(TestConfig.Redis)
 }
