@@ -1,9 +1,9 @@
 package utils
 
 import (
-	ucore "github.com/WingGao/go-utils/ucore"
 	"github.com/WingGao/go-utils/session"
-	"github.com/WingGao/go-utils/whandler"
+	ucore "github.com/WingGao/go-utils/ucore"
+	"wingao.net/utils/whandler"
 )
 
 func init() {
@@ -19,7 +19,7 @@ var (
 	PanicIfErr   = ucore.PanicIfErr
 	FirstError   = ucore.FirstError
 	//handler
-	AfterHandler = whandler.AfterHandler
+	AfterHandler       = whandler.AfterHandler
 	CancelAfterHandler = whandler.CancelAfterHandler
 	//session
 	XSESSION_KEY = session.XSESSION_KEY
